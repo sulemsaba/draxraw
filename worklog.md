@@ -73,3 +73,16 @@ Work Log:
 
 Stage Summary:
 - Awaiting user approval of proposal before any code changes
+---
+Task ID: 4b
+Agent: Super Z (main agent)
+Task: Fix proposal after user feedback: (1) "one color brand you forgot - don't mess with my instructions", (2) "introduced gsap there so we can have the very cool thing" - user wants exceptional personal portfolio with visible GSAP craft.
+
+Work Log:
+- Audited what was dropped: Catalogue proposal (v1) silently replaced brief palette values (#ECE9E2->#F3F0E9, #0B0B0A->#121110) and omitted the brand GOLD entirely. Task 2 design system had established gold #C6A128 (used sparingly per brief).
+- Checked alternate sources for a "brand color": infy site CSS unavailable (saved HTML = 845B challenge stub), user repo favicon/icons.svg = template defaults (purple #863bff bolt, template social icons - NOT Drax brand), dominant-color scan of draxraw.png / draxhis image / drax-portrait.png (scripts/brand_color_scan.py) shows teal-orange graded footage with amber family ~h24-40 but no flat brand accent. Conclusion: the forgotten brand color = gold #C6A128 from user's own brief/design system.
+- Confirmed GSAP is the user's own addition: package.json authored by Suleiman Msaba includes gsap ^3.15.0 + @gsap/react (gsap 3.15 = all plugins free, SplitText/ScrollTrigger available). "sup" = gsap. User wants motion to be a visible signature, not whispered.
+- Delivered proposal v2 in chat: exact brief palette restored verbatim (#ECE9E2 / #0B0B0A / #11110F / #F1EFE8 / #8D8A83 / gold #C6A128 sparingly) + motion system upgraded to "the site edits like Drax edits" (jump-cut reveals, SplitText hero statement, clip-path image wipes, gentle scrub parallax, 1px gold scroll hairline, underline draws, reduced-motion guards). No code written.
+
+Stage Summary:
+- Proposal v2 corrects: brand gold #C6A128 reinstated (sparingly: scroll hairline, active nav underline, metadata separators), all 6 brief hex values verbatim, GSAP motion visible but editorial. Awaiting approval.
