@@ -49,6 +49,7 @@ const ThemeToggle: React.FC<{ variant: 'bar' | 'menu' }> = ({ variant }) => {
 export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
   const { mode } = useTheme();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const frame = useRef<number>(0);
 
@@ -62,6 +63,8 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
         setTheme((prev) => (prev === mode ? prev : mode));
         return;
       }
+
+      setScrolled(window.scrollY > 24);
 
       const probe = window.scrollY + 40;
       const sections = document.querySelectorAll<HTMLElement>('[data-theme]');
@@ -110,11 +113,13 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
   return (
     <header
       ref={navRef}
-      className={`site-nav nav-on-${theme} ${menuOpen ? 'is-open' : ''}`}
+      className={`site-nav nav-on-${theme} ${scrolled ? 'is-scrolled' : ''} ${
+        menuOpen ? 'is-open' : ''
+      }`}
     >
       <div className="site-nav-inner">
         <a href="#top" className="nav-brand" onClick={closeMenu}>
-          DRAX.RAW
+          Drax Raw
         </a>
 
         <nav className="nav-links" aria-label="Primary">
@@ -124,7 +129,7 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
             </a>
           ))}
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/drax.raw/"
             target="_blank"
             rel="noopener noreferrer"
             className="nav-link nav-link-external"
@@ -158,7 +163,7 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
             </a>
           ))}
           <a
-            href="https://instagram.com"
+            href="https://www.instagram.com/drax.raw/"
             target="_blank"
             rel="noopener noreferrer"
             className="mobile-link"

@@ -11,10 +11,32 @@
 
 .nav-on-light {
   color: var(--ink-on-light);
+  --nav-veil: rgba(236, 233, 226, 0.94);
 }
 
 .nav-on-dark {
   color: var(--ink-on-dark);
+  --nav-veil: rgba(11, 11, 10, 0.94);
+}
+
+/* Soft veil once scrolled — invisible over paper, restores
+   contrast when the photograph slides beneath the bar */
+.site-nav::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(100% + 2.5rem);
+  background: linear-gradient(to bottom, var(--nav-veil), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.site-nav.is-scrolled::before {
+  opacity: 1;
 }
 
 .site-nav-inner {
