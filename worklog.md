@@ -40,3 +40,21 @@ Work Log:
 Stage Summary:
 - Scope complete per stop condition; no About/Stills/Contact/Footer/project pages built
 - Site: quiet editorial light->dark->light->dark rhythm, photography dominant, real data only
+---
+Task ID: 3
+Agent: Super Z (main agent)
+Task: Add a Light / Dark / Hybrid theme system with a toggle in the navigation (user request on top of the completed visual reset).
+
+Work Log:
+- New src/theme/ThemeContext.tsx: ThemeProvider + useTheme(); mode = 'light' | 'dark' | 'hybrid'; persists to localStorage 'drax-theme'; syncs html[data-mode] + meta theme-color; hybrid is the default (the designed rhythm)
+- index.html: inline pre-paint script sets html[data-mode] from localStorage before first paint (no wrong-theme flash); added meta theme-color
+- index.css: forced-mode overrides (html[data-mode='light'|'dark'] re-map .theme-light/.theme-dark tokens incl. --theme-ink/--theme-muted, html+body surfaces); 0.45s background/color cross-fade on mode flip only (hard cuts between sections untouched); reduced-motion kills the fade via existing global rule
+- Navigation.tsx: ThemeToggle (Light / Dark / Hybrid text row, aria-pressed, role=group); desktop = inside nav links row, mobile = inside full-screen overlay menu; scroll probe now returns the forced mode instantly when mode !== hybrid, else probes [data-theme] sections (re-probes on mode change)
+- Navigation.css: .nav-themes styles (quiet text row, inactive 0.45 opacity, active full ink, "/" separators); mobile overlay switched to column layout with --space-xl separation above the toggle
+- App.tsx: wrapped in ThemeProvider
+- Verified in browser: hybrid (light hero -> dark work, probe adapts nav), dark (portrait pops on near-black), light (all warm light); persistence survives reload; 375px no horizontal overflow; overlay toggle switches theme; console clean
+- bun run build (tsc -b && vite build): PASS (dist 346.00 kB js / 8.74 kB css)
+
+Stage Summary:
+- Three-mode theme system live: Light / Dark / Hybrid, hybrid = designed editorial rhythm (default)
+- Screenshots in download/: theme-hybrid-hero.png, theme-hybrid-work.png, theme-dark-hero.png, theme-dark-work.png, theme-light-work.png, theme-mobile-menu-dark-toggle.png, theme-mobile-dark-hero-top.png

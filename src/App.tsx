@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { ThemeProvider } from './theme/ThemeContext';
 import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
 import { SelectedWork } from './components/SelectedWork';
@@ -8,13 +9,15 @@ export const App: React.FC = () => {
   const navRef = useRef<HTMLElement>(null);
 
   return (
-    <div className="draxraw-app">
-      <Navigation navRef={navRef} />
-      <main id="main-content">
-        <Hero navRef={navRef} />
-        <SelectedWork />
-      </main>
-    </div>
+    <ThemeProvider>
+      <div className="draxraw-app">
+        <Navigation navRef={navRef} />
+        <main id="main-content">
+          <Hero navRef={navRef} />
+          <SelectedWork />
+        </main>
+      </div>
+    </ThemeProvider>
   );
 };
 

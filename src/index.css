@@ -66,7 +66,8 @@ body {
   overflow-x: clip;
 }
 
-/* Theme contexts — sections declare light or dark */
+/* Theme contexts — sections declare light or dark.
+   Forced modes (below) can override either context site-wide. */
 .theme-light {
   background-color: var(--bg-light);
   color: var(--ink-on-light);
@@ -79,6 +80,56 @@ body {
   color: var(--ink-on-dark);
   --theme-ink: var(--ink-on-dark);
   --theme-muted: var(--muted-on-dark);
+}
+
+/* Surfaces cross-fade gently when the mode changes
+   (the hard cuts BETWEEN sections are untouched — this
+   only animates when html[data-mode] actually flips) */
+.theme-light,
+.theme-dark {
+  transition: background-color 0.45s ease, color 0.45s ease;
+}
+
+/* ============================================================
+   Colour modes
+   hybrid (default) — the designed rhythm: light hero, dark film
+   block, light counterpoint, dark close. Nothing to override.
+   light / dark — every themed section reads on one surface.
+   ============================================================ */
+
+html[data-mode='light'] .theme-light,
+html[data-mode='light'] .theme-dark {
+  background-color: var(--bg-light);
+  color: var(--ink-on-light);
+  --theme-ink: var(--ink-on-light);
+  --theme-muted: var(--muted-on-light);
+}
+
+html[data-mode='dark'] .theme-light,
+html[data-mode='dark'] .theme-dark {
+  background-color: var(--bg-dark);
+  color: var(--ink-on-dark);
+  --theme-ink: var(--ink-on-dark);
+  --theme-muted: var(--muted-on-dark);
+}
+
+/* Page-level surfaces follow the mode (overscroll + base ink) */
+html[data-mode='light'],
+html[data-mode='light'] body {
+  background-color: var(--bg-light);
+}
+
+html[data-mode='dark'],
+html[data-mode='dark'] body {
+  background-color: var(--bg-dark);
+}
+
+html[data-mode='light'] body {
+  color: var(--ink-on-light);
+}
+
+html[data-mode='dark'] body {
+  color: var(--ink-on-dark);
 }
 
 /* Typography base */

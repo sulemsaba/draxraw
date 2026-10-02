@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTheme, type ThemeMode } from '../theme/ThemeContext';
 import './Navigation.css';
 
 interface NavigationProps {
@@ -12,15 +13,56 @@ const LINKS = [
   { label: 'Contact', href: '#contact' }
 ] as const;
 
+const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'hybrid', label: 'Hybrid' }
+];
+
+/** Quiet text control — Light / Dark / Hybrid. */
+const ThemeToggle: React.FC<{ variant: 'bar' | 'menu' }> = ({ variant }) => {
+  const { mode, setMode } = useTheme();
+
+  return (
+    <div className={`nav-themes nav-themes-${variant}`} role="group" aria-label="Colour theme">
+      {THEME_OPTIONS.map((option, i) => (
+        <React.Fragment key={option.value}>
+          {i > 0 && (
+            <span className="theme-sep" aria-hidden="true">
+              /
+            </span>
+          )}
+          <button
+            type="button"
+            className={`theme-option${mode === option.value ? ' is-active' : ''}`}
+            aria-pressed={mode === option.value}
+            onClick={() => setMode(option.value)}
+          >
+            {option.label}
+          </button>
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
 export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
+  const { mode } = useTheme();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [menuOpen, setMenuOpen] = useState(false);
   const frame = useRef<number>(0);
 
-  /* Which themed section sits under the navigation? */
+  /* Which surface sits under the navigation?
+     Forced modes answer instantly; hybrid probes the sections. */
   useEffect(() => {
     const readTheme = () => {
       frame.current = 0;
+
+      if (mode !== 'hybrid') {
+        setTheme((prev) => (prev === mode ? prev : mode));
+        return;
+      }
+
       const probe = window.scrollY + 40;
       const sections = document.querySelectorAll<HTMLElement>('[data-theme]');
       let current: 'light' | 'dark' = 'light';
@@ -44,7 +86,7 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
       window.removeEventListener('resize', onScroll);
       if (frame.current) window.cancelAnimationFrame(frame.current);
     };
-  }, []);
+  }, [mode]);
 
   /* Lock page scroll while the mobile menu is open */
   useEffect(() => {
@@ -90,6 +132,7 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
           >
             IG&nbsp;&#8599;
           </a>
+          <ThemeToggle variant="bar" />
         </nav>
 
         <button
@@ -125,6 +168,8 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
             Instagram&nbsp;&#8599;
           </a>
         </nav>
+
+        <ThemeToggle variant="menu" />
       </div>
     </header>
   );

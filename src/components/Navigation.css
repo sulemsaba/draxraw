@@ -80,7 +80,9 @@
   background-color: var(--bg-light);
   color: var(--ink-on-light);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
   padding: var(--pad-page);
   opacity: 0;
   visibility: hidden;
@@ -117,4 +119,58 @@
   .nav-menu-toggle {
     display: block;
   }
+}
+
+/* ============================================================
+   Theme control — Light / Dark / Hybrid
+   Quiet text row; active option reads at full ink.
+   ============================================================ */
+
+.nav-themes {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+}
+
+/* Slightly separated from the page links in the bar */
+.nav-themes-bar {
+  margin-left: var(--space-xs);
+}
+
+.theme-sep {
+  font-size: 0.8rem;
+  line-height: 1;
+  opacity: 0.3;
+  user-select: none;
+}
+
+.theme-option {
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0.25rem 0;
+  opacity: 0.45;
+  transition: opacity 0.25s ease;
+}
+
+.theme-option:hover {
+  opacity: 0.8;
+}
+
+.theme-option.is-active {
+  opacity: 1;
+}
+
+/* Inside the mobile overlay — a touch larger, clear separation */
+.nav-themes-menu {
+  margin-top: var(--space-xl);
+  gap: 0.55rem;
+}
+
+.nav-themes-menu .theme-option {
+  font-size: 1rem;
+  padding: 0.35rem 0;
+}
+
+.nav-themes-menu .theme-sep {
+  font-size: 0.9rem;
 }
