@@ -100,3 +100,22 @@ Work Log:
 Stage Summary:
 - GitHub main is up to date with all local work (visual reset, theme system, real assets)
 - User advised to revoke both pasted tokens; awaiting proposal v2 approval to start the Catalogue build
+---
+Task ID: 5
+Agent: Super Z (main agent)
+Task: Build the best welcome screen (user approved hero work: "do the best home screen after that push") - GSAP signature animation, then push.
+
+Work Log:
+- Optimized hero asset: download/draxraw-infy-assets/img-1-full.jpg (4000x6000) -> public/images/hero-drax.jpg 1400x2100 q84 progressive, 320KB (scripts/make_hero_asset.py)
+- Rewrote Hero.tsx: catalogue statement composition - kicker captions (Filmmaker - Video Editor - Visual Storyteller / Dar es Salaam, Tanzania), statement h1 "I Tell Stories Through The Art of Editing" with gold period span, photograph right (82svh, 2/3, object-position 50% 30%), "Selected work" cue
+- Motion signature "the site edits like Drax edits": SplitText (gsap 3.15 free plugin, registered in lib/gsap.ts) word-by-word jump cuts (autoAlpha 0.01s, stagger 0.075), figure clip-path inset horizontal wipe power4.inOut 1.05s + img scale 1.06->1 settle, gold period lands on final beat, cue cuts last; desktop-only scrub parallax via gsap.matchMedia (figure +48, statement -26, kicker -14, cue fades); reduced-motion = static render; split.revert() cleanup
+- Gold #C6A128 appearances: statement period, 1px fixed scroll-progress hairline (new ScrollProgress component in App.tsx, scrub to scaleX 1), cue arrow (existing)
+- Navigation: brand text "Drax Raw" (was DRAX.RAW), scrolled veil (::before gradient from --nav-veil paper/near-black, is-scrolled state via existing rAF probe) fixing dark-ink-over-dark-photo legibility during hero parallax; Instagram link -> https://www.instagram.com/drax.raw/ (real handle from infy scrape, 2 instances)
+- Hero.css: 12-col grid rows kicker/statement/cue left + figure cols 7/-1; mobile single column, figure 58svh cover, cue align-self flex-end (right, balances statement, verified intentional)
+- Verified via agent-browser: 1440 entry animation mid-flight (7/8 words at 0.7s, nav 0.92 opacity), scrolled veil state, parallax deltas, hairline scaleX 0.1157@400px; 375 no horizontal overflow; forced dark+light modes render correctly with toggle active states; console clean (only pre-existing JQMIGRATE dev logs)
+- bun run lint: 0 errors; bun run build PASS (353.70 kB js / 9.27 kB css)
+- Committed 897487c, pushed to GitHub main (ghp_ token via temp askpass, helper deleted)
+
+Stage Summary:
+- Welcome screen live with GSAP signature: word cuts + image wipe + gold hairline
+- Rest of page (SelectedWork, 3 projects) untouched - still Task 2 style, awaiting direction
