@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" width="100%" height="100%">
+  <defs>
+    <radialGradient id="libGlow" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#26231c" />
+      <stop offset="35%" stop-color="#141310" />
+      <stop offset="80%" stop-color="#0a0a09" />
+      <stop offset="100%" stop-color="#050504" />
+    </radialGradient>
+    <linearGradient id="windowLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F1EFE8" stop-opacity="0.14" />
+      <stop offset="60%" stop-color="#C6A128" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#0A0A09" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="1200" fill="url(#libGlow)" />
+  
+  <!-- Architectural window diagonal beams -->
+  <polygon points="100,0 350,0 850,1200 600,1200" fill="url(#windowLight)" opacity="0.6" />
+  <polygon points="400,0 550,0 1150,1200 1000,1200" fill="url(#windowLight)" opacity="0.3" />
+
+  <!-- Abstract bookshelf / geometric vertical rhythms -->
+  <line x1="880" y1="200" x2="880" y2="1000" stroke="#F1EFE8" stroke-width="1" stroke-opacity="0.1" />
+  <line x1="940" y1="200" x2="940" y2="1000" stroke="#F1EFE8" stroke-width="1" stroke-opacity="0.06" />
+  <line x1="1000" y1="200" x2="1000" y2="1000" stroke="#F1EFE8" stroke-width="1" stroke-opacity="0.1" />
+
+  <!-- RAW Film Metadata Stamp -->
+  <g fill="#F1EFE8" opacity="0.3" font-family="'JetBrains Mono', monospace" font-size="12" letter-spacing="3">
+    <text x="60" y="70">ROLL: 08 // MUGABE PROJECT</text>
+    <text x="60" y="1140">SOCIAL IMPACT DOC // 2025</text>
+    <text x="1140" y="70" text-anchor="end">4:3 ACADEMY RATIO</text>
+    <text x="1140" y="1140" text-anchor="end">50MM PRIME T1.5</text>
+  </g>
+
+  <!-- Framing crosshairs -->
+  <line x1="600" y1="580" x2="600" y2="620" stroke="#C6A128" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="580" y1="600" x2="620" y2="600" stroke="#C6A128" stroke-width="1" stroke-opacity="0.4" />
+</svg>
