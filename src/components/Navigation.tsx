@@ -1,111 +1,128 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './Navigation.css';
 
 interface NavigationProps {
   navRef?: React.RefObject<HTMLElement | null>;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const LINKS = [
+  { label: 'Work', href: '#work' },
+  { label: 'Stills', href: '#stills' },
+  { label: 'About', href: '#about' },
+  { label: 'Contact', href: '#contact' }
+] as const;
 
+export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const frame = useRef<number>(0);
+
+  /* Which themed section sits under the navigation? */
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 40) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+    const readTheme = () => {
+      frame.current = 0;
+      const probe = window.scrollY + 40;
+      const sections = document.querySelectorAll<HTMLElement>('[data-theme]');
+      let current: 'light' | 'dark' = 'light';
+      sections.forEach((section) => {
+        const top = section.getBoundingClientRect().top + window.scrollY;
+        if (probe >= top) current = section.dataset.theme === 'dark' ? 'dark' : 'light';
+      });
+      setTheme((prev) => (prev === current ? prev : current));
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => {
+      if (frame.current) return;
+      frame.current = window.requestAnimationFrame(readTheme);
+    };
+
+    readTheme();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      if (frame.current) window.cancelAnimationFrame(frame.current);
+    };
   }, []);
 
-  const closeMenu = () => setIsMobileMenuOpen(false);
+  /* Lock page scroll while the mobile menu is open */
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   return (
     <header
       ref={navRef}
-      className={`site-navigation ${isScrolled ? 'is-scrolled' : ''} ${isMobileMenuOpen ? 'menu-open' : ''}`}
-      id="main-navigation"
+      className={`site-nav nav-on-${theme} ${menuOpen ? 'is-open' : ''}`}
     >
-      <div className="nav-container">
-        {/* Brand Left */}
-        <a href="#" className="nav-brand" onClick={closeMenu}>
-          DRAX<span className="brand-dot">.</span>RAW
+      <div className="site-nav-inner">
+        <a href="#top" className="nav-brand" onClick={closeMenu}>
+          DRAX.RAW
         </a>
 
-        {/* Desktop Navigation Links Right */}
-        <nav className="nav-desktop-links" aria-label="Main Navigation">
-          <a href="#work" className="nav-link">
-            <span className="nav-link-text">WORK</span>
-          </a>
-          <a href="#stills" className="nav-link">
-            <span className="nav-link-text">STILLS</span>
-          </a>
-          <a href="#about" className="nav-link">
-            <span className="nav-link-text">ABOUT</span>
-          </a>
-          <a href="#contact" className="nav-link">
-            <span className="nav-link-text">CONTACT</span>
-          </a>
+        <nav className="nav-links" aria-label="Primary">
+          {LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="nav-link">
+              {link.label}
+            </a>
+          ))}
           <a
             href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
             className="nav-link nav-link-external"
-            aria-label="Instagram profile"
+            aria-label="Instagram (opens in a new tab)"
           >
-            <span className="nav-link-text">IG ↗</span>
+            IG&nbsp;&#8599;
           </a>
         </nav>
 
-        {/* Mobile Minimal Menu Toggle */}
         <button
           type="button"
-          className="nav-mobile-toggle"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          aria-label={isMobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={isMobileMenuOpen}
+          className="nav-menu-toggle"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
-          <span className={`toggle-line ${isMobileMenuOpen ? 'open' : ''}`} />
-          <span className={`toggle-line ${isMobileMenuOpen ? 'open' : ''}`} />
+          {menuOpen ? 'Close' : 'Menu'}
         </button>
       </div>
 
-      {/* Mobile Drawer Overlay */}
-      <div className={`nav-mobile-overlay ${isMobileMenuOpen ? 'active' : ''}`}>
-        <div className="mobile-overlay-header">
-          <span className="mobile-meta">DAR ES SALAAM — TZ</span>
-          <span className="mobile-meta">2026 ARCHIVE</span>
-        </div>
-        <nav className="mobile-links">
-          <a href="#work" className="mobile-link" onClick={closeMenu}>
-            <span className="link-num">01</span>
-            <span className="link-label">WORK</span>
-          </a>
-          <a href="#stills" className="mobile-link" onClick={closeMenu}>
-            <span className="link-num">02</span>
-            <span className="link-label">STILLS</span>
-          </a>
-          <a href="#about" className="mobile-link" onClick={closeMenu}>
-            <span className="link-num">03</span>
-            <span className="link-label">ABOUT</span>
-          </a>
-          <a href="#contact" className="mobile-link" onClick={closeMenu}>
-            <span className="link-num">04</span>
-            <span className="link-label">CONTACT</span>
-          </a>
+      <div
+        id="mobile-menu"
+        className={`nav-mobile-menu ${menuOpen ? 'is-open' : ''}`}
+        aria-hidden={!menuOpen}
+      >
+        <nav aria-label="Mobile">
+          {LINKS.map((link) => (
+            <a key={link.href} href={link.href} className="mobile-link" onClick={closeMenu} tabIndex={menuOpen ? 0 : -1}>
+              {link.label}
+            </a>
+          ))}
           <a
             href="https://instagram.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="mobile-link external"
+            className="mobile-link"
             onClick={closeMenu}
+            tabIndex={menuOpen ? 0 : -1}
           >
-            <span className="link-num">05</span>
-            <span className="link-label">INSTAGRAM ↗</span>
+            Instagram&nbsp;&#8599;
           </a>
         </nav>
       </div>

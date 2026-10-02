@@ -1,22 +1,20 @@
-export type ProjectLayoutVariant = 'left-aligned' | 'wide-scene' | 'split-editorial';
+export type ProjectLayoutVariant = 'landscape-feature' | 'portrait-offset' | 'full-bleed';
 
+/**
+ * Homepage project presentation.
+ * Only provable, supplied content lives here — no camera specs,
+ * no durations, no invented copy. Deeper real data (roles,
+ * descriptions, YouTube ids) stays in `data/projects.ts`
+ * (`ALL_COLLECTED_FILMS`) for the future project pages.
+ */
 export interface Project {
   id: string;
-  number: string; // e.g. "001"
+  number: string;
   title: string;
-  category: string;
+  type: string;
   year: string;
-  duration?: string;
   thumbnail: string;
-  youtubeId?: string;
-  youtubeUrl?: string;
-  role: string;
-  description: string;
+  youtubeUrl: string;
   layoutVariant: ProjectLayoutVariant;
-  aspectRatio?: string;
-  filmMeta?: {
-    camera?: string;
-    aspect?: string;
-    location?: string;
-  };
+  aspectRatio: string;
 }

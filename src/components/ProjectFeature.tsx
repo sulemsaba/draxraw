@@ -1,129 +1,115 @@
 import React, { useRef } from 'react';
-import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { gsap } from '../lib/gsap';
 import type { Project } from '../types/project';
 import './ProjectFeature.css';
 
 interface ProjectFeatureProps {
   project: Project;
   index?: number;
+  theme?: 'light' | 'dark';
 }
 
-export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project }) => {
-  const containerRef = useRef<HTMLElement>(null);
-  const imageFrameRef = useRef<HTMLDivElement>(null);
-  const textContentRef = useRef<HTMLDivElement>(null);
+/** Per-variant reveal choreography — deliberately not identical. */
+const REVEALS = {
+  'landscape-feature': { clipFrom: 'inset(0 0 100% 0)', duration: 1.1, ease: 'power3.out', imgFrom: 1.03 },
+  'portrait-offset': { clipFrom: 'inset(0 0 0 100%)', duration: 0.95, ease: 'power2.out', imgFrom: 1.04 },
+  'full-bleed': { clipFrom: 'inset(0 100% 0 0)', duration: 1.25, ease: 'power3.out', imgFrom: 1.03 }
+} as const;
+
+export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index = 0, theme = 'dark' }) => {
+  const articleRef = useRef<HTMLElement>(null);
+  const mediaRef = useRef<HTMLAnchorElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReducedMotion) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: 'top 85%',
-          end: 'top 30%',
-          toggleActions: 'play none none reverse'
+      const reveal = REVEALS[project.layoutVariant];
+
+      gsap.fromTo(
+        mediaRef.current,
+        { clipPath: reveal.clipFrom },
+        {
+          clipPath: 'inset(0% 0% 0% 0%)',
+          duration: reveal.duration,
+          ease: reveal.ease,
+          scrollTrigger: {
+            trigger: articleRef.current,
+            start: 'top 78%',
+            once: true
+          }
         }
-      });
+      );
 
-      tl.fromTo(
-        imageFrameRef.current,
-        { opacity: 0, y: 50 },
-        { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' }
-      ).fromTo(
-        textContentRef.current,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1.0, ease: 'power3.out' },
-        '-=0.8'
+      gsap.fromTo(
+        mediaRef.current?.querySelector('img') ?? {},
+        { scale: reveal.imgFrom },
+        {
+          scale: 1,
+          duration: reveal.duration + 0.25,
+          ease: reveal.ease,
+          scrollTrigger: {
+            trigger: articleRef.current,
+            start: 'top 78%',
+            once: true
+          }
+        }
+      );
+
+      gsap.fromTo(
+        metaRef.current,
+        { autoAlpha: 0, y: 16 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          delay: 0.15 + index * 0.05,
+          scrollTrigger: {
+            trigger: articleRef.current,
+            start: 'top 74%',
+            once: true
+          }
+        }
       );
     },
-    { scope: containerRef }
+    { scope: articleRef }
   );
 
   return (
     <article
-      ref={containerRef}
-      className={`project-scene variant-${project.layoutVariant}`}
-      id={`project-${project.id}`}
-      data-testid={`project-scene-${project.number}`}
+      ref={articleRef}
+      className={`project theme-${theme} variant-${project.layoutVariant}`}
+      data-theme={theme}
+      data-testid={`project-${project.number}`}
     >
-      {/* Top Scene Marker Line */}
-      <div className="scene-status-line">
-        <span className="scene-index-num">{project.number}</span>
-        <div className="scene-divider" />
-        <span className="scene-category-tag">{project.category}</span>
-        {project.duration && <span className="scene-duration">{project.duration}</span>}
-        <span className="scene-year">{project.year}</span>
-      </div>
-
-      <div className="scene-body">
-        {/* Cinematic Visual Frame linking directly to the film */}
-        <a
-          ref={imageFrameRef as unknown as React.RefObject<HTMLAnchorElement>}
-          href={project.youtubeUrl || (project.youtubeId ? `https://youtu.be/${project.youtubeId}` : '#')}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="scene-media-frame"
-          style={{ aspectRatio: project.aspectRatio || '16/9' }}
-          aria-label={`Watch ${project.title} on YouTube`}
-        >
-          <img
-            src={project.thumbnail}
-            alt={project.title}
-            className="scene-image"
-            loading="lazy"
-          />
-
-          {/* Cinematic Corner Accents */}
-          <div className="frame-crosshair top-left" />
-          <div className="frame-crosshair top-right" />
-          <div className="frame-crosshair bottom-left" />
-          <div className="frame-crosshair bottom-right" />
-
-          {/* Hover View Project Indicator */}
-          <div className="scene-hover-badge">
-            <span className="badge-dot" />
-            <span className="badge-text">PLAY FILM</span>
-            {project.duration && <span className="badge-time">[{project.duration}]</span>}
-            <span className="badge-arrow">↗</span>
-          </div>
-        </a>
-
-        {/* Editorial Project Information */}
-        <div ref={textContentRef} className="scene-editorial-info">
-          <div className="info-header">
-            <h3 className="project-title">{project.title}</h3>
-            {project.role && <p className="project-role">{project.role}</p>}
-          </div>
-
-          <p className="project-description">{project.description}</p>
-
-          {/* Technical Camera / Location Specs */}
-          {project.filmMeta && (
-            <div className="project-tech-meta">
-              {project.filmMeta.camera && (
-                <div className="tech-item">
-                  <span className="tech-key">CAM:</span>
-                  <span className="tech-val">{project.filmMeta.camera}</span>
-                </div>
-              )}
-              {project.filmMeta.aspect && (
-                <div className="tech-item">
-                  <span className="tech-key">FRAME:</span>
-                  <span className="tech-val">{project.filmMeta.aspect}</span>
-                </div>
-              )}
-              {project.filmMeta.location && (
-                <div className="tech-item">
-                  <span className="tech-key">LOC:</span>
-                  <span className="tech-val">{project.filmMeta.location}</span>
-                </div>
-              )}
-            </div>
-          )}
+      <a
+        ref={mediaRef}
+        href={project.youtubeUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="project-media"
+        style={{ aspectRatio: project.aspectRatio }}
+        aria-label={`Watch ${project.title} on YouTube (opens in a new tab)`}
+      >
+        <div className="media-inner">
+          <img src={project.thumbnail} alt={project.title} loading="lazy" />
         </div>
+      </a>
+
+      <div ref={metaRef} className="project-meta">
+        <div className="meta-main">
+          <span className="project-number">{project.number}</span>
+          <h3 className="project-title">{project.title}</h3>
+          <p className="project-type">
+            {project.type} / {project.year}
+          </p>
+        </div>
+        <span className="view-project" aria-hidden="true">
+          View project&nbsp;&#8599;
+        </span>
       </div>
     </article>
   );

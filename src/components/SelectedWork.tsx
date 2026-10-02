@@ -1,31 +1,30 @@
 import React, { useRef } from 'react';
-import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import { gsap } from '../lib/gsap';
 import { FILM_PROJECTS } from '../data/projects';
 import { ProjectFeature } from './ProjectFeature';
 import './SelectedWork.css';
 
 export const SelectedWork: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
+  const introRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (prefersReducedMotion) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
       gsap.fromTo(
-        headerRef.current,
-        { opacity: 0, y: 40 },
+        introRef.current,
+        { autoAlpha: 0, y: 14 },
         {
-          opacity: 1,
+          autoAlpha: 1,
           y: 0,
-          duration: 1.2,
-          ease: 'power3.out',
+          duration: 0.9,
+          ease: 'power2.out',
           scrollTrigger: {
-            trigger: headerRef.current,
+            trigger: introRef.current,
             start: 'top 85%',
-            toggleActions: 'play none none reverse'
+            once: true
           }
         }
       );
@@ -34,26 +33,23 @@ export const SelectedWork: React.FC = () => {
   );
 
   return (
-    <section ref={sectionRef} className="selected-work-section" id="work" aria-label="Selected Work">
-      <div className="work-container">
-        {/* Section Header */}
-        <header ref={headerRef} className="work-header">
-          <div className="work-header-lead">
-            <h2 className="work-section-title">SELECTED WORK</h2>
-            <p className="work-secondary-line">FILMS / STORIES / COMMISSIONS</p>
-          </div>
-          <div className="work-header-meta">
-            <span className="archive-counter">[ 001 — 003 ]</span>
-            <span className="archive-status">AVAILABLE FOR COMMISSION</span>
-          </div>
-        </header>
-
-        {/* Cinematic Project Rows / Scenes */}
-        <div className="work-projects-list">
-          {FILM_PROJECTS.map((project, index) => (
-            <ProjectFeature key={project.id} project={project} index={index} />
-          ))}
+    <section ref={sectionRef} className="selected-work" id="work" aria-label="Selected work">
+      <div ref={introRef} className="work-intro theme-dark" data-theme="dark">
+        <div className="work-intro-inner">
+          <h2 className="work-title">Selected work</h2>
+          <span className="work-years">2026</span>
         </div>
+      </div>
+
+      <div className="work-list">
+        {FILM_PROJECTS.map((project, index) => (
+          <ProjectFeature
+            key={project.id}
+            project={project}
+            index={index}
+            theme={index === 1 ? 'light' : 'dark'}
+          />
+        ))}
       </div>
     </section>
   );

@@ -1,87 +1,35 @@
-.selected-work-section {
-  position: relative;
-  width: 100%;
-  background-color: var(--bg);
-  padding: var(--gap-section) var(--pad-page) clamp(4rem, 10vh, 8rem);
-  border-top: 1px solid var(--line-subtle);
+/* Selected work — restrained heading, projects carry their own theme */
+
+.selected-work {
+  scroll-margin-top: 4.5rem;
 }
 
-.work-container {
-  width: 100%;
-  max-width: 1800px;
-  margin: 0 auto;
+.work-intro {
+  /* Hard editorial cut from the light hero into the dark film block */
+  padding: var(--space-xl) var(--pad-page) var(--space-lg);
 }
 
-/* Header */
-.work-header {
+.work-intro-inner {
   display: flex;
-  align-items: flex-end;
+  align-items: baseline;
   justify-content: space-between;
-  border-bottom: 1px solid var(--line-strong);
-  padding-bottom: 2rem;
-  margin-bottom: clamp(4rem, 10vh, 8rem);
+  gap: var(--space-sm);
 }
 
-.work-header-lead {
+.work-title {
+  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.work-years {
+  font-size: 0.95rem;
+  color: var(--theme-muted);
+}
+
+.work-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-}
-
-.work-section-title {
-  font-family: var(--font-grotesk);
-  font-size: clamp(2.4rem, 5.5vw, 5rem);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
-  color: var(--text);
-}
-
-.work-secondary-line {
-  font-family: var(--font-mono);
-  font-size: clamp(0.78rem, 1vw, 0.92rem);
-  letter-spacing: 0.22em;
-  color: var(--gold);
-  text-transform: uppercase;
-}
-
-.work-header-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  color: var(--muted);
-  text-transform: uppercase;
-}
-
-.archive-counter {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.archive-status {
-  color: var(--muted);
-}
-
-.work-projects-list {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
-@media (max-width: 768px) {
-  .work-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-    padding-bottom: 1.5rem;
-    margin-bottom: 3.5rem;
-  }
-
-  .work-header-meta {
-    align-items: flex-start;
-  }
+  gap: var(--space-2xl);
+  padding-bottom: var(--space-2xl);
 }

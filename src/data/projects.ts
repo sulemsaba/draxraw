@@ -1,4 +1,4 @@
-import type { Project } from '../types/project';
+import type { Project, ProjectLayoutVariant } from '../types/project';
 
 export interface DraxFilmEntry {
   id: string;
@@ -19,6 +19,11 @@ export const DRAX_YOUTUBE_CHANNEL = {
   url: 'http://www.youtube.com/@DraxRaw'
 };
 
+/**
+ * Real, collected film data (source of truth for titles, types,
+ * roles, years, links and thumbnails). The homepage projects below
+ * are derived from these entries — nothing is invented here.
+ */
 export const ALL_COLLECTED_FILMS: DraxFilmEntry[] = [
   {
     id: 'world-that-never-stops',
@@ -94,65 +99,55 @@ export const ALL_COLLECTED_FILMS: DraxFilmEntry[] = [
   }
 ];
 
-export const FILM_PROJECTS: Project[] = [
-  {
-    id: 'world-that-never-stops',
-    number: '001',
-    title: 'A WORLD THAT NEVER STOPS',
-    category: 'DOCUMENTARY / EDIT',
-    year: '2025',
-    duration: '03:42',
-    thumbnail: '/images/dar-girls-00584.jpg',
-    youtubeId: 'HxAhX2KDeos',
-    youtubeUrl: 'https://youtu.be/HxAhX2KDeos',
-    role: 'PRODUCER & VIDEO EDITOR',
-    description: 'An intimate study of rhythmic labor, dawn tides, and quiet resilience along the Indian Ocean coastline of Dar es Salaam.',
-    layoutVariant: 'left-aligned',
-    aspectRatio: '16/9',
-    filmMeta: {
-      camera: 'ARRI Alexa Mini LF',
-      aspect: '2.39:1 Anamorphic',
-      location: 'Dar es Salaam, TZ'
-    }
-  },
-  {
-    id: 'a-new-chapter',
-    number: '002',
-    title: 'A NEW CHAPTER',
-    category: 'EVENT FILM',
-    year: '2025',
-    duration: '02:18',
-    thumbnail: '/images/book-launch-01.jpg',
-    youtubeId: 'hyaAb77XwGI',
-    youtubeUrl: 'https://youtu.be/hyaAb77XwGI',
-    role: 'CINEMATOGRAPHER & COLORIST',
-    description: 'A cinematic celebration of a new book release, capturing unscripted human warmth, shared voices, and illuminated nightscapes.',
-    layoutVariant: 'wide-scene',
-    aspectRatio: '21/9',
-    filmMeta: {
-      camera: 'Sony FX6 RAW',
-      aspect: '2.35:1 Scope',
-      location: 'Oysterbay, TZ'
-    }
-  },
-  {
-    id: 'a-place-transformed',
-    number: '003',
-    title: 'A PLACE TRANSFORMED',
-    category: 'SOCIAL IMPACT FILM',
-    year: '2025',
-    duration: '04:05',
-    thumbnail: '/images/read-tz-mugabe-07280.jpg',
-    youtubeId: 'tK7P7bwisdo',
-    youtubeUrl: 'https://youtu.be/tK7P7bwisdo',
-    role: 'DIRECTOR & EDITOR',
-    description: 'Documenting how the renewal of a local school library catalyzed curiosity, dignity, and a sanctuary of self-discovery for young students.',
-    layoutVariant: 'split-editorial',
-    aspectRatio: '4/3',
-    filmMeta: {
-      camera: 'RED Komodo 6K',
-      aspect: '4:3 Academy Format',
-      location: 'Mugabe Secondary, TZ'
-    }
+const byId = new Map(ALL_COLLECTED_FILMS.map((film) => [film.id, film]));
+
+interface PresentationSpec {
+  number: string;
+  layoutVariant: ProjectLayoutVariant;
+  aspectRatio: string;
+  /** Optional display-title trim, always a substring of the real title. */
+  displayTitle?: string;
+}
+
+const toProject = (id: string, spec: PresentationSpec): Project => {
+  const film = byId.get(id);
+  if (!film) {
+    throw new Error(`Unknown film id: ${id}`);
   }
+  return {
+    id: film.id,
+    number: spec.number,
+    title: spec.displayTitle ?? film.title,
+    type: film.type,
+    year: film.year,
+    thumbnail: film.thumbnail,
+    youtubeUrl: film.youtubeUrl,
+    layoutVariant: spec.layoutVariant,
+    aspectRatio: spec.aspectRatio
+  };
+};
+
+/**
+ * The three homepage features. Rhythm:
+ * 01 — landscape feature on dark (the featured film)
+ * 02 — portrait offset on light (editorial counterpoint)
+ * 03 — near full-bleed on dark (closing transition)
+ */
+export const FILM_PROJECTS: Project[] = [
+  toProject('world-that-never-stops', {
+    number: '01',
+    layoutVariant: 'landscape-feature',
+    aspectRatio: '4 / 3'
+  }),
+  toProject('book-launch-highlights', {
+    number: '02',
+    layoutVariant: 'portrait-offset',
+    aspectRatio: '2 / 3'
+  }),
+  toProject('library-social-impact', {
+    number: '03',
+    layoutVariant: 'full-bleed',
+    aspectRatio: '3 / 2',
+    displayTitle: 'A Place Transformed'
+  })
 ];

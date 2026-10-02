@@ -1,81 +1,99 @@
+/* ============================================================
+   DRAX.RAW — Editorial design system
+   Warm light / deep dark surfaces, photography first.
+   ============================================================ */
+
 :root {
-  /* Color System */
-  --bg: #0A0A09;
-  --surface: #11110F;
-  --text: #F1EFE8;
-  --muted: #97958E;
-  --gold: #C6A128;
-  --line: rgba(241, 239, 232, 0.16);
-  --line-strong: rgba(241, 239, 232, 0.28);
-  --line-subtle: rgba(241, 239, 232, 0.08);
+  /* Surfaces */
+  --bg-light: #ece9e2;
+  --bg-dark: #0b0b0a;
 
-  /* Typography System */
-  --font-grotesk: 'Syne', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Instrument Serif', Georgia, serif;
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  /* Ink */
+  --ink-on-light: #11110f;
+  --ink-on-dark: #f1efe8;
 
-  /* Fluid Spacing */
-  --pad-page: clamp(1.25rem, 4vw, 4.5rem);
-  --pad-page-sm: clamp(1rem, 3vw, 2rem);
-  --gap-section: clamp(6rem, 14vh, 14rem);
+  /* Muted */
+  --muted-on-light: #8d8a83;
+  --muted-on-dark: #8d8a83;
 
-  /* Easing */
-  --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+  /* Accent — the existing muted gold, used very sparingly */
+  --gold: #c6a128;
+
+  /* Typography */
+  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Spacing scale */
+  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
+  --space-sm: clamp(1rem, 1.6vw, 1.5rem);
+  --space-md: clamp(1.75rem, 3.2vw, 3rem);
+  --space-lg: clamp(3rem, 5.5vw, 4.5rem);
+  --space-xl: clamp(4.5rem, 8.5vw, 7rem);
+  --space-2xl: clamp(7rem, 13vw, 11rem);
+
+  /* Page gutter */
+  --pad-page: clamp(1.25rem, 4vw, 4rem);
+
+  /* Motion */
+  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
+  --theme-shift: color 0.4s ease, background-color 0.4s ease;
 }
 
-/* Reset & Box Sizing */
-*, *::before, *::after {
+/* Modern reset */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 html {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: var(--font-grotesk);
+  scroll-behavior: smooth;
+  overflow-x: clip;
+  background-color: var(--bg-light);
+}
+
+/* Page opens on light (hero) and closes on dark (last project) */
+body {
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  font-family: var(--font-sans);
+  color: var(--ink-on-light);
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
   overflow-x: clip;
 }
 
-body {
-  min-height: 100vh;
-  background-color: var(--bg);
-  color: var(--text);
-  overflow-x: clip;
-  position: relative;
-  line-height: 1.5;
+/* Theme contexts — sections declare light or dark */
+.theme-light {
+  background-color: var(--bg-light);
+  color: var(--ink-on-light);
+  --theme-ink: var(--ink-on-light);
+  --theme-muted: var(--muted-on-light);
 }
 
-/* Film Grain Canvas Texture */
-.film-grain {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.038;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+.theme-dark {
+  background-color: var(--bg-dark);
+  color: var(--ink-on-dark);
+  --theme-ink: var(--ink-on-dark);
+  --theme-muted: var(--muted-on-dark);
 }
 
-/* Typography Base Classes */
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-grotesk);
-  font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.03em;
-  color: var(--text);
+/* Typography base */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: inherit;
 }
 
 p {
-  color: var(--muted);
-  font-size: clamp(0.95rem, 1.1vw, 1.125rem);
-  line-height: 1.65;
-  font-weight: 400;
+  color: var(--theme-muted, var(--muted-on-light));
 }
 
 a {
@@ -91,15 +109,26 @@ button {
   cursor: pointer;
 }
 
-/* Selection */
-::selection {
-  background-color: var(--gold);
-  color: var(--bg);
+img {
+  display: block;
+  max-width: 100%;
 }
 
-/* Respect Reduced Motion */
+::selection {
+  background-color: var(--gold);
+  color: var(--bg-dark);
+}
+
+/* Focus visibility — quiet but present */
+:focus-visible {
+  outline: 1.5px solid currentColor;
+  outline-offset: 3px;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
