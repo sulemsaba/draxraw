@@ -58,3 +58,18 @@ Work Log:
 Stage Summary:
 - Three-mode theme system live: Light / Dark / Hybrid, hybrid = designed editorial rhythm (default)
 - Screenshots in download/: theme-hybrid-hero.png, theme-hybrid-work.png, theme-dark-hero.png, theme-dark-work.png, theme-light-work.png, theme-mobile-menu-dark-toggle.png, theme-mobile-dark-hero-top.png
+---
+Task ID: 4
+Agent: Super Z (main agent)
+Task: Scrape draxraw.infy.click (user's live site) for all real images + info; download assets; write ONE-composition homepage proposal (art direction reset). NO CODE until approved.
+
+Work Log:
+- Site behind InfinityFree JS challenge -> passed via agent-browser, harvested __test cookie for curl
+- Scraped Home + Portfolio + About: 22 unique wp-content image URLs, all external links, all text content
+- Downloaded 21 valid images to download/draxraw-infy-assets/ incl. full-res originals: portrait-no-bg-full.png 4525x6788 alpha (20MB), img-1-full.jpg + portrait-2-full.jpg 4000x6000, about-portrait.jpg 1707x2560, 8x dar-girls (2560x1707-ish + 00117 portrait 1707x2560), 4x read-tz (2560x1707); scripts/inventory_assets.py verifies dims
+- Extracted real info: name "Drax Raw", tagline "Filmmaker - Video Editor - Visual Storyteller", statement "I Tell Stories Through The Art of Editing", 4-paragraph bio, projects w/ live titles (A World That Never Stops / Driven by Purpose. / Before & After. / A New Chapter Begins. / A Place Transformed.), categories, roles (Editor, Colorist), YouTube links (HxAhX2KDeos, iw1qnfriJIc, zXTNZ-AaWWw, hyaAb77XwGI, tK7P7bwisdo, QoEMUUKstAI), contacts (draxraw0@gmail.com, wa.me/255666040825, IG @drax.raw, YT @DraxRaw, Threads), photography label "Stories in a Frame"
+- Confirmed repo thumbs: book-launch-01/02 portrait 1707x2560, read-tz-07280/07296 landscape 2560x1707
+- Wrote full homepage composition proposal in chat (hero, type scale, nav, background sequence, image dims, Selected Work, 3-project variation, photography preview, GSAP, mobile). NO implementation.
+
+Stage Summary:
+- Awaiting user approval of proposal before any code changes
