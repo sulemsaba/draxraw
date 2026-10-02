@@ -86,3 +86,17 @@ Work Log:
 
 Stage Summary:
 - Proposal v2 corrects: brand gold #C6A128 reinstated (sparingly: scroll hairline, active nav underline, metadata separators), all 6 brief hex values verbatim, GSAP motion visible but editorial. Awaiting approval.
+---
+Task ID: 4c
+Agent: Super Z (main agent)
+Task: Push all work to github.com/sulemsaba/draxraw (user provided a PAT, said it will be revoked soon).
+
+Work Log:
+- Working tree clean; 5 local commits ahead of origin/main (774bb98..4f4835e): Task 2 visual reset + Task 3 theme system + downloaded infy assets + worklog/scripts
+- First token (fine-grained github_pat_...) authenticated as sulemsaba but 403 on push: missing Contents: Read and write (API repo permissions object reflects user perms, not token scope; verified via api.github.com /user + /repos)
+- Second token (classic ghp_...) -> push succeeded via temporary GIT_ASKPASS helper (token never stored in .git/config or on disk; helper deleted immediately after push)
+- Verified: git ls-remote main = 4f4835e = local HEAD; rg scan confirms no token traces in .git/config, scripts/, worklog.md
+
+Stage Summary:
+- GitHub main is up to date with all local work (visual reset, theme system, real assets)
+- User advised to revoke both pasted tokens; awaiting proposal v2 approval to start the Catalogue build
