@@ -153,3 +153,33 @@ Work Log:
 
 Stage Summary:
 - Local main ahead of origin by 1 commit (9c4e187); push pending new token
+---
+Task ID: 7
+Agent: Super Z (main agent)
+Task: Full design overhaul after user verdict "the design is very very poor... it feel ai". Target: Lando Norris / Ali Ali award-site level. Also: pending Task 6 push with re-enabled token; no em dashes in copy.
+
+Work Log:
+- Pushed the stranded Task 6 commits first (7c2a07c) after user re-enabled the ghp_ token; verified remote == local
+- Researched references directly on awwwards: Lando Norris by OFF+BRAND (SOTD Nov 17 2025, 8.18) and Ali Ali by Exo Ape (SOTD Aug 24 2020, 7.73); extracted DNA: giant display type, corner nav, autoplay showreel, line-mask reveals, custom cursor, velocity-reactive strips
+- Fonts: added Archivo variable (wdth 62..125) as display voice (.display = 800 weight, 112% stretch, uppercase); body stays Instrument Sans
+- New lib/lenis.ts: Lenis 1.3.26 on gsap.ticker, ScrollTrigger.update on scroll, scrollToTarget helper, stop/start for boot lock
+- NEW Preloader: DRAX RAW SplitText char lift (mask:'chars'), gold rule scaleX, 00-100 counter, curtain wipes up at ~1.9s; reduced-motion + App boot state coordination (hero introDelay = handoff)
+- NEW Cursor: fine-pointer paper dot (difference blend), grows to PLAY chip over [data-cursor=media]; html.has-cursor hides native cursor
+- SelectedWork intro rebuilt: SELECTED / WORK (06) as two line-mask curtain lifts at 12vw; note copy rewritten without em dashes
+- ProjectFeature rebuilt as 6 scenes (spotlight/poster/cinema/spread/frame/vertical): outlined giant numerals w/ scrub counter-drift, per-scene clip reveals incl. iris-open for vertical, title overlaps/behind media, meta rows; autoplay in-view gate + poster breath + cinema lightbox kept
+- data/projects.ts: layoutVariants remapped to the 6 scene names; film 06 aspect 9/16 (real Shorts)
+- NEW Marquee: services ticker, xPercent -50 loop, timeScale boost from Lenis velocity
+- NEW StillsGallery "Stories in a Frame": desktop pinned horizontal scrub w/ containerAnimation clip reveals; mobile native scroll-snap; real photos only (dar-girls + read-tz-mugabe series), IG close card
+- NEW ContactFooter: LET'S MAKE SOMETHING. line lifts, giant contact rows (email/WhatsApp/IG/YT) with magnetic pull + gold hover, base row, back-to-top via lenis
+- Navigation: About dead link removed, anchors via scrollToTarget, mobile menu = giant masked links staggered on open (CSS)
+- Fixed: Cursor.css missing import (static 24.8px block pushed whole page down), still path read-tz-mugabe-07267, mobile INSTAGRAM clip
+- Em dash audit: index.html title/meta, WorkLightbox attrs, SelectedWork note all cleaned; zero em dashes in rendered copy
+- Palette untouched; gold stays: hero period, scroll hairline, preloader rule, footer dot/hover, selection
+- Verified agent-browser 1440: preloader->hero handoff, marquee, all 6 scenes, pinned gallery scrub (track x -2117->-2251), lightbox open/Esc, forced light mode; 375: hero, menu, scenes, native swipe, no horizontal overflow; console clean
+- bun run lint 0 errors; build PASS 387.35 kB js / 21.00 kB css
+- Committed 9c3b071, pushed to GitHub main via temp askpass (helper deleted)
+
+Stage Summary:
+- Site is now an award-pattern experience: boot curtain -> poster hero -> velocity marquee -> six unique film scenes with in-view autoplay -> pinned contact-sheet gallery -> giant close
+- All six real films autoplay muted in-page, cinema overlay carries sound; all real photography showcased
+- Awaiting user verdict on the new feel
