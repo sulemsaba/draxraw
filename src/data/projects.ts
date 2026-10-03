@@ -122,16 +122,23 @@ const toProject = (id: string, spec: PresentationSpec): Project => {
     year: film.year,
     thumbnail: film.thumbnail,
     youtubeUrl: film.youtubeUrl,
+    youtubeId: film.youtubeId,
+    role: film.role,
+    description: film.description,
+    vertical: film.youtubeUrl.includes('/shorts/'),
     layoutVariant: spec.layoutVariant,
     aspectRatio: spec.aspectRatio
   };
 };
 
 /**
- * The three homepage features. Rhythm:
- * 01 — landscape feature on dark (the featured film)
+ * All six films. The page cuts between surfaces like an edit:
+ * 01 — landscape feature on dark (the showreel opens the block)
  * 02 — portrait offset on light (editorial counterpoint)
- * 03 — near full-bleed on dark (closing transition)
+ * 03 — near full-bleed on dark
+ * 04 — landscape feature on light (second counterpoint)
+ * 05 — portrait offset on dark
+ * 06 — near full-bleed on dark (the closing cut — page ends dark)
  */
 export const FILM_PROJECTS: Project[] = [
   toProject('world-that-never-stops', {
@@ -149,5 +156,20 @@ export const FILM_PROJECTS: Project[] = [
     layoutVariant: 'full-bleed',
     aspectRatio: '3 / 2',
     displayTitle: 'A Place Transformed'
+  }),
+  toProject('school-library-transformation', {
+    number: '04',
+    layoutVariant: 'landscape-feature',
+    aspectRatio: '4 / 3'
+  }),
+  toProject('engagement-film', {
+    number: '05',
+    layoutVariant: 'portrait-offset',
+    aspectRatio: '2 / 3'
+  }),
+  toProject('driven-by-purpose', {
+    number: '06',
+    layoutVariant: 'full-bleed',
+    aspectRatio: '3 / 2'
   })
 ];

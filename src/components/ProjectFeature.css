@@ -1,37 +1,84 @@
-/* Project features — three editorial rhythms, images sit directly
-   in the composition. No cards, no frames, no borders. */
+/* Project frames — the work plays here. No cards, no frames,
+   no borders: the film itself is the surface. */
 
 .project {
   padding: 0 var(--pad-page);
 }
 
-/* ---- Shared media ---- */
+/* ---- Media frame ------------------------------------------- */
 
 .project-media {
+  position: relative;
   display: block;
   overflow: hidden;
   will-change: clip-path;
 }
 
+/* Oversized top/bottom so the desktop drift never shows an edge */
 .media-inner {
-  width: 100%;
-  height: 100%;
-  transition: transform 0.7s var(--ease-editorial);
+  position: absolute;
+  inset: -4% 0;
+  will-change: transform;
 }
 
-.project-media:hover .media-inner,
-.project-media:focus-visible .media-inner {
-  transform: scale(1.015);
+.media-poster {
+  position: absolute;
+  inset: 0;
 }
 
-.media-inner img {
+.media-poster img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   will-change: transform;
 }
 
-/* ---- Shared metadata ---- */
+/* The live cut — fades over the poster once the stream is running */
+.media-live {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.65s ease 0.05s;
+  pointer-events: none;
+}
+
+.media-live.is-on {
+  opacity: 1;
+}
+
+.media-live iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Whole-frame press target — opens the cinema overlay */
+.media-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  cursor: pointer;
+}
+
+.media-hit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: transparent;
+  transition: background-color 0.4s ease;
+}
+
+.project-media:hover .media-hit::after,
+.project-media:focus-within .media-hit::after {
+  background-color: rgba(11, 11, 10, 0.08);
+}
+
+.media-hit:focus-visible {
+  outline-offset: -2px;
+}
+
+/* ---- Shared metadata ---------------------------------------- */
 
 .project-meta {
   display: flex;
@@ -45,6 +92,7 @@
   font-size: 0.85rem;
   color: var(--theme-muted);
   margin-bottom: var(--space-xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .project-title {
@@ -84,7 +132,7 @@
 }
 
 /* ============================================================
-   Variant 01 — landscape feature on dark
+   Variant 01/04 — landscape feature
    Metadata above, large landscape image at ~74vw.
    ============================================================ */
 
@@ -107,8 +155,8 @@
 }
 
 /* ============================================================
-   Variant 02 — portrait offset on light
-   Text toward the left, portrait image toward the right,
+   Variant 02/05 — portrait offset
+   Text toward one side, portrait image toward the other,
    significant whitespace between them.
    ============================================================ */
 
@@ -141,7 +189,7 @@
 }
 
 /* ============================================================
-   Variant 03 — near full-bleed on dark
+   Variant 03/06 — near full-bleed
    Wide image, metadata below.
    ============================================================ */
 

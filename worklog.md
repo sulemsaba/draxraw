@@ -119,3 +119,24 @@ Work Log:
 Stage Summary:
 - Welcome screen live with GSAP signature: word cuts + image wipe + gold hairline
 - Rest of page (SelectedWork, 3 projects) untouched - still Task 2 style, awaiting direction
+---
+Task ID: 6
+Agent: Super Z (main agent)
+Task: Work showcase v2 - "the cutting room": showcase ALL six films with autoplaying media + cinema overlay + signature GSAP (user: "best animation and user experience all in one... design inspiration from the web... images autoplay inside the website... showcase all work").
+
+Work Log:
+- Executed pending "man pull again": fetch confirmed local == origin/main at ec1a3c5, nothing new remote
+- Web research (web-search + page_reader): muted <video/embed autoplay loop playsInline> is the industry pattern for cinematic video-first sites; awwwards portfolio galleries as reference hub; GSAP ScrollTrigger pinning cautions (layout shift) -> mitigated via fixed aspect-ratio boxes; UX warning that upfront-heavy video portfolios fail -> validated the in-view lazy gate
+- data/projects.ts: FILM_PROJECTS expanded 3 -> 6 films (all real entries from ALL_COLLECTED_FILMS); toProject now passes through youtubeId, role, description, vertical (derived from /shorts/ url)
+- types/project.ts: Project extended with youtubeId/role/description/vertical
+- ProjectFeature.tsx rewritten: ScrollTrigger.create gate (start top 95% / end bottom 5%) mounts a muted looping chrome-less youtube-nocookie embed ONLY while the frame is on screen (state machine idle->loading->live; fade-in over poster only after iframe onLoad); poster keeps a scale-only Ken Burns breath (yoyo, sine, per-index duration); per-variant clip-path reveals kept; SplitText word cuts on titles; desktop-only yPercent drift on .media-inner (inset -4% 0 so no edge shows); media is now a <button> (media-hit) that opens the cinema
+- WorkLightbox.tsx/.css NEW: fullscreen dark cinema (z-80, rgba(11,11,10,.96)), sound-on autoplay embed (user gesture earned it), vertical Shorts letterbox via 9/16 frame width min(calc(78svh*9/16), 92vw, 34rem), caption = number/title/type/year/role/description (all real), Watch on YouTube link, Esc + backdrop + Close all close, body scroll lock, focus moves to Close on open and returns on unmount; FIX: overlay tween uses opacity not autoAlpha (autoAlpha visibility:hidden swallowed the focus() call)
+- SelectedWork.tsx/.css: SplitText intro ("Selected work" word cuts + (06) counter + microcopy note), THEME_RHYTHM dark/light/dark/light/dark/dark, lightbox state lives here
+- Verified via agent-browser: 6 frames render (01..06); autoplay gate bidirectional (iframe mounts in view, unmounts on scroll-away, exactly one live player); lightbox open/close/Esc/backdrop + focus handoff + scroll lock; 375px no horizontal overflow; forced dark + light modes correct; gold hairline scaleX 1 at page end; page ends dark; console clean
+- NOTE: sandbox datacenter IP triggers YouTube "confirm you're not a bot" inside embeds (screenshot artifact) - machinery verified via onLoad fade gate; on real visitor connections embeds play the actual films
+- bun run lint: 0 errors; bun run build PASS (357.93 kB js / 11.27 kB css)
+
+Stage Summary:
+- All six real films showcased with autoplaying muted previews + sound-on cinema overlay
+- GSAP signature extended site-wide: hero + intro + every caption cut like an edit
+- Committed and pushed to GitHub main

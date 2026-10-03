@@ -2,10 +2,9 @@ export type ProjectLayoutVariant = 'landscape-feature' | 'portrait-offset' | 'fu
 
 /**
  * Homepage project presentation.
- * Only provable, supplied content lives here — no camera specs,
- * no durations, no invented copy. Deeper real data (roles,
- * descriptions, YouTube ids) stays in `data/projects.ts`
- * (`ALL_COLLECTED_FILMS`) for the future project pages.
+ * Only provable, supplied content lives here — roles, descriptions
+ * and YouTube ids come straight from `data/projects.ts`
+ * (`ALL_COLLECTED_FILMS`). Nothing is invented.
  */
 export interface Project {
   id: string;
@@ -15,6 +14,12 @@ export interface Project {
   year: string;
   thumbnail: string;
   youtubeUrl: string;
+  /** Plain video id — drives the muted in-page previews + cinema embeds. */
+  youtubeId: string;
+  role: string;
+  description: string;
+  /** Shorts are vertical — the cinema stage letterboxes them accordingly. */
+  vertical: boolean;
   layoutVariant: ProjectLayoutVariant;
   aspectRatio: string;
 }

@@ -1,4 +1,5 @@
-/* Selected work — restrained heading, projects carry their own theme */
+/* Selected work — the cutting room heading; the six frames
+   below each carry their own theme. */
 
 .selected-work {
   scroll-margin-top: 4.5rem;
@@ -22,7 +23,15 @@
   letter-spacing: -0.015em;
 }
 
-.work-years {
+.work-count {
+  font-size: 0.95rem;
+  color: var(--theme-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.work-note {
+  margin-top: var(--space-xs);
+  max-width: 46ch;
   font-size: 0.95rem;
   color: var(--theme-muted);
 }
