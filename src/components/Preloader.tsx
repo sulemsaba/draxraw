@@ -1,42 +1,43 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '../lib/gsap';
 import './Preloader.css';
 
 interface PreloaderProps {
-  /** Fires once the curtain has left the screen. */
+  /** Fires at the START of the wipe-up phase — the homepage can begin welcoming. */
   onRevealed: () => void;
+  /** Fires once the wipe-up is fully complete — the preloader can be unmounted. */
+  onExited?: () => void;
 }
 
-const BOOT_MS = 2.6; // total time budget — the TV takes a moment to warm up
+const BOOT_MS = 3.0; // total time budget — slightly longer for the richer logo bloom
 
 /**
- * The old television. Black CRT screen fills the viewport. Static
- * noise hisses on first paint, then settles as the Drax Raw logo
- * fades in through the snow — phosphor glow, scan lines, vignette.
- * A counter ticks 00 to 100. Then the screen collapses vertically
- * to a single horizontal line, the line collapses to a dot, and the
- * dot blinks out. Black hands the stage to the hero.
+ * The old television — now fills the WHOLE viewport.
  *
- * Reduced motion: the static never animates, the logo just appears,
- * the counter jumps to 100, the screen fades out. The visitor is
- * never made to wait for an effect they cannot see comfortably.
+ * Black fills the screen. Static noise hisses. The Drax Raw logo
+ * blooms in through the snow — scale + slight rotate + blur
+ * settle + a touch of channel-tuning jitter, ending with a soft
+ * bounce. The phosphor glow pulses in sync. A counter ticks
+ * 00 → 100. Then the whole viewport collapses vertically to a
+ * horizontal line, the line to a dot, and finally the panel
+ * wipes UP off the screen to welcome the content — with the
+ * homepage blooming up beneath it (handled in App.css).
+ *
+ * Reduced motion: the static never animates, the logo just
+ * appears, the counter jumps to 100, the panel fades out.
  */
-export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
+export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) => {
   const rootRef = useRef<HTMLDivElement>(null);
-  const screenRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const logoRef = useRef<HTMLImageElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
   const standByRef = useRef<HTMLSpanElement>(null);
   const rafRef = useRef<number>(0);
+  const [leaving, setLeaving] = useState(false);
 
   /* ---- Static noise canvas --------------------------------- */
-  /* A tiny canvas (200x150) gets scaled up via CSS to fill the
-     viewport. Updating ImageData on a small canvas is fast
-     enough to run at 30fps without jank. The CSS image-rendering
-     keeps the upscaling crisp-pixel, matching the CRT aesthetic. */
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -51,14 +52,12 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
     const img = ctx.createImageData(W, H);
 
     let last = 0;
-    const FRAME_MS = 1000 / 30; // 30fps is enough for snow
+    const FRAME_MS = 1000 / 30;
 
     const tick = (now: number) => {
       if (now - last >= FRAME_MS) {
         last = now;
         const data = img.data;
-        /* Fill with random grayscale noise. The alpha is full so
-           the noise canvas sits opaque over the black screen. */
         for (let i = 0; i < data.length; i += 4) {
           const v = (Math.random() * 255) | 0;
           data[i] = v;
@@ -72,7 +71,6 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
     };
 
     rafRef.current = window.requestAnimationFrame(tick);
-
     return () => {
       if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
     };
@@ -82,55 +80,114 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
     () => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reducedMotion) {
-        /* No animation. Show the logo, jump to 100, fade out. */
         if (countRef.current) countRef.current.textContent = '100';
-        gsap.to(rootRef.current, {
-          autoAlpha: 0,
-          duration: 0.4,
-          ease: 'power1.inOut',
-          onComplete: onRevealed
-        });
+        const tl = gsap.timeline({ onComplete: () => { onRevealed(); onExited?.(); } });
+        tl.to(rootRef.current, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' });
         return;
       }
 
-      /* ---- Phase 1: TV warm-up + logo through the snow ------ */
-      /* The static starts dense. The logo fades in through it
-         while the phosphor glow pulses gently. The counter ticks
-         00 → 100 over the same window. */
+      /* ---- Phase 1: TV warm-up + logo bloom through the snow ----
+         Richer than a simple fade. The logo:
+           - starts at 65% scale, tilted -3deg, blurred 14px, invisible
+           - blooms to full size with a slight overshoot (1.04) then settles
+           - has 4 horizontal micro-jitters during the bloom (channel tuning)
+           - the phosphor glow pulses 0.85 -> 1.1 -> 1 in sync
+           - the static recedes as the logo sharpens
+         The counter ticks 00 -> 100 over the same window. */
 
       const counter = { value: 0 };
-      const noiseIntensity = { value: 1 }; // drives canvas alpha via CSS
+      const noiseIntensity = { value: 1 };
 
       gsap.set(canvasRef.current, { opacity: noiseIntensity.value });
-      gsap.set(logoRef.current, { autoAlpha: 0, scale: 1.06, filter: 'blur(8px)' });
+      gsap.set(logoRef.current, {
+        autoAlpha: 0,
+        scale: 0.65,
+        rotation: -3,
+        filter: 'blur(14px)',
+        y: 24
+      });
       gsap.set(glowRef.current, { autoAlpha: 0, scale: 0.85 });
       gsap.set([countRef.current, standByRef.current], { autoAlpha: 0 });
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out' },
-        onComplete: onRevealed
+        onComplete: () => {
+          /* Self-unmount after the wipe-up completes. The App's
+             preloaderDone flag will also flip, but this defends
+             against any race. */
+          setLeaving(true);
+          onExited?.();
+        }
       });
 
       tl /* the screen flicks to life */
         .fromTo(
-          screenRef.current,
+          rootRef.current,
           { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.08 },
+          { autoAlpha: 1, duration: 0.1 },
           0
         )
         /* the standby caption cuts in early */
-        .to(standByRef.current, { autoAlpha: 1, duration: 0.01 }, 0.12)
-        /* the logo fades in through the static, blur settling */
+        .to(standByRef.current, { autoAlpha: 1, duration: 0.01 }, 0.15)
+        /* the logo blooms: scale up with slight overshoot, rotate to 0,
+           blur settles to 0, slight upward motion, opacity to 1 */
         .to(
           logoRef.current,
-          { autoAlpha: 1, scale: 1, filter: 'blur(0px)', duration: 1.4, ease: 'power2.out' },
-          0.35
+          {
+            autoAlpha: 1,
+            scale: 1.04,
+            rotation: 0,
+            filter: 'blur(0px)',
+            y: 0,
+            duration: 1.2,
+            ease: 'power3.out'
+          },
+          0.4
         )
-        /* the phosphor glow blooms behind the logo */
+        /* subtle channel-tuning horizontal jitter during the bloom
+           (4 quick x oscillations) */
+        .to(
+          logoRef.current,
+          {
+            x: -3,
+            duration: 0.045,
+            repeat: 5,
+            yoyo: true,
+            ease: 'none'
+          },
+          0.45
+        )
+        /* settle back to x:0 with a soft elastic bounce at the end */
+        .to(
+          logoRef.current,
+          {
+            x: 0,
+            scale: 1,
+            duration: 0.55,
+            ease: 'elastic.out(1, 0.55)'
+          },
+          1.05
+        )
+        /* the phosphor glow blooms larger then settles in sync */
         .to(
           glowRef.current,
-          { autoAlpha: 0.7, scale: 1, duration: 1.1, ease: 'power2.out' },
-          0.4
+          {
+            autoAlpha: 0.7,
+            scale: 1.1,
+            duration: 1.0,
+            ease: 'power2.out'
+          },
+          0.45
+        )
+        .to(
+          glowRef.current,
+          {
+            scale: 1,
+            autoAlpha: 0.4,
+            duration: 0.6,
+            ease: 'power2.out'
+          },
+          1.45
         )
         /* the static recedes as the logo sharpens */
         .to(
@@ -145,9 +202,9 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
               }
             }
           },
-          0.5
+          0.55
         )
-        /* the counter ticks 00 → 100 */
+        /* the counter ticks 00 -> 100 */
         .fromTo(
           counter,
           { value: 0 },
@@ -162,81 +219,85 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed }) => {
               }
             }
           },
-          0.4
+          0.45
         )
-        /* the count + standby fade out just before power-off */
-        .to([countRef.current, standByRef.current], { autoAlpha: 0, duration: 0.25 }, 2.0)
+        /* the count + standby fade out before power-off */
+        .to([countRef.current, standByRef.current], { autoAlpha: 0, duration: 0.25 }, 2.15)
         /* the static stops entirely */
-        .to(canvasRef.current, { autoAlpha: 0, duration: 0.25 }, 2.0)
-        /* the logo + glow hold a beat, full clarity */
-        .to(glowRef.current, { autoAlpha: 0.4, duration: 0.3 }, 2.1)
-        /* ---- Phase 2: power-off collapse ---- */
-        /* The screen collapses vertically to a single horizontal
-           line, then the line collapses horizontally to a dot,
-           then the dot blinks out. Classic CRT shutdown. */
+        .to(canvasRef.current, { autoAlpha: 0, duration: 0.25 }, 2.15)
+
+        /* ---- Phase 2: power-off collapse ----
+           Vertical to a horizontal line, then the line to a dot. */
         .to(
-          screenRef.current,
+          rootRef.current,
           { scaleY: 0.004, duration: 0.18, ease: 'power3.in', transformOrigin: '50% 50%' },
-          2.3
-        )
-        .to(
-          screenRef.current,
-          { scaleX: 0.001, duration: 0.12, ease: 'power3.in', transformOrigin: '50% 50%' },
-          2.48
+          2.4
         )
         .to(
           rootRef.current,
-          { autoAlpha: 0, duration: 0.18, ease: 'power1.inOut' },
-          2.6
+          { scaleX: 0.001, duration: 0.12, ease: 'power3.in', transformOrigin: '50% 50%' },
+          2.58
+        )
+
+        /* ---- Phase 3: welcome the content ----
+           The collapsed dot expands back to full size briefly,
+           then the whole panel wipes UP off the screen. The
+           homepage blooms up beneath (handled in App.css). The
+           onRevealed callback fires HERE so the homepage can
+           start its welcome animation in parallel with the wipe. */
+        .set(rootRef.current, { transformOrigin: '50% 50%', scaleY: 1, scaleX: 1, yPercent: 0, autoAlpha: 1 }, 2.78)
+        .call(() => onRevealed(), [], 2.78)
+        .to(
+          rootRef.current,
+          {
+            yPercent: -100,
+            autoAlpha: 1,
+            duration: 0.55,
+            ease: 'power3.inOut'
+          },
+          2.78
         );
     },
     { scope: rootRef }
   );
 
+  if (leaving) return null;
+
   return (
     <div ref={rootRef} className="preloader" role="status" aria-label="Drax Raw, loading">
-      <div ref={screenRef} className="crt-screen">
-        {/* Static noise canvas — CSS-scaled up to fill the screen */}
-        <canvas ref={canvasRef} className="crt-static" width={200} height={150} aria-hidden="true" />
+      {/* Static noise canvas — fills the whole viewport */}
+      <canvas ref={canvasRef} className="crt-static" width={200} height={150} aria-hidden="true" />
 
-        {/* Phosphor glow behind the logo */}
-        <div ref={glowRef} className="crt-glow" aria-hidden="true" />
+      {/* Phosphor glow behind the logo */}
+      <div ref={glowRef} className="crt-glow" aria-hidden="true" />
 
-        {/* The Drax Raw logo — fades in through the snow.
-            Transparent source lets it sit cleanly on the dark
-            CRT screen without a black box around it. AVIF first
-            (62KB), WebP fallback (154KB), PNG last resort (400KB
-            but lossless with full alpha). */}
-        <picture>
-          <source srcSet="/images/drax-logo.avif" type="image/avif" />
-          <source srcSet="/images/drax-logo.webp" type="image/webp" />
-          <img
-            ref={logoRef}
-            src="/images/drax-logo.png"
-            alt="Drax Raw"
-            className="crt-logo"
-            loading="eager"
-            fetchPriority="high"
-          />
-        </picture>
+      {/* The Drax Raw logo — blooms in through the snow with GSAP */}
+      <picture>
+        <source srcSet="/images/drax-logo.avif" type="image/avif" />
+        <source srcSet="/images/drax-logo.webp" type="image/webp" />
+        <img
+          ref={logoRef}
+          src="/images/drax-logo.png"
+          alt="Drax Raw"
+          className="crt-logo"
+          loading="eager"
+          fetchPriority="high"
+        />
+      </picture>
 
-        {/* Scan lines + vignette — pure CSS overlays */}
-        <div className="crt-scanlines" aria-hidden="true" />
-        <div className="crt-vignette" aria-hidden="true" />
-        <div className="crt-curvature" aria-hidden="true" />
+      {/* Scan lines + vignette + curvature — pure CSS overlays, full viewport */}
+      <div className="crt-scanlines" aria-hidden="true" />
+      <div className="crt-vignette" aria-hidden="true" />
+      <div className="crt-curvature" aria-hidden="true" />
 
-        {/* Meta lives INSIDE the screen — more CRT-authentic
-            (channel indicator on the tube, not on the bezel)
-            and saves the vertical space a separate row would
-            need below the screen. Critical for mobile. */}
-        <div className="crt-meta">
-          <span ref={standByRef} className="crt-standby" aria-hidden="true">
-            Please stand by
-          </span>
-          <span ref={countRef} className="crt-count" aria-hidden="true">
-            00
-          </span>
-        </div>
+      {/* Meta at the bottom of the viewport */}
+      <div className="crt-meta">
+        <span ref={standByRef} className="crt-standby" aria-hidden="true">
+          Please stand by
+        </span>
+        <span ref={countRef} className="crt-count" aria-hidden="true">
+          00
+        </span>
       </div>
     </div>
   );

@@ -66,6 +66,7 @@ export const App: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [booted, setBooted] = useState(false);
+  const [preloaderDone, setPreloaderDone] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -100,6 +101,7 @@ export const App: React.FC = () => {
   }, [location.pathname, booted]);
 
   const reveal = useCallback(() => setBooted(true), []);
+  const exit = useCallback(() => setPreloaderDone(true), []);
 
   /* Smooth-scroll nav helper that works across routes: if we're on a
      project page, route home first, then scroll after a tick. */
@@ -120,7 +122,7 @@ export const App: React.FC = () => {
 
   return (
     <ThemeProvider>
-      <div className="draxraw-app">
+      <div className={`draxraw-app${booted ? ' is-booted' : ''}`}>
         <Cursor />
         <ScrollProgress />
         <Navigation navRef={navRef} onNavigate={goSection} />
@@ -139,7 +141,9 @@ export const App: React.FC = () => {
           </Routes>
         </main>
         <ContactFooter />
-        {!reducedMotion && !booted && <Preloader onRevealed={reveal} />}
+        {!reducedMotion && !preloaderDone && (
+          <Preloader onRevealed={reveal} onExited={exit} />
+        )}
       </div>
     </ThemeProvider>
   );

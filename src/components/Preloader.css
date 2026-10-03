@@ -1,9 +1,11 @@
 /* ============================================================
-   PRELOADER — Old TV / CRT (mobile-first responsive)
-   Black CRT screen fills the viewport. Static noise canvas
-   hisses, the Drax Raw logo fades in through the snow, a
-   counter ticks 00 → 100, then the screen collapses to a
-   horizontal line, then a dot, then blinks out.
+   PRELOADER — Old TV / CRT (full-viewport)
+   The whole viewport IS the CRT screen. Static noise, scan
+   lines, vignette, curvature all fill the entire page. The
+   Drax Raw logo blooms in through the snow with a richer GSAP
+   timeline. After the power-off collapse, the panel wipes UP
+   off the screen to welcome the content (the homepage blooms
+   up beneath via App.css).
    ============================================================ */
 
 .preloader {
@@ -11,45 +13,17 @@
   inset: 0;
   z-index: 100;
   background-color: #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /* No gap — meta lives inside the screen now. */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-}
-
-/* ---- The CRT screen itself --------------------------------
-   vmin-based sizing means the screen scales with whichever
-   viewport dimension is smaller. On a 375x812 portrait phone,
-   vmin=375 so the screen is sized off the WIDTH — and we use a
-   3:4 aspect so it grows tall enough to fill more of the
-   viewport without overflowing.
-
-   On a 1920x1080 desktop, vmin=1080 → width 928px (capped at
-   64rem). On 1440x900, vmin=900 → width 774px. Always fits.
-
-   The curvature is faked via border-radius + a soft inner
-   shadow so the screen reads as a tube, not a flat panel. */
-.crt-screen {
-  position: relative;
-  /* Default: desktop 4:3 */
-  width: min(86vmin, 64rem);
-  aspect-ratio: 4 / 3;
-  background-color: #0a0a0a;
-  border-radius: 1.4rem;
-  overflow: hidden;
-  box-shadow:
-    inset 0 0 4rem rgba(0, 0, 0, 0.85),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 1.6rem 4rem rgba(0, 0, 0, 0.6);
+  /* The root is the screen itself — every CRT effect is a
+     direct child positioned to fill the viewport. The root
+     also takes the power-off collapse + wipe-up transforms. */
   transform-origin: 50% 50%;
   will-change: transform, opacity;
 }
 
 /* ---- Static noise canvas ----------------------------------
-   Small canvas (200x150) scaled up via CSS. Crisp-pixel
-   rendering keeps the snow sharp like a real CRT. */
+   Fills the whole viewport. Small 200x150 canvas scaled up
+   with crisp-pixel rendering so the snow reads like a real
+   CRT raster, not blurry video. */
 .crt-static {
   position: absolute;
   inset: 0;
@@ -62,22 +36,24 @@
   pointer-events: none;
 }
 
-/* ---- Phosphor glow behind the logo ----------------------- */
+/* ---- Phosphor glow behind the logo -----------------------
+   A wide soft bloom that fills much of the viewport behind
+   the logo so the brand mark reads as the source of light. */
 .crt-glow {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 60%;
+  width: min(60vw, 50rem);
   aspect-ratio: 1;
   background: radial-gradient(
     circle at center,
-    rgba(255, 250, 235, 0.55) 0%,
+    rgba(255, 250, 235, 0.5) 0%,
     rgba(198, 161, 40, 0.32) 32%,
     rgba(198, 161, 40, 0.12) 56%,
     transparent 78%
   );
-  filter: blur(18px);
+  filter: blur(28px);
   z-index: 3;
   pointer-events: none;
   mix-blend-mode: screen;
@@ -85,14 +61,15 @@
 }
 
 /* ---- The Drax Raw logo ------------------------------------
-   Centered, with subtle white phosphor trace. */
+   Centered, larger. The GSAP timeline drives scale, rotate,
+   blur, y, and a subtle horizontal jitter during bloom. */
 .crt-logo {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 58%;
-  max-height: 50%;
+  width: min(42vw, 32rem);
+  max-height: 50vh;
   object-fit: contain;
   z-index: 4;
   filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.18));
@@ -100,7 +77,8 @@
 }
 
 /* ---- Scan lines ------------------------------------------
-   Horizontal darkening every 3px, the classic CRT raster. */
+   Horizontal darkening every 3px, classic CRT raster.
+   Fills the whole viewport. */
 .crt-scanlines {
   position: absolute;
   inset: 0;
@@ -116,54 +94,56 @@
   mix-blend-mode: multiply;
 }
 
-/* ---- Vignette -------------------------------------------- */
+/* ---- Vignette --------------------------------------------
+   Darkens the edges of the viewport to fake CRT curvature
+   shadow. Sits above scan lines so it deepens them too. */
 .crt-vignette {
   position: absolute;
   inset: 0;
   background: radial-gradient(
     ellipse at center,
-    rgba(0, 0, 0, 0) 38%,
-    rgba(0, 0, 0, 0.4) 78%,
-    rgba(0, 0, 0, 0.78) 100%
+    rgba(0, 0, 0, 0) 42%,
+    rgba(0, 0, 0, 0.42) 78%,
+    rgba(0, 0, 0, 0.85) 100%
   );
   z-index: 6;
   pointer-events: none;
 }
 
-/* ---- Curvature illusion ---------------------------------- */
+/* ---- Curvature illusion ----------------------------------
+   Subtle highlight at top-left + bottom-right, simulating
+   glass reflection on a tube. Fills the whole viewport. */
 .crt-curvature {
   position: absolute;
   inset: 0;
-  border-radius: inherit;
   background:
-    radial-gradient(ellipse at 30% 18%, rgba(255, 255, 255, 0.06) 0%, transparent 36%),
-    radial-gradient(ellipse at 70% 86%, rgba(255, 255, 255, 0.03) 0%, transparent 32%);
+    radial-gradient(ellipse at 28% 16%, rgba(255, 255, 255, 0.06) 0%, transparent 36%),
+    radial-gradient(ellipse at 72% 86%, rgba(255, 255, 255, 0.03) 0%, transparent 32%);
   z-index: 7;
   pointer-events: none;
   mix-blend-mode: screen;
 }
 
-/* ---- Meta row (INSIDE the screen) ------------------------
-   Lives at the bottom of the tube — like a real CRT's
-   channel/volume indicator drawn on the screen itself. */
+/* ---- Meta row (bottom of viewport) ----------------------- */
 .crt-meta {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 7%;
+  bottom: clamp(1.5rem, 5vh, 3.5rem);
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: clamp(0.8rem, 2.4vmin, 1.6rem);
   color: #f1efe8;
   font-family: var(--font-sans, 'Instrument Sans', sans-serif);
-  font-size: clamp(0.62rem, 2vmin, 0.86rem);
+  font-size: clamp(0.7rem, 1.8vmin, 0.9rem);
   letter-spacing: 0.2em;
   text-transform: uppercase;
   z-index: 8;
-  /* Subtle text shadow so the meta reads even over snow. */
   text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
   pointer-events: none;
+  /* Respect safe area so iOS Safari chrome doesn't crowd it. */
+  bottom: max(clamp(1.5rem, 5vh, 3.5rem), env(safe-area-inset-bottom));
 }
 
 .crt-standby {
@@ -177,39 +157,24 @@
 }
 
 /* ============================================================
-   RESPONSIVE — mobile-first tuning per device shape.
+   RESPONSIVE — the screen IS the viewport, so we just need to
+   tune logo size and meta placement per device shape.
    ============================================================ */
 
-/* ---- Portrait phones (375–430 wide, tall) ----------------
-   Switch to a 3:4 portrait aspect so the screen grows
-   vertically and fills more of the tall viewport. Old
-   portable battery TVs were often taller than wide. */
+/* ---- Portrait phones (tall narrow viewports) ------------- */
 @media (max-width: 768px) and (orientation: portrait) {
-  .crt-screen {
-    width: 82vmin;            /* vmin = vw in portrait = 82% of width */
-    aspect-ratio: 3 / 4;      /* taller — fills vertical space */
-    border-radius: 1.1rem;
-    box-shadow:
-      inset 0 0 3rem rgba(0, 0, 0, 0.85),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-      0 0 0 1px rgba(255, 255, 255, 0.02),
-      0 1rem 2.4rem rgba(0, 0, 0, 0.5);
-  }
-
-  /* Logo larger relative to screen — fills the tube. */
   .crt-logo {
-    width: 72%;
-    max-height: 54%;
+    width: min(68vw, 22rem);
+    max-height: 30vh;
   }
 
-  /* Glow wider to match the bigger logo. */
   .crt-glow {
-    width: 78%;
+    width: min(80vw, 26rem);
+    filter: blur(20px);
   }
 
-  /* Scan lines slightly less aggressive on dense PPI
-     (mobile screens are 3x+ DPI, the 3px raster would
-     alias into moiré). */
+  /* Scan lines slightly less aggressive on dense mobile PPI
+     to avoid moiré. */
   .crt-scanlines {
     background: repeating-linear-gradient(
       to bottom,
@@ -220,56 +185,44 @@
     );
   }
 
-  /* Meta sits a touch higher so iOS Safari chrome
-      doesn't crowd it. */
   .crt-meta {
-    bottom: 9%;
     font-size: clamp(0.62rem, 2.6vw, 0.82rem);
     letter-spacing: 0.18em;
+    bottom: max(2rem, env(safe-area-inset-bottom));
   }
 }
 
-/* ---- Landscape phones (short height) ---------------------
-   Wider aspect to fit the short viewport. The screen takes
-   most of the available width and stays short. */
+/* ---- Landscape phones (short height) -------------------- */
 @media (max-width: 768px) and (orientation: landscape) {
-  .crt-screen {
-    width: min(74vmin, 38rem);
-    aspect-ratio: 16 / 10;
-    border-radius: 1rem;
-  }
-
   .crt-logo {
-    width: 50%;
-    max-height: 56%;
+    width: min(44vw, 22rem);
+    max-height: 56vh;
   }
 
   .crt-glow {
-    width: 60%;
+    width: min(56vw, 28rem);
+    filter: blur(22px);
   }
 
   .crt-meta {
-    bottom: 6%;
-    font-size: clamp(0.6rem, 2vmin, 0.78rem);
+    font-size: clamp(0.62rem, 2vmin, 0.78rem);
+    bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
 
-/* ---- Small landscape height (e.g. iPhone SE landscape) -- */
+/* ---- Very short landscape heights ------------------------ */
 @media (max-height: 24rem) {
-  .crt-screen {
-    width: min(70vw, 32rem);
-    aspect-ratio: 16 / 10;
-    border-radius: 0.8rem;
-  }
   .crt-logo {
-    width: 46%;
+    width: min(38vw, 18rem);
+    max-height: 60vh;
   }
+
   .crt-glow {
-    width: 56%;
+    width: min(48vw, 22rem);
   }
 }
 
-/* ---- Reduced motion: instant, no snow, no collapse ------- */
+/* ---- Reduced motion: instant, no snow, no collapse ------ */
 @media (prefers-reduced-motion: reduce) {
   .crt-static,
   .crt-scanlines,
@@ -284,12 +237,13 @@
     opacity: 0 !important;
   }
 
-  .crt-screen {
+  .preloader {
     transform: none !important;
   }
 
   .crt-logo {
     opacity: 1 !important;
     filter: none !important;
+    transform: translate(-50%, -50%) !important;
   }
 }

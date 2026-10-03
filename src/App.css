@@ -3,4 +3,34 @@
   min-height: 100vh;
   width: 100%;
   overflow-x: clip;
+
+  /* Welcome animation: the homepage blooms up from beneath the
+     preloader when the wipe-up phase begins. Starts at opacity 0
+     + slight scale-down; transitions to full opacity + scale 1
+     over 0.7s when the `is-booted` class is added (which happens
+     at the start of the preloader's wipe-up phase). The 0.7s
+     duration overlaps with the 0.55s wipe-up for a smooth
+     cross-fade rather than a hard reveal. */
+  opacity: 0;
+  transform: scale(0.985);
+  transform-origin: center top;
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.draxraw-app.is-booted {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Reduced motion: no scale/opacity transition, instant reveal. */
+@media (prefers-reduced-motion: reduce) {
+  .draxraw-app,
+  .draxraw-app.is-booted {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
