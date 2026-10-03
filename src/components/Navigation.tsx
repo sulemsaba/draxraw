@@ -8,8 +8,9 @@ interface NavigationProps {
 }
 
 const LINKS = [
-  { label: 'Work', href: '#work' },
-  { label: 'Stills', href: '#stills' },
+  { label: 'Film', href: '#film' },
+  { label: 'About', href: '#about' },
+  { label: 'Photography', href: '#photography' },
   { label: 'Contact', href: '#contact' }
 ] as const;
 

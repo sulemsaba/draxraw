@@ -6,6 +6,7 @@ import { Navigation } from './components/Navigation';
 import { Hero } from './components/Hero';
 import { Marquee } from './components/Marquee';
 import { SelectedWork } from './components/SelectedWork';
+import { About } from './components/About';
 import { StillsGallery } from './components/StillsGallery';
 import { ContactFooter } from './components/ContactFooter';
 import { Cursor } from './components/Cursor';
@@ -66,6 +67,7 @@ export const App: React.FC = () => {
           />
           <Marquee />
           <SelectedWork />
+          <About />
           <StillsGallery />
         </main>
         <ContactFooter />

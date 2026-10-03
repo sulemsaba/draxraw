@@ -183,3 +183,26 @@ Stage Summary:
 - Site is now an award-pattern experience: boot curtain -> poster hero -> velocity marquee -> six unique film scenes with in-view autoplay -> pinned contact-sheet gallery -> giant close
 - All six real films autoplay muted in-page, cinema overlay carries sound; all real photography showcased
 - Awaiting user verdict on the new feel
+
+---
+Task ID: 8
+Agent: Super Z (main agent)
+Task: User verdict round 2: differentiate images vs videos, put the camera-cutout image in the hero, finish the remaining sections, inject real GSAP magic, no em dashes in copy.
+
+Work Log:
+- Found the camera image: assets/draxraw.png (transparent cutout of Drax operating a cinema camera, 768x1152 RGBA). Cropped to content 632x965.
+- Asset pipeline: first attempt (palette-quantized PNG) collapsed semi-transparent alpha into an opaque light box behind the subject; rebuilt as lossy WebP with full 8-bit alpha (scripts/make_hero_cutout_webp.py), 72KB, corners verified alpha 0, smooth edge pixels preserved. Also made about-drax.jpg from assets/draxhis image .jpg (760px, 83KB).
+- Hero rebuilt as "the poster": giant DRAX RAW display type (clamp 14vw) with the cutout subject standing on the fold INSIDE the typography. Two SplitText char layers in one CSS grid cell (solid behind him, hairline stroke copy in front of him) so registration is pixel-identical.
+- Hero GSAP: both type layers rise char-by-char from masks on one beat, subject prints bottom-up via clip-path inset + settle scale, statement word jump-cuts, gold period lands last, cue last. Scroll scrub separates planes (subject sinks slower, type and statement lift). Pointer drift on fine pointers: subject and type counter-move via gsap.quickTo.
+- Fixed in hero: type overflow (15.5vw -> 14vw + measured Archivo Expanded width), 60px drop-shadow halo reading as a light box (removed, cutout stays flat), head/kicker collision (60svh), hardcoded --ink-on-light text invisible in forced dark (now --theme-ink + color-mix stroke), mobile min-height dead space (content height on mobile).
+- Film/Photography differentiation: SelectedWork id #film, intro now "SELECTED WORK / FILM / (06)" dark cinema world; StillsGallery id #photography, giant "PHOTOGRAPHY (06)" one-line curtain reveal + "STORIES IN A FRAME" kicker, light paper contact-sheet world; nav links now Film / About / Photography / Contact.
+- NEW About section (id #about, light): real 4-paragraph bio verbatim from infy scrape (src/data/bio.ts), lead statement fills word-by-word on scrub (SplitText autoAlpha 0.14 -> 1), portrait clip-reveal + scrub drift + sticky on desktop, capability index 01-04 (Editing / Color Grading / Sound / Cinematic Storytelling) with staggered lift.
+- App order: Hero, Marquee, Film, About, Photography, ContactFooter.
+- Mobile: email row overflow-wrap fix in footer; hero stacks type + subject; stills native swipe unchanged.
+- Verified agent-browser 1440: poster hero, film intro, about scrub mid-fill + capability index, photography header + pinned strip mid-scrub, footer, cinema overlay open/close, forced dark (paper-white type, subject on black) and light heroes; 375: poster stack, about portrait-first, footer email wraps, no horizontal overflow (scrollWidth 375). Console clean.
+- bun run lint 0 errors; build PASS 392.70 kB js / 24.14 kB css.
+- Palette untouched: 6 brand values verbatim in index.css; gold #C6A128 still only period, hairline, preloader rule, cue arrow, selection, footer hover.
+
+Stage Summary:
+- Site now separates FILM (dark, six autoplaying films) from PHOTOGRAPHY (light, pinned contact sheet), About finishes the page with his real bio, and the hero is a GSAP-built poster with the camera cutout inside the name.
+- Committed and pushed to GitHub main via temp askpass (helper deleted).

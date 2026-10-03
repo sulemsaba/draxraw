@@ -21,18 +21,36 @@ const STILLS: Still[] = [
 ];
 
 /**
- * "Stories in a Frame": the photography, shown the way a contact
- * sheet scrolls. Desktop pins the section and scrubs the strip
+ * Photography, "Stories in a Frame". The counterpart to Film:
+ * where the films play dark, the stills live on warm paper like a
+ * contact sheet. Desktop pins the section and scrubs the strip
  * sideways; touch and reduced-motion get an honest native swipe.
  */
 export const StillsGallery: React.FC = () => {
   const rootRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const line1Ref = useRef<HTMLSpanElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reducedMotion) return;
+
+      /* the header lifts out of a mask, same curtain as Film */
+      gsap.set(line1Ref.current, { yPercent: 112 });
+      gsap.set(headRef.current, { autoAlpha: 0, y: 16 });
+
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: rootRef.current,
+            start: 'top 74%',
+            once: true
+          }
+        })
+        .to(line1Ref.current, { yPercent: 0, duration: 1.05, ease: 'power4.out' }, 0)
+        .to(headRef.current, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.55);
 
       const mm = gsap.matchMedia();
 
@@ -87,14 +105,27 @@ export const StillsGallery: React.FC = () => {
   );
 
   return (
-    <section ref={rootRef} className="stills theme-light" id="stills" data-theme="light" aria-label="Photography, Stories in a Frame">
+    <section
+      ref={rootRef}
+      className="stills theme-light"
+      id="photography"
+      data-theme="light"
+      aria-label="Photography, Stories in a Frame"
+    >
       <div className="stills-viewport">
         <header className="stills-head">
-          <p className="stills-kicker">Photography</p>
-          <h2 className="stills-title display">
-            Stories in a&nbsp;Frame
-          </h2>
-          <p className="stills-hint" aria-hidden="true">
+          <div>
+            <p className="stills-kicker">Stories in a Frame</p>
+            <h2 className="stills-title display">
+              <span className="line-mask">
+                <span ref={line1Ref} className="line-inner">
+                  Photography&ensp;
+                  <span className="stills-count">({String(STILLS.length).padStart(2, '0')})</span>
+                </span>
+              </span>
+            </h2>
+          </div>
+          <p ref={headRef} className="stills-hint" aria-hidden="true">
             Keep scrolling &nbsp;&rarr;
           </p>
         </header>

@@ -32,8 +32,17 @@
 }
 
 .stills-title {
-  font-size: clamp(2.6rem, 7vw, 7rem);
+  font-size: clamp(2.8rem, 8.6vw, 8.6rem);
   color: var(--ink-on-light);
+  white-space: nowrap;
+}
+
+.stills-count {
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  vertical-align: 0.9em;
+  color: var(--theme-muted);
 }
 
 .stills-hint {
@@ -150,6 +159,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: var(--space-xs);
+  }
+
+  .stills-title {
+    white-space: normal;
+    font-size: clamp(2.5rem, 11.5vw, 5rem);
   }
 
   .stills-hint {

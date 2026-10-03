@@ -11,31 +11,40 @@ interface HeroProps {
 }
 
 /**
- * Welcome screen — "the site edits like Drax edits".
- * Words CUT in one frame at a time (his cuts), the photograph
- * wipes open in one long move (his reveals), everything else
- * stays silent. GSAP is the signature here, not decoration.
+ * The poster. One giant name across the page, the man and his
+ * camera cut out and standing right on the fold, the statement
+ * underneath. The name is split twice: a solid layer behind him
+ * and a hairline outline in front of him, so he physically sits
+ * INSIDE the typography. GSAP builds him into the page, then the
+ * scroll pulls the planes apart at different speeds.
  */
 export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
   const sectionRef = useRef<HTMLElement>(null);
+  const typeRef = useRef<HTMLDivElement>(null);
+  const solidRef = useRef<HTMLHeadingElement>(null);
+  const outlineRef = useRef<HTMLSpanElement>(null);
+  const subjectRef = useRef<HTMLDivElement>(null);
   const kickerRef = useRef<HTMLDivElement>(null);
   const statementRef = useRef<HTMLHeadingElement>(null);
   const dotRef = useRef<HTMLSpanElement>(null);
-  const figureRef = useRef<HTMLDivElement>(null);
   const cueRef = useRef<HTMLAnchorElement>(null);
 
   useGSAP(
     () => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reducedMotion) return; /* copy and image simply render */
+      if (reducedMotion) return; /* the poster simply renders */
 
-      /* ---- entry sequence ------------------------------------ */
-      const split = new SplitText(statementRef.current, { type: 'words' });
+      /* ---- entrance: build the poster ------------------------- */
+      const solidSplit = new SplitText(solidRef.current, { type: 'chars', mask: 'chars' });
+      const outlineSplit = new SplitText(outlineRef.current, { type: 'chars', mask: 'chars' });
+      const words = new SplitText(statementRef.current, { type: 'words' });
 
-      gsap.set(split.words, { autoAlpha: 0 });
+      gsap.set(solidSplit.chars, { yPercent: 118 });
+      gsap.set(outlineSplit.chars, { yPercent: 118, autoAlpha: 0 });
       gsap.set([kickerRef.current, dotRef.current, cueRef.current], { autoAlpha: 0 });
-      gsap.set(figureRef.current, { clipPath: 'inset(0% 100% 0% 0%)' });
-      gsap.set(figureRef.current?.querySelector('img') ?? {}, { scale: 1.06 });
+      gsap.set(words.words, { autoAlpha: 0 });
+      gsap.set(subjectRef.current, { clipPath: 'inset(100% 0% 0% 0%)', y: 34 });
+      gsap.set(subjectRef.current?.querySelector('img') ?? {}, { scale: 1.07 });
 
       const tl = gsap.timeline({ delay: introDelay });
 
@@ -45,33 +54,40 @@ export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
         tl.fromTo(navRef.current, { autoAlpha: 0 }, { autoAlpha: 1, duration: 1.0 }, 0.1);
       }
 
-      tl.to(
-        kickerRef.current,
-        { autoAlpha: 1, duration: 0.01, ease: 'none' },
-        0.2
-      )
-        /* the statement — one word per frame, on a beat */
+      tl /* the name rises letter by letter, both layers on one beat */
         .to(
-          split.words,
-          { autoAlpha: 1, duration: 0.01, ease: 'none', stagger: 0.075 },
-          0.35
-        )
-        /* the photograph — one long horizontal wipe, like a slate opening */
-        .to(
-          figureRef.current,
-          { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.05, ease: 'power4.inOut' },
-          0.55
+          solidSplit.chars,
+          { yPercent: 0, duration: 0.9, ease: 'power4.out', stagger: 0.05 },
+          0.15
         )
         .to(
-          figureRef.current?.querySelector('img') ?? {},
-          { scale: 1, duration: 1.6, ease: 'power3.out' },
-          0.55
+          outlineSplit.chars,
+          { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: 'power4.out', stagger: 0.05 },
+          0.15
         )
-        /* the period lands after the last word — full stop, gold */
-        .to(dotRef.current, { autoAlpha: 1, duration: 0.01, ease: 'none' }, 0.98)
-        .to(cueRef.current, { autoAlpha: 1, duration: 0.01, ease: 'none' }, 1.55);
+        /* the man prints into the page, bottom up, and settles */
+        .to(
+          subjectRef.current,
+          { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: 1.15, ease: 'power4.inOut' },
+          0.5
+        )
+        .to(
+          subjectRef.current?.querySelector('img') ?? {},
+          { scale: 1, duration: 1.7, ease: 'power3.out' },
+          0.5
+        )
+        /* the statement cuts in word by word, the house signature */
+        .to(
+          words.words,
+          { autoAlpha: 1, duration: 0.01, ease: 'none', stagger: 0.07 },
+          0.95
+        )
+        .to(kickerRef.current, { autoAlpha: 1, duration: 0.01, ease: 'none' }, 0.4)
+        /* the period lands after the last word, gold, full stop */
+        .to(dotRef.current, { autoAlpha: 1, duration: 0.01, ease: 'none' }, 1.42)
+        .to(cueRef.current, { autoAlpha: 1, duration: 0.01, ease: 'none' }, 1.7);
 
-      /* ---- scroll: the moment breathes ------------------------ */
+      /* ---- scroll: the planes separate ------------------------ */
       const mm = gsap.matchMedia();
       mm.add('(min-width: 769px)', () => {
         const scrollTween = gsap.timeline({
@@ -84,18 +100,39 @@ export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
         });
 
         scrollTween
-          .to(figureRef.current, { y: 48 }, 0)
-          .to(statementRef.current, { y: -26 }, 0)
-          .to(kickerRef.current, { y: -14 }, 0)
+          /* he sinks slower than the page: the poster breathes open */
+          .to(subjectRef.current, { y: 110, scale: 1.03 }, 0)
+          .to(typeRef.current, { y: -90 }, 0)
+          .to(statementRef.current, { y: -40 }, 0)
+          .to(kickerRef.current, { y: -18 }, 0)
           .to(cueRef.current, { autoAlpha: 0, y: -8 }, 0);
 
+        /* ---- pointer drift: the layers answer the cursor ------- */
+        const subjectX = gsap.quickTo(subjectRef.current, 'x', { duration: 0.7, ease: 'power3' });
+        const subjectY = gsap.quickTo(subjectRef.current, 'yPercent', { duration: 0.9, ease: 'power3' });
+        const typeX = gsap.quickTo(typeRef.current, 'x', { duration: 0.9, ease: 'power3' });
+
+        const onMove = (event: MouseEvent) => {
+          const nx = (event.clientX / window.innerWidth - 0.5) * 2;
+          const ny = (event.clientY / window.innerHeight - 0.5) * 2;
+          subjectX(nx * 14);
+          subjectY(ny * 5);
+          typeX(nx * -8);
+        };
+
+        const section = sectionRef.current;
+        section?.addEventListener('mousemove', onMove);
+
         return () => {
+          section?.removeEventListener('mousemove', onMove);
           scrollTween.kill();
         };
       });
 
       return () => {
-        split.revert();
+        solidSplit.revert();
+        outlineSplit.revert();
+        words.revert();
         mm.revert();
       };
     },
@@ -104,7 +141,7 @@ export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
 
   const scrollToWork = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    scrollToTarget('#work');
+    scrollToTarget('#film');
   };
 
   return (
@@ -115,27 +152,39 @@ export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
           <p>Dar es Salaam, Tanzania</p>
         </div>
 
-        <div className="hero-statement-zone">
-          <h1 ref={statementRef} className="hero-statement">
-            I Tell Stories Through The Art of Editing
+        <div ref={typeRef} className="hero-type">
+          <h1 className="hero-giant display">
+            <span ref={solidRef} className="hero-giant-solid">
+              Drax&nbsp;Raw
+            </span>
+            <span ref={outlineRef} className="hero-giant-outline" aria-hidden="true">
+              Drax&nbsp;Raw
+            </span>
           </h1>
-          <span ref={dotRef} className="statement-dot" aria-hidden="true">
-            .
-          </span>
+          <div ref={subjectRef} className="hero-subject">
+            <img
+              src="/images/hero-drax-cutout.webp"
+              alt="Drax Raw operating a cinema camera, red cap and headphones"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </div>
         </div>
 
-        <div ref={figureRef} className="hero-figure">
-          <img
-            src="/images/hero-drax.jpg"
-            alt="Drax Raw lowering his sunglasses in studio light"
-            loading="eager"
-            fetchPriority="high"
-          />
-        </div>
+        <div className="hero-foot">
+          <div className="hero-statement-zone">
+            <h2 ref={statementRef} className="hero-statement">
+              I Tell Stories Through The Art of Editing
+            </h2>
+            <span ref={dotRef} className="statement-dot" aria-hidden="true">
+              .
+            </span>
+          </div>
 
-        <a ref={cueRef} href="#work" className="hero-cue" onClick={scrollToWork}>
-          Selected work <span className="cue-arrow" aria-hidden="true">&#8595;</span>
-        </a>
+          <a ref={cueRef} href="#film" className="hero-cue" onClick={scrollToWork}>
+            Selected work <span className="cue-arrow" aria-hidden="true">&#8595;</span>
+          </a>
+        </div>
       </div>
     </section>
   );

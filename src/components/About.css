@@ -1,0 +1,144 @@
+/* About: the real bio, edited like a sequence */
+.about {
+  position: relative;
+}
+
+.about-inner {
+  padding: var(--space-2xl) var(--pad-page);
+}
+
+.about-kicker {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--theme-muted);
+  margin-bottom: var(--space-md);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+/* ---- lead: the reading moment ------------------------------- */
+.about-lead {
+  font-size: clamp(1.55rem, 2.9vw, 2.9rem);
+  font-weight: 500;
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+  color: var(--ink-on-light);
+  max-width: 34ch;
+}
+
+/* ---- body copy ---------------------------------------------- */
+.about-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+  max-width: 38rem;
+}
+
+.about-body p {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  font-weight: 500;
+  color: var(--theme-muted);
+}
+
+/* ---- capability index ---------------------------------------- */
+.about-caps {
+  list-style: none;
+  margin-top: var(--space-lg);
+  border-top: 1px solid rgba(17, 17, 15, 0.14);
+}
+
+.about-cap {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr auto;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: 1.05rem 0;
+  border-bottom: 1px solid rgba(17, 17, 15, 0.14);
+}
+
+.about-cap-index {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--theme-muted);
+}
+
+.about-cap-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-stretch: 108%;
+  text-transform: uppercase;
+  font-size: clamp(1.05rem, 1.6vw, 1.45rem);
+  letter-spacing: 0.01em;
+  color: var(--ink-on-light);
+}
+
+.about-cap-note {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--theme-muted);
+  text-align: right;
+}
+
+/* ---- portrait ------------------------------------------------- */
+.about-figure {
+  position: sticky;
+  top: 12vh;
+}
+
+.about-figure-crop {
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: rgba(17, 17, 15, 0.05);
+}
+
+.about-figure-crop img {
+  width: 100%;
+  height: 114%;
+  object-fit: cover;
+  will-change: transform;
+}
+
+.about-figure-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.65rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--theme-muted);
+}
+
+/* ---- mobile ---------------------------------------------------- */
+@media (max-width: 900px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-figure {
+    position: relative;
+    top: 0;
+    order: -1;
+    max-width: 22rem;
+  }
+
+  .about-cap {
+    grid-template-columns: 2.4rem 1fr;
+  }
+
+  .about-cap-note {
+    grid-column: 2;
+    text-align: left;
+  }
+}

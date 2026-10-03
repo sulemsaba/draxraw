@@ -50,17 +50,18 @@ export const SelectedWork: React.FC = () => {
   const closeWatch = useCallback(() => setWatching(null), []);
 
   return (
-    <section ref={sectionRef} className="selected-work" id="work" aria-label="Selected work">
+    <section ref={sectionRef} className="selected-work" id="film" aria-label="Film work">
       <div className="work-intro theme-dark" data-theme="dark">
+        <p className="work-kicker">Selected work</p>
         <h2 className="work-title display">
           <span className="line-mask">
             <span ref={line1Ref} className="line-inner">
-              Selected
+              Film
             </span>
           </span>
           <span className="line-mask">
             <span ref={line2Ref} className="line-inner">
-              Work&ensp;<span className="work-count">({String(FILM_PROJECTS.length).padStart(2, '0')})</span>
+              <span className="work-count">({String(FILM_PROJECTS.length).padStart(2, '0')})</span>
             </span>
           </span>
         </h2>
