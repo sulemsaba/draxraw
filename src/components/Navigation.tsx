@@ -173,7 +173,8 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef, onNavigate }) =>
 
       <div
         id="mobile-menu"
-        className={`nav-mobile-menu ${menuOpen ? 'is-open' : ''}`}
+        className={`nav-mobile-menu theme-light ${menuOpen ? 'is-open' : ''}`}
+        data-theme="light"
         aria-hidden={!menuOpen}
       >
         <nav aria-label="Mobile">

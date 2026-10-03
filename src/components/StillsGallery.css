@@ -33,7 +33,7 @@
 
 .stills-title {
   font-size: clamp(2.8rem, 8.6vw, 8.6rem);
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   white-space: nowrap;
 }
 
@@ -129,12 +129,12 @@
   aspect-ratio: 3 / 4;
   padding: var(--space-md);
   border: 1px solid rgba(17, 17, 15, 0.22);
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   transition: background-color 0.45s ease, color 0.45s ease;
 }
 
 .still-more:hover {
-  background-color: var(--ink-on-light);
+  background-color: var(--theme-ink);
   color: var(--bg-light);
 }
 

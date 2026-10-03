@@ -7,7 +7,7 @@
 .work-detail {
   display: block;
   background-color: var(--bg-dark);
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
   --theme-ink: var(--ink-on-dark);
   --theme-muted: var(--muted-on-dark);
 }
@@ -66,7 +66,7 @@
 .work-title {
   font-size: clamp(2.4rem, 8vw, 6.5rem);
   line-height: 0.92;
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
   max-width: 16ch;
   letter-spacing: -0.018em;
   /* SplitText masks the chars with overflow:hidden; we want them
@@ -353,7 +353,7 @@
   height: 90svh;
   min-height: 30rem;
   overflow: clip;
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
   background-color: var(--bg-dark);
   cursor: pointer;
 }
@@ -410,7 +410,7 @@
 .work-next-title {
   font-size: clamp(1.9rem, 6vw, 4.4rem);
   line-height: 0.95;
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
   max-width: 14ch;
   letter-spacing: -0.015em;
   will-change: transform;
@@ -447,7 +447,7 @@
   align-items: center;
   justify-content: center;
   background-color: var(--bg-dark);
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
   text-align: center;
   padding: var(--pad-page);
 }

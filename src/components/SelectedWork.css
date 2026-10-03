@@ -22,7 +22,7 @@
 
 .work-title {
   font-size: clamp(3.4rem, 12vw, 12rem);
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
 }
 
 .work-count {

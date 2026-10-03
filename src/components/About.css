@@ -29,7 +29,7 @@
   font-weight: 500;
   line-height: 1.24;
   letter-spacing: -0.01em;
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   max-width: 34ch;
 }
 
@@ -79,7 +79,7 @@
   text-transform: uppercase;
   font-size: clamp(1.05rem, 1.6vw, 1.45rem);
   letter-spacing: 0.01em;
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
 }
 
 .about-cap-note {

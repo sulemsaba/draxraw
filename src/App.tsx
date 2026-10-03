@@ -13,6 +13,7 @@ import { ContactFooter } from './components/ContactFooter';
 import { Cursor } from './components/Cursor';
 import { Preloader, PRELOADER_HANDOFF_MS } from './components/Preloader';
 import { WorkDetail } from './routes/WorkDetail';
+import { BackToTop } from './components/BackToTop';
 import { initLenis, stopLenis, startLenis, scrollToTarget } from './lib/lenis';
 import './App.css';
 
@@ -141,6 +142,7 @@ export const App: React.FC = () => {
           </Routes>
         </main>
         <ContactFooter />
+        <BackToTop />
         {!reducedMotion && !preloaderDone && (
           <Preloader onRevealed={reveal} onExited={exit} />
         )}

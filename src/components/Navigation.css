@@ -49,9 +49,11 @@
   padding: var(--space-sm) var(--pad-page);
 }
 
-/* While the menu is open the bar always reads on light */
+/* While the menu is open the bar reads on the menu's surface —
+   which now switches with the theme (light by default, dark in
+   forced dark mode) via the .theme-light class on the overlay. */
 .site-nav.is-open {
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
 }
 
 .nav-brand {
@@ -94,18 +96,23 @@
   padding: 0.5rem 0;
 }
 
-/* Mobile menu overlay */
+/* Mobile menu overlay — switches with the theme via the
+   .theme-light class on the element (added in Navigation.tsx).
+   Default: light bg + dark text. Forced dark mode: dark bg +
+   light text (via html[data-mode='dark'] .theme-light override). */
 .nav-mobile-menu {
   position: fixed;
   inset: 0;
   z-index: 1;
   background-color: var(--bg-light);
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
   padding: var(--pad-page);
+  padding-top: max(var(--pad-page), env(safe-area-inset-top));
+  padding-bottom: max(var(--pad-page), env(safe-area-inset-bottom));
   opacity: 0;
   visibility: hidden;
   transition:
@@ -129,9 +136,9 @@
 /* Giant menu type: the overlay is a poster, not a list.
    Each line rises out of the nav's mask, staggered, whenever
    the menu opens. CSS-driven so it replays on repeated opens
-   without any JS state. */
+   without any JS state. Color switches with theme via
+   --theme-ink (inherits from the .theme-light overlay). */
 .mobile-link {
-  display: block;
   font-family: var(--font-display);
   font-weight: 800;
   font-stretch: 110%;
@@ -139,9 +146,13 @@
   font-size: clamp(2.2rem, 11.5vw, 5rem);
   letter-spacing: -0.01em;
   line-height: 1.04;
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   transform: translateY(115%);
   transition: transform 0.65s var(--ease-editorial);
+  /* Minimum 44px tap target on mobile, vertically centered. */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
 }
 
 .mobile-link:nth-child(2) {
@@ -160,13 +171,27 @@
   transform: translateY(0);
 }
 
+/* Reverse stagger on close — the links drop back into the
+   mask in reverse order so the menu 'folds up' rather than
+   just fading. Mirrors the open rhythm. */
+.nav-mobile-menu:not(.is-open) .mobile-link {
+  transition-delay: 0s;
+}
+.nav-mobile-menu:not(.is-open) .mobile-link:nth-last-child(1) { transition-delay: 0s; }
+.nav-mobile-menu:not(.is-open) .mobile-link:nth-last-child(2) { transition-delay: 0.06s; }
+.nav-mobile-menu:not(.is-open) .mobile-link:nth-last-child(3) { transition-delay: 0.12s; }
+.nav-mobile-menu:not(.is-open) .mobile-link:nth-last-child(4) { transition-delay: 0.18s; }
+
 @media (max-width: 768px) {
   .nav-links {
     display: none;
   }
 
   .nav-menu-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5rem 0;
   }
 }
 
@@ -196,9 +221,12 @@
 .theme-option {
   font-size: 0.85rem;
   line-height: 1;
-  padding: 0.25rem 0;
+  padding: 0.5rem 0;
   opacity: 0.45;
   transition: opacity 0.25s ease;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .theme-option:hover {

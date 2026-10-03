@@ -18,7 +18,7 @@
 
 .contact-title {
   font-size: clamp(3rem, 10.5vw, 10.5rem);
-  color: var(--ink-on-dark);
+  color: var(--theme-ink);
 }
 
 /* the one gold beat down here, echoing the hero's period */
@@ -29,7 +29,13 @@
 .contact-list {
   list-style: none;
   margin-top: var(--space-xl);
-  border-top: 1px solid rgba(241, 239, 232, 0.16);
+  border-top: 1px solid currentColor;
+  opacity: 1;
+}
+
+.contact-list,
+.contact-list * {
+  --contact-border: color-mix(in srgb, var(--theme-ink) 18%, transparent);
 }
 
 .contact-row {
@@ -37,8 +43,8 @@
   align-items: baseline;
   gap: var(--space-sm);
   padding: clamp(1.1rem, 2.2vw, 1.7rem) 0;
-  border-bottom: 1px solid rgba(241, 239, 232, 0.16);
-  color: var(--ink-on-dark);
+  border-bottom: 1px solid var(--contact-border, rgba(241, 239, 232, 0.16));
+  color: var(--theme-ink);
   will-change: transform;
 }
 

@@ -26,7 +26,7 @@
 
 .marquee-text {
   font-size: clamp(1.9rem, 4.4vw, 4.4rem);
-  color: var(--ink-on-light);
+  color: var(--theme-ink);
   white-space: nowrap;
   padding: 0 0.35em;
 }
@@ -34,7 +34,7 @@
 /* every other item outlined: rhythm inside the strip itself */
 .marquee-item:nth-child(even) .marquee-text {
   color: transparent;
-  -webkit-text-stroke: 1.2px var(--ink-on-light);
+  -webkit-text-stroke: 1.2px var(--theme-ink);
 }
 
 .marquee-dot {

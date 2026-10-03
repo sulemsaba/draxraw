@@ -1,0 +1,78 @@
+/* ============================================================
+   BACK TO TOP — mobile-only floating control
+   Appears after the visitor scrolls past the first viewport.
+   Desktop visitors never see it (they have the native scrollbar
+   + the footer "Back to top" link).
+   ============================================================ */
+
+.back-to-top {
+  position: fixed;
+  right: clamp(1rem, 4vw, 1.6rem);
+  bottom: max(clamp(1rem, 4vw, 1.6rem), env(safe-area-inset-bottom));
+  z-index: 35;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(11, 11, 10, 0.78);
+  color: var(--ink-on-dark, #f1efe8);
+  border: 1px solid rgba(198, 161, 40, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  /* Animate in: scale up + fade. */
+  animation: back-to-top-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.back-to-top:hover {
+  background: rgba(198, 161, 40, 0.22);
+  border-color: var(--gold, #c6a128);
+}
+
+.back-to-top:active {
+  transform: scale(0.92);
+}
+
+.back-to-top-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+  color: var(--gold, #c6a128);
+}
+
+@keyframes back-to-top-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Desktop: hidden. The footer "Back to top" link covers it. */
+@media (pointer: fine) {
+  .back-to-top {
+    display: none;
+  }
+}
+
+/* Reduced motion: instant, no animation. */
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    animation: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(11, 11, 10, 0.92);
+  }
+}
+
+/* Hide on small landscape heights — too crowded. */
+@media (max-height: 24rem) {
+  .back-to-top {
+    display: none;
+  }
+}
