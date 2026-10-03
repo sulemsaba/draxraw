@@ -1,10 +1,13 @@
 import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap, SplitText } from '../lib/gsap';
+import { scrollToTarget } from '../lib/lenis';
 import './Hero.css';
 
 interface HeroProps {
   navRef: React.RefObject<HTMLElement | null>;
+  /** Seconds to wait for the preloader curtain before the edit starts. */
+  introDelay?: number;
 }
 
 /**
@@ -13,7 +16,7 @@ interface HeroProps {
  * wipes open in one long move (his reveals), everything else
  * stays silent. GSAP is the signature here, not decoration.
  */
-export const Hero: React.FC<HeroProps> = ({ navRef }) => {
+export const Hero: React.FC<HeroProps> = ({ navRef, introDelay = 0 }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const kickerRef = useRef<HTMLDivElement>(null);
   const statementRef = useRef<HTMLHeadingElement>(null);
@@ -34,7 +37,7 @@ export const Hero: React.FC<HeroProps> = ({ navRef }) => {
       gsap.set(figureRef.current, { clipPath: 'inset(0% 100% 0% 0%)' });
       gsap.set(figureRef.current?.querySelector('img') ?? {}, { scale: 1.06 });
 
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({ delay: introDelay });
 
       if (navRef.current) {
         /* Opacity only — a transform here would break position:fixed
@@ -101,7 +104,7 @@ export const Hero: React.FC<HeroProps> = ({ navRef }) => {
 
   const scrollToWork = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
-    document.getElementById('work')?.scrollIntoView({ behavior: 'smooth' });
+    scrollToTarget('#work');
   };
 
   return (

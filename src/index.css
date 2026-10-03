@@ -21,6 +21,7 @@
 
   /* Typography */
   --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Archivo', 'Instrument Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif;
 
   /* Spacing scale */
   --space-xs: clamp(0.5rem, 1vw, 0.75rem);
@@ -143,6 +144,32 @@ h4 {
   color: inherit;
 }
 
+/* Display voice: poster-weight grotesque for the big moments.
+   Slightly expanded, uppercase, tight leading. Body stays
+   Instrument Sans so the contrast reads as art direction. */
+.display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 112%;
+  text-transform: uppercase;
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+}
+
+/* Outlined numerals and words: pure graphic layer */
+.stroke-ink {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--theme-ink, var(--ink-on-light));
+}
+
+/* When the custom cursor is active (fine pointers only), the
+   native one steps aside. Keyboard and touch keep theirs. */
+html.has-cursor,
+html.has-cursor a,
+html.has-cursor button {
+  cursor: none;
+}
+
 p {
   color: var(--theme-muted, var(--muted-on-light));
 }
@@ -188,6 +215,19 @@ img {
 :focus-visible {
   outline: 1.5px solid currentColor;
   outline-offset: 3px;
+}
+
+/* Line-mask containers for the big reveals (Preloader, section
+   headers). Overflow hidden + translateY = the classic curtain
+   line lift used across award-level sites. */
+.line-mask {
+  display: block;
+  overflow: hidden;
+}
+
+.line-mask > .line-inner {
+  display: block;
+  will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {

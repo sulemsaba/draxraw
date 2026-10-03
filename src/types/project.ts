@@ -1,4 +1,4 @@
-export type ProjectLayoutVariant = 'landscape-feature' | 'portrait-offset' | 'full-bleed';
+export type ProjectLayoutVariant = 'spotlight' | 'poster' | 'cinema' | 'spread' | 'frame' | 'vertical';
 
 /**
  * Homepage project presentation.

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTheme, type ThemeMode } from '../theme/ThemeContext';
+import { scrollToTarget } from '../lib/lenis';
 import './Navigation.css';
 
 interface NavigationProps {
@@ -9,7 +10,6 @@ interface NavigationProps {
 const LINKS = [
   { label: 'Work', href: '#work' },
   { label: 'Stills', href: '#stills' },
-  { label: 'About', href: '#about' },
   { label: 'Contact', href: '#contact' }
 ] as const;
 
@@ -110,6 +110,13 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
+  /* Smooth-scroll anchors through Lenis, then close the menu */
+  const goSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    event.preventDefault();
+    closeMenu();
+    scrollToTarget(href);
+  };
+
   return (
     <header
       ref={navRef}
@@ -118,13 +125,18 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
       }`}
     >
       <div className="site-nav-inner">
-        <a href="#top" className="nav-brand" onClick={closeMenu}>
+        <a href="#top" className="nav-brand" onClick={(e) => goSection(e, '#top')}>
           Drax Raw
         </a>
 
         <nav className="nav-links" aria-label="Primary">
           {LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="nav-link">
+            <a
+              key={link.href}
+              href={link.href}
+              className="nav-link"
+              onClick={(e) => goSection(e, link.href)}
+            >
               {link.label}
             </a>
           ))}
@@ -158,7 +170,13 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
       >
         <nav aria-label="Mobile">
           {LINKS.map((link) => (
-            <a key={link.href} href={link.href} className="mobile-link" onClick={closeMenu} tabIndex={menuOpen ? 0 : -1}>
+            <a
+              key={link.href}
+              href={link.href}
+              className="mobile-link"
+              onClick={(e) => goSection(e, link.href)}
+              tabIndex={menuOpen ? 0 : -1}
+            >
               {link.label}
             </a>
           ))}

@@ -1,6 +1,6 @@
 import React, { useCallback, useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
-import { gsap, SplitText } from '../lib/gsap';
+import { gsap } from '../lib/gsap';
 import { FILM_PROJECTS } from '../data/projects';
 import type { Project } from '../types/project';
 import { ProjectFeature } from './ProjectFeature';
@@ -11,13 +11,14 @@ import './SelectedWork.css';
 const THEME_RHYTHM: Array<'light' | 'dark'> = ['dark', 'light', 'dark', 'light', 'dark', 'dark'];
 
 /**
- * The cutting room — all six films, each frame playing the film
- * itself (muted, in view), the cinema overlay one press away.
+ * The cutting room. A poster-size header, then all six films as
+ * six different scenes, each one playing its film in view. Press
+ * any frame for the sound-on cinema overlay.
  */
 export const SelectedWork: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const countRef = useRef<HTMLSpanElement>(null);
+  const line1Ref = useRef<HTMLSpanElement>(null);
+  const line2Ref = useRef<HTMLSpanElement>(null);
   const noteRef = useRef<HTMLParagraphElement>(null);
   const [watching, setWatching] = useState<Project | null>(null);
 
@@ -26,27 +27,11 @@ export const SelectedWork: React.FC = () => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (reducedMotion) return;
 
-      /* The heading cuts in word by word — the hero's signature. */
-      const split = new SplitText(titleRef.current, { type: 'words' });
-      gsap.set(split.words, { autoAlpha: 0 });
-      gsap.set([countRef.current, noteRef.current], { autoAlpha: 0 });
+      /* the header lifts out of two masks: curtains, not fades */
+      gsap.set([line1Ref.current, line2Ref.current], { yPercent: 112 });
+      gsap.set(noteRef.current, { autoAlpha: 0, y: 16 });
 
-      gsap.to(split.words, {
-        autoAlpha: 1,
-        duration: 0.01,
-        ease: 'none',
-        stagger: 0.07,
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 82%',
-          once: true
-        }
-      });
-
-      gsap.to(countRef.current, {
-        autoAlpha: 1,
-        duration: 0.01,
-        ease: 'none',
+      const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 78%',
@@ -54,20 +39,9 @@ export const SelectedWork: React.FC = () => {
         }
       });
 
-      gsap.to(noteRef.current, {
-        autoAlpha: 1,
-        duration: 0.7,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 75%',
-          once: true
-        }
-      });
-
-      return () => {
-        split.revert();
-      };
+      tl.to(line1Ref.current, { yPercent: 0, duration: 1.05, ease: 'power4.out' }, 0)
+        .to(line2Ref.current, { yPercent: 0, duration: 1.05, ease: 'power4.out' }, 0.12)
+        .to(noteRef.current, { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.55);
     },
     { scope: sectionRef }
   );
@@ -78,17 +52,21 @@ export const SelectedWork: React.FC = () => {
   return (
     <section ref={sectionRef} className="selected-work" id="work" aria-label="Selected work">
       <div className="work-intro theme-dark" data-theme="dark">
-        <div className="work-intro-inner">
-          <h2 ref={titleRef} className="work-title">
-            Selected work
-          </h2>
-          <span ref={countRef} className="work-count">
-            ({String(FILM_PROJECTS.length).padStart(2, '0')})
+        <h2 className="work-title display">
+          <span className="line-mask">
+            <span ref={line1Ref} className="line-inner">
+              Selected
+            </span>
           </span>
-        </div>
+          <span className="line-mask">
+            <span ref={line2Ref} className="line-inner">
+              Work&ensp;<span className="work-count">({String(FILM_PROJECTS.length).padStart(2, '0')})</span>
+            </span>
+          </span>
+        </h2>
         <p ref={noteRef} className="work-note">
-          Every film plays right here &mdash; muted, looping, cut straight into the page. Press any frame to
-          watch it with sound.
+          Six films, cut straight into the page. Every one plays right here: muted, looping,
+          honest. Press any frame for sound.
         </p>
       </div>
 

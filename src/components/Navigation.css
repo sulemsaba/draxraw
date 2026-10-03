@@ -122,15 +122,42 @@
 .nav-mobile-menu nav {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+  overflow: hidden; /* the mask the giant links rise out of */
 }
 
+/* Giant menu type: the overlay is a poster, not a list.
+   Each line rises out of the nav's mask, staggered, whenever
+   the menu opens. CSS-driven so it replays on repeated opens
+   without any JS state. */
 .mobile-link {
-  font-size: clamp(1.75rem, 7vw, 2.5rem);
-  font-weight: 500;
-  letter-spacing: -0.015em;
-  line-height: 1.1;
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-stretch: 110%;
+  text-transform: uppercase;
+  font-size: clamp(2.2rem, 11.5vw, 5rem);
+  letter-spacing: -0.01em;
+  line-height: 1.04;
   color: var(--ink-on-light);
+  transform: translateY(115%);
+  transition: transform 0.65s var(--ease-editorial);
+}
+
+.mobile-link:nth-child(2) {
+  transition-delay: 0.06s;
+}
+
+.mobile-link:nth-child(3) {
+  transition-delay: 0.12s;
+}
+
+.mobile-link:nth-child(4) {
+  transition-delay: 0.18s;
+}
+
+.nav-mobile-menu.is-open .mobile-link {
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {

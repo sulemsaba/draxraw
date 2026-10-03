@@ -22,7 +22,7 @@ export const DRAX_YOUTUBE_CHANNEL = {
 /**
  * Real, collected film data (source of truth for titles, types,
  * roles, years, links and thumbnails). The homepage projects below
- * are derived from these entries — nothing is invented here.
+ * are derived from these entries, nothing is invented here.
  */
 export const ALL_COLLECTED_FILMS: DraxFilmEntry[] = [
   {
@@ -132,44 +132,45 @@ const toProject = (id: string, spec: PresentationSpec): Project => {
 };
 
 /**
- * All six films. The page cuts between surfaces like an edit:
- * 01 — landscape feature on dark (the showreel opens the block)
- * 02 — portrait offset on light (editorial counterpoint)
- * 03 — near full-bleed on dark
- * 04 — landscape feature on light (second counterpoint)
- * 05 — portrait offset on dark
- * 06 — near full-bleed on dark (the closing cut — page ends dark)
+ * All six films. Every scene is composed differently on purpose:
+ * 01 spotlight: the showreel opens the block, title overlaps the frame
+ * 02 poster:    portrait frame right, type stacks left (light)
+ * 03 cinema:    near full-bleed, title sits ON the footage
+ * 04 spread:    frame left, title anchored bottom right (light)
+ * 05 frame:     portrait frame centered, giant title across its edge
+ * 06 vertical:  the Shorts film, type runs behind the 9/16 frame,
+ *               page closes dark
  */
 export const FILM_PROJECTS: Project[] = [
   toProject('world-that-never-stops', {
     number: '01',
-    layoutVariant: 'landscape-feature',
+    layoutVariant: 'spotlight',
     aspectRatio: '4 / 3'
   }),
   toProject('book-launch-highlights', {
     number: '02',
-    layoutVariant: 'portrait-offset',
+    layoutVariant: 'poster',
     aspectRatio: '2 / 3'
   }),
   toProject('library-social-impact', {
     number: '03',
-    layoutVariant: 'full-bleed',
+    layoutVariant: 'cinema',
     aspectRatio: '3 / 2',
     displayTitle: 'A Place Transformed'
   }),
   toProject('school-library-transformation', {
     number: '04',
-    layoutVariant: 'landscape-feature',
+    layoutVariant: 'spread',
     aspectRatio: '4 / 3'
   }),
   toProject('engagement-film', {
     number: '05',
-    layoutVariant: 'portrait-offset',
+    layoutVariant: 'frame',
     aspectRatio: '2 / 3'
   }),
   toProject('driven-by-purpose', {
     number: '06',
-    layoutVariant: 'full-bleed',
-    aspectRatio: '3 / 2'
+    layoutVariant: 'vertical',
+    aspectRatio: '9 / 16'
   })
 ];

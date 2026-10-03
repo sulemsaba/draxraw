@@ -81,7 +81,7 @@ export const WorkLightbox: React.FC<WorkLightboxProps> = ({ project, onClose }) 
       className="cinema"
       role="dialog"
       aria-modal="true"
-      aria-label={`${project.title} — playing with sound`}
+      aria-label={`${project.title} · playing with sound`}
       onClick={(event) => {
         if (event.target === event.currentTarget) requestClose();
       }}
@@ -94,7 +94,7 @@ export const WorkLightbox: React.FC<WorkLightboxProps> = ({ project, onClose }) 
         <div className={`cinema-frame${project.vertical ? ' cinema-frame-vertical' : ''}`}>
           <iframe
             src={embedSrc}
-            title={`${project.title} — Drax Raw`}
+            title={`${project.title} · Drax Raw`}
             allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
             allowFullScreen
           />

@@ -1,27 +1,49 @@
-/* Project frames — the work plays here. No cards, no frames,
-   no borders: the film itself is the surface. */
+/* ============================================================
+   Six film scenes, six different compositions. Shared parts
+   below, then one block per scene. Desktop scenes use a 12
+   column grid with overlapping type; everything collapses to
+   one honest column on small screens.
+   ============================================================ */
 
-.project {
-  padding: 0 var(--pad-page);
-}
-
-/* ---- Media frame ------------------------------------------- */
-
-.project-media {
+.film {
   position: relative;
-  display: block;
-  overflow: hidden;
-  will-change: clip-path;
+  padding: var(--space-xl) var(--pad-page);
+  overflow: clip;
 }
 
-/* Oversized top/bottom so the desktop drift never shows an edge */
+/* Outlined numeral: a graphic layer, not a label */
+.film-index {
+  position: absolute;
+  z-index: 0;
+  font-size: clamp(7rem, 15vw, 14rem);
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--theme-ink);
+  opacity: 0.4;
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+
+.film-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.film-media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: rgba(141, 138, 131, 0.08);
+}
+
+/* the drift layer: slightly oversized so ±3% never shows an edge */
 .media-inner {
   position: absolute;
   inset: -4% 0;
-  will-change: transform;
 }
 
-.media-poster {
+.media-poster,
+.media-live {
   position: absolute;
   inset: 0;
 }
@@ -30,16 +52,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  will-change: transform;
 }
 
-/* The live cut — fades over the poster once the stream is running */
 .media-live {
-  position: absolute;
-  inset: 0;
   opacity: 0;
-  transition: opacity 0.65s ease 0.05s;
-  pointer-events: none;
+  transition: opacity 0.7s ease;
 }
 
 .media-live.is-on {
@@ -47,189 +64,407 @@
 }
 
 .media-live iframe {
-  display: block;
   width: 100%;
   height: 100%;
   border: 0;
+  display: block;
 }
 
-/* Whole-frame press target — opens the cinema overlay */
 .media-hit {
   position: absolute;
   inset: 0;
-  z-index: 3;
-  cursor: pointer;
+  z-index: 5;
 }
 
-.media-hit::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-color: transparent;
-  transition: background-color 0.4s ease;
+.film-head {
+  position: relative;
+  z-index: 2;
 }
 
-.project-media:hover .media-hit::after,
-.project-media:focus-within .media-hit::after {
-  background-color: rgba(11, 11, 10, 0.08);
-}
-
-.media-hit:focus-visible {
-  outline-offset: -2px;
-}
-
-/* ---- Shared metadata ---------------------------------------- */
-
-.project-meta {
+.film-row {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-sm);
-}
-
-.project-number {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--theme-muted);
+  align-items: center;
+  gap: 0.8rem;
   margin-bottom: var(--space-xs);
-  font-variant-numeric: tabular-nums;
 }
 
-.project-title {
-  font-size: clamp(1.5rem, 2.4vw, 2.1rem);
+.film-no {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--theme-muted);
+}
+
+.film-rule {
+  height: 1px;
+  width: 3.2rem;
+  background-color: var(--theme-ink);
+  opacity: 0.3;
+}
+
+.film-title {
+  font-size: clamp(2.4rem, 5.4vw, 5.4rem);
+  color: var(--theme-ink);
+}
+
+.film-meta {
+  margin-top: var(--space-sm);
+  font-size: 0.86rem;
   font-weight: 500;
-  letter-spacing: -0.015em;
-  color: var(--theme-ink);
-}
-
-.project-type {
-  margin-top: var(--space-xs);
-  font-size: 0.95rem;
-}
-
-.view-project {
-  font-size: 0.9rem;
-  color: var(--theme-ink);
-  opacity: 0;
-  transform: translateY(4px);
-  transition:
-    opacity 0.35s ease,
-    transform 0.35s ease;
-  white-space: nowrap;
-}
-
-.project:hover .view-project,
-.project:focus-within .view-project {
-  opacity: 0.9;
-  transform: translateY(0);
-}
-
-@media (hover: none) {
-  .view-project {
-    opacity: 0.6;
-    transform: none;
-  }
+  letter-spacing: 0.02em;
+  color: var(--theme-muted);
 }
 
 /* ============================================================
-   Variant 01/04 — landscape feature
-   Metadata above, large landscape image at ~74vw.
+   01 SPOTLIGHT (dark): showreel opens the block, title overlaps
+   the frame's lower-left corner, numeral sits behind everything.
    ============================================================ */
 
-.variant-landscape-feature {
-  display: grid;
-  grid-template-areas:
-    'meta'
-    'media';
-  row-gap: var(--space-md);
-}
-
-.variant-landscape-feature .project-meta {
-  grid-area: meta;
-}
-
-.variant-landscape-feature .project-media {
-  grid-area: media;
-  width: min(100%, 74vw);
-  aspect-ratio: 4 / 3;
-}
-
-/* ============================================================
-   Variant 02/05 — portrait offset
-   Text toward one side, portrait image toward the other,
-   significant whitespace between them.
-   ============================================================ */
-
-.variant-portrait-offset {
+.scene-spotlight {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  column-gap: var(--space-sm);
+  column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  align-items: end;
+  padding-top: var(--space-2xl);
+}
+
+.scene-spotlight .film-index {
+  top: 5%;
+  left: var(--pad-page);
+}
+
+.scene-spotlight .film-stage {
+  grid-column: 4 / -1;
+  grid-row: 1;
+}
+
+.scene-spotlight .film-media {
+  max-height: 78svh;
+}
+
+.scene-spotlight .film-head {
+  grid-column: 1 / 9;
+  grid-row: 1;
+  align-self: end;
+  padding-bottom: var(--space-sm);
+}
+
+.scene-spotlight .film-title {
+  font-size: clamp(2.6rem, 5.8vw, 5.8rem);
+}
+
+/* ============================================================
+   02 POSTER (light): portrait frame right, type stacks left.
+   ============================================================ */
+
+.scene-poster {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
   align-items: center;
 }
 
-.variant-portrait-offset .project-media {
-  grid-column: 7 / -1;
+.scene-poster .film-index {
+  top: 4%;
+  left: var(--pad-page);
+}
+
+.scene-poster .film-stage {
+  grid-column: 8 / -1;
   grid-row: 1;
-  width: min(100%, 30rem);
-  aspect-ratio: 2 / 3;
   justify-self: end;
-  margin-right: calc(var(--pad-page) * -0.35);
 }
 
-.variant-portrait-offset .project-meta {
-  grid-column: 1 / 5;
+.scene-poster .film-media {
+  height: min(80svh, 44rem);
+}
+
+.scene-poster .film-head {
+  grid-column: 1 / 8;
   grid-row: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-sm);
+  align-self: center;
+  padding-right: var(--space-sm);
 }
 
-.variant-portrait-offset .view-project {
-  order: 3;
+.scene-poster .film-title {
+  font-size: clamp(2.9rem, 6.2vw, 6.2rem);
 }
 
 /* ============================================================
-   Variant 03/06 — near full-bleed
-   Wide image, metadata below.
+   03 CINEMA (dark): near full-bleed frame, the title sits ON
+   the footage like a title card. Meta drops below, right.
    ============================================================ */
 
-.variant-full-bleed {
+.scene-cinema {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  align-items: center;
 }
 
-.variant-full-bleed .project-media {
-  width: min(100%, 94vw);
-  aspect-ratio: 3 / 2;
-  margin-inline: auto;
+.scene-cinema .film-index {
+  top: 6%;
+  right: var(--pad-page);
+  left: auto;
+}
+
+.scene-cinema .film-stage {
+  width: min(94vw, calc(84svh * 1.5));
+}
+
+.scene-cinema .film-head {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.scene-cinema .film-row {
+  justify-content: center;
+}
+
+.scene-cinema .film-rule {
+  display: none;
+}
+
+.scene-cinema .film-title {
+  font-size: clamp(3rem, 7.2vw, 7.4rem);
+  color: var(--ink-on-dark);
+}
+
+.scene-cinema .film-meta {
+  position: absolute;
+  right: var(--pad-page);
+  bottom: calc(var(--space-sm) * -1 - 0.4rem);
+  transform: translateY(100%);
+  text-align: right;
 }
 
 /* ============================================================
-   Mobile — vertical rhythm, image first, metadata below.
+   04 SPREAD (light): frame left, title anchored to its right
+   edge near the bottom, numeral huge behind the type.
+   ============================================================ */
+
+.scene-spread {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+  align-items: end;
+}
+
+.scene-spread .film-index {
+  top: 2%;
+  right: var(--pad-page);
+  left: auto;
+}
+
+.scene-spread .film-stage {
+  grid-column: 1 / 8;
+  grid-row: 1;
+}
+
+.scene-spread .film-media {
+  max-height: 76svh;
+}
+
+.scene-spread .film-head {
+  grid-column: 7 / -1;
+  grid-row: 1;
+  align-self: end;
+  padding-bottom: var(--space-sm);
+  padding-left: var(--space-xs);
+}
+
+.scene-spread .film-title {
+  font-size: clamp(2.5rem, 5.2vw, 5.2rem);
+}
+
+/* ============================================================
+   05 FRAME (dark): portrait frame centered, giant title
+   straddles its lower edge. Numeral hangs top left.
+   ============================================================ */
+
+.scene-frame {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scene-frame .film-index {
+  top: 8%;
+  left: var(--pad-page);
+}
+
+.scene-frame .film-stage {
+  width: min(calc(74svh * 2 / 3), 26rem, 74vw);
+}
+
+.scene-frame .film-head {
+  position: absolute;
+  left: 50%;
+  bottom: 16%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 92vw;
+  text-align: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.scene-frame .film-row {
+  justify-content: center;
+}
+
+.scene-frame .film-rule {
+  display: none;
+}
+
+.scene-frame .film-title {
+  font-size: clamp(2.8rem, 6vw, 6rem);
+}
+
+.scene-frame .film-meta {
+  margin-top: var(--space-xs);
+}
+
+/* ============================================================
+   06 VERTICAL (dark): the Shorts film. Type runs BEHIND the
+   9/16 frame and pokes out both sides. The page's last cut.
+   ============================================================ */
+
+.scene-vertical {
+  display: grid;
+  place-items: center;
+  min-height: 92svh;
+}
+
+.scene-vertical .film-index {
+  top: 7%;
+  right: var(--pad-page);
+  left: auto;
+  z-index: 2;
+}
+
+.scene-vertical .film-stage {
+  z-index: 1;
+  width: min(calc(78svh * 9 / 16), 24rem, 78vw);
+}
+
+.scene-vertical .film-head {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  text-align: center;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scene-vertical .film-row {
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.scene-vertical .film-rule {
+  display: none;
+}
+
+.scene-vertical .film-title {
+  font-size: clamp(3.4rem, 9.5vw, 9.5rem);
+  white-space: nowrap;
+}
+
+.scene-vertical .film-meta {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 2;
+}
+
+/* ============================================================
+   Small screens: every scene becomes one honest column.
    ============================================================ */
 
 @media (max-width: 768px) {
-  .project {
+  .film {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    padding: var(--space-lg) var(--pad-page);
   }
 
-  .project-media {
-    order: 1;
-    width: 100% !important;
-    margin-right: 0 !important;
+  .film-index {
+    position: absolute;
+    top: var(--space-sm);
+    right: var(--pad-page);
+    left: auto;
+    font-size: 3.4rem;
+    opacity: 0.32;
   }
 
-  .project-meta {
-    order: 2;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-  }
-
-  .variant-portrait-offset {
+  .scene-spotlight,
+  .scene-poster,
+  .scene-spread {
     display: flex;
+  }
+
+  .film-stage,
+  .scene-poster .film-stage,
+  .scene-spotlight .film-stage,
+  .scene-spread .film-stage {
+    width: 100%;
+  }
+
+  .film-media {
+    max-height: 62svh;
+    margin-inline: auto;
+  }
+
+  .scene-poster .film-media,
+  .scene-frame .film-media {
+    width: min(calc(62svh * 2 / 3), 78vw);
+    height: auto;
+  }
+
+  .scene-vertical .film-media {
+    width: min(calc(64svh * 9 / 16), 80vw);
+  }
+
+  /* the standing arrangements dissolve: title under the frame */
+  .film-head,
+  .scene-cinema .film-head,
+  .scene-frame .film-head,
+  .scene-vertical .film-head {
+    position: static;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    pointer-events: auto;
+  }
+
+  .scene-cinema .film-title,
+  .scene-frame .film-title,
+  .scene-vertical .film-title {
+    color: var(--theme-ink);
+    white-space: normal;
+    font-size: clamp(2.2rem, 8.5vw, 3.4rem);
+  }
+
+  .scene-cinema .film-meta,
+  .scene-vertical .film-meta {
+    position: static;
+    transform: none;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .scene-vertical {
+    min-height: 0;
   }
 }

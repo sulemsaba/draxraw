@@ -1,44 +1,46 @@
-/* Selected work — the cutting room heading; the six frames
-   below each carry their own theme. */
-
+/* The cutting room: poster header + six scenes */
 .selected-work {
-  scroll-margin-top: 4.5rem;
+  position: relative;
 }
 
 .work-intro {
-  /* Hard editorial cut from the light hero into the dark film block */
-  padding: var(--space-xl) var(--pad-page) var(--space-lg);
-}
-
-.work-intro-inner {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm);
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  min-height: 62svh;
+  padding: var(--space-2xl) var(--pad-page) var(--space-lg);
 }
 
 .work-title {
-  font-size: clamp(1.6rem, 2.6vw, 2.4rem);
-  font-weight: 500;
-  letter-spacing: -0.015em;
+  font-size: clamp(3.4rem, 12vw, 12rem);
+  color: var(--ink-on-dark);
 }
 
 .work-count {
-  font-size: 0.95rem;
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  vertical-align: 0.9em;
   color: var(--theme-muted);
-  font-variant-numeric: tabular-nums;
 }
 
 .work-note {
-  margin-top: var(--space-xs);
-  max-width: 46ch;
-  font-size: 0.95rem;
+  align-self: flex-end;
+  max-width: 24rem;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  font-weight: 500;
   color: var(--theme-muted);
+  text-align: left;
 }
 
-.work-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xl);
-  padding-bottom: var(--space-2xl);
+@media (max-width: 768px) {
+  .work-intro {
+    min-height: 52svh;
+  }
+
+  .work-note {
+    align-self: flex-start;
+  }
 }

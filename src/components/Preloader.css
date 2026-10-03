@@ -1,0 +1,60 @@
+/* The boot curtain. Dark, silent, gone in under two seconds. */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background-color: var(--bg-dark);
+  color: var(--ink-on-dark);
+  display: grid;
+  place-items: center;
+  will-change: transform;
+}
+
+.preloader-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.9rem, 1.8vw, 1.4rem);
+}
+
+.preloader-word {
+  font-size: clamp(3.2rem, 11vw, 10.5rem);
+  white-space: nowrap;
+}
+
+/* thin gold rule under the wordmark, the one warm beat */
+.preloader-rule {
+  display: block;
+  width: min(52vw, 34rem);
+  height: 1px;
+  background-color: rgba(241, 239, 232, 0.14);
+  overflow: hidden;
+}
+
+.preloader-rule-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: var(--gold);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.preloader-count {
+  position: absolute;
+  right: clamp(1.25rem, 4vw, 4rem);
+  bottom: clamp(1.1rem, 3.5vw, 3rem);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--muted-on-dark);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 768px) {
+  .preloader-word {
+    white-space: nowrap;
+    font-size: clamp(2.6rem, 15vw, 5rem);
+  }
+}
