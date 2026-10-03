@@ -1,0 +1,29 @@
+[
+  {
+    "url": "https://gsap.com",
+    "name": "Integrating a GSAP-Scroll animation into a website..",
+    "snippet": "Jan 12, 2022 — How do you go about adding a section above and below it, so that the user scrolls into the section , sees the animation until the end, and then ... Read more",
+    "host_name": "gsap.com",
+    "rank": 0,
+    "date": "Jan 12, 2022",
+    "favicon": ""
+  },
+  {
+    "url": "https://dev.to",
+    "name": "GSAP ScrollTrigger pin: true Nearly Broke My Portfolio",
+    "snippet": "Apr 4, 2026 — GSAP measures your element's dimensions once during initialization. If your layout changes after init (fonts loading, images rendering, dynamic ... Read more",
+    "host_name": "dev.to",
+    "rank": 1,
+    "date": "Apr 4, 2026",
+    "favicon": ""
+  },
+  {
+    "url": "https://blog.openreplay.com",
+    "name": "Bring Your UI to Life with ScrollTrigger Animations in GSAP",
+    "snippet": "Jul 26, 2025 — In this guide, you'll learn how to implement ScrollTrigger animations that respond naturally to user scrolling, with practical examples you can ... Read more",
+    "host_name": "blog.openreplay.com",
+    "rank": 2,
+    "date": "Jul 26, 2025",
+    "favicon": ""
+  }
+]
