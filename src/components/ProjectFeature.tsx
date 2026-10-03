@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger, SplitText } from '../lib/gsap';
+import { stashFlipState } from '../lib/flipState';
 import type { Project } from '../types/project';
 import './ProjectFeature.css';
 
@@ -8,8 +10,6 @@ interface ProjectFeatureProps {
   project: Project;
   index?: number;
   theme?: 'light' | 'dark';
-  /** Opens the cinema overlay: the film plays there with sound. */
-  onWatch?: (project: Project) => void;
 }
 
 /** Per-scene reveal choreography, deliberately not identical. */
@@ -23,34 +23,52 @@ const REVEALS = {
 } as const;
 
 /**
- * One film, one scene. Six different compositions so the page
- * reads like a cut sequence, not a template: titles overlap
- * frames, one title runs BEHIND the frame, outlined numerals
- * drift against the media. The film itself plays inside its
- * frame, muted and looping, but only while the frame is on
- * screen (a ScrollTrigger gate mounts and unmounts the stream,
- * so six films never cost six live players). The still sits
- * underneath the whole time: it breathes until the stream
- * fades over it, and it stays honest if the stream never
- * arrives. Pressing a frame opens the sound-on cinema overlay.
+ * One film, one scene. Six different compositions so the page reads
+ * like a cut sequence, not a template: titles overlap frames, one
+ * title runs BEHIND the frame, outlined numerals drift against the
+ * media. The film itself plays inside its frame, muted and looping,
+ * but only while the frame is on screen (a ScrollTrigger gate mounts
+ * and unmounts the stream, so six films never cost six live players).
+ *
+ * Clicking a frame carries the still image into a dedicated project
+ * page via GSAP Flip — the image is the through-line between the
+ * cutting room and the storytelling room.
  */
-export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index = 0, theme = 'dark', onWatch }) => {
+export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index = 0, theme = 'dark' }) => {
+  const navigate = useNavigate();
   const articleRef = useRef<HTMLElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
-  const indexRef = useRef<HTMLSpanElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const metaRef = useRef<HTMLParagraphElement>(null);
+  const posterImgRef = useRef<HTMLImageElement>(null);
   const [streamState, setStreamState] = useState<'idle' | 'loading' | 'live'>('idle');
 
   /* Muted, chrome-less loop of the actual film: the poster's live cut. */
   const previewSrc = `https://www.youtube-nocookie.com/embed/${project.youtubeId}?autoplay=1&mute=1&loop=1&playlist=${project.youtubeId}&controls=0&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3&disablekb=1&fs=0`;
 
+  /**
+   * Capture the poster image's Flip state before navigation so the
+   * project page hero can carry it across the route change. We use a
+   * plain `<a href>` link for keyboard/pointer navigation but intercept
+   * the click to stash state. If Flip fails to capture for any reason,
+   * the project page falls back to a simple reveal — navigation never
+   * depends on the transition succeeding.
+   */
+  const openProject = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    const img = posterImgRef.current;
+    if (img) {
+      stashFlipState(`project-${project.id}`, img);
+    }
+    navigate(`/work/${project.id}`);
+  };
+
   useGSAP(
     () => {
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      if (reducedMotion) return; /* still, honest frames: pressing one still opens the cinema */
+      if (reducedMotion) return;
 
       /* Live gate: the film plays only while its frame is on screen.
          Mount, wait for load, fade over the poster; off screen, unmount. */
@@ -81,7 +99,7 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
       /* The still breathes until the stream covers it (and forever
          on connections where the stream never arrives). Scale only:
          a translate would expose the edges of a cover-fit image. */
-      const poster = mediaRef.current?.querySelector('img');
+      const poster = posterImgRef.current;
       if (poster) {
         gsap.to(poster, {
           scale: 1.07,
@@ -95,7 +113,7 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
       /* Title words cut in one frame at a time: the house signature. */
       const split = new SplitText(titleRef.current, { type: 'words' });
       gsap.set(split.words, { autoAlpha: 0 });
-      gsap.set([indexRef.current, metaRef.current], { autoAlpha: 0, y: 18 });
+      gsap.set(metaRef.current, { autoAlpha: 0, y: 18 });
 
       gsap.to(split.words, {
         autoAlpha: 1,
@@ -109,7 +127,7 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
         }
       });
 
-      gsap.to([indexRef.current, metaRef.current], {
+      gsap.to(metaRef.current, {
         autoAlpha: 1,
         y: 0,
         duration: 0.75,
@@ -121,7 +139,7 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
         }
       });
 
-      /* Depth: desktop only. The numeral drifts against the frame. */
+      /* Depth: desktop only. The frame drifts gently against the page. */
       const mm = gsap.matchMedia();
       mm.add('(min-width: 769px)', () => {
         const drift = gsap.fromTo(
@@ -138,23 +156,8 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
             }
           }
         );
-        const indexDrift = gsap.fromTo(
-          indexRef.current,
-          { yPercent: 26 },
-          {
-            yPercent: -26,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: articleRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 0.9
-            }
-          }
-        );
         return () => {
           drift.kill();
-          indexDrift.kill();
         };
       });
 
@@ -173,15 +176,17 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
       data-theme={theme}
       data-testid={`project-${project.number}`}
     >
-      <span ref={indexRef} className="film-index display" aria-hidden="true">
-        {project.number}
-      </span>
-
       <div className="film-stage">
         <div ref={mediaRef} className="film-media" style={{ aspectRatio: project.aspectRatio }}>
           <div ref={innerRef} className="media-inner">
             <div className="media-poster">
-              <img src={project.thumbnail} alt={project.title} loading="lazy" />
+              <img
+                ref={posterImgRef}
+                src={project.thumbnail}
+                alt={project.title}
+                loading="lazy"
+                data-flip-id={`project-${project.id}`}
+              />
             </div>
             <div className={`media-live${streamState === 'live' ? ' is-on' : ''}`} aria-hidden="true">
               {streamState !== 'idle' && (
@@ -195,21 +200,17 @@ export const ProjectFeature: React.FC<ProjectFeatureProps> = ({ project, index =
               )}
             </div>
           </div>
-          <button
-            type="button"
+          <a
+            href={`/work/${project.id}`}
             className="media-hit"
             data-cursor="media"
-            onClick={() => onWatch?.(project)}
-            aria-label={`Watch ${project.title} with sound`}
+            onClick={openProject}
+            aria-label={`Open ${project.title} project`}
           />
         </div>
       </div>
 
       <header className="film-head">
-        <div className="film-row">
-          <span className="film-no">{project.number}</span>
-          <span className="film-rule" aria-hidden="true" />
-        </div>
         <h3 ref={titleRef} className="film-title display">
           {project.title}
         </h3>

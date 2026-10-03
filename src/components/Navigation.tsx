@@ -5,6 +5,8 @@ import './Navigation.css';
 
 interface NavigationProps {
   navRef?: React.RefObject<HTMLElement | null>;
+  /** Cross-route nav handler from App so links work on project pages too. */
+  onNavigate?: (event: React.MouseEvent<HTMLAnchorElement>, href: string) => void;
 }
 
 const LINKS = [
@@ -47,7 +49,7 @@ const ThemeToggle: React.FC<{ variant: 'bar' | 'menu' }> = ({ variant }) => {
   );
 };
 
-export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
+export const Navigation: React.FC<NavigationProps> = ({ navRef, onNavigate }) => {
   const { mode } = useTheme();
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [scrolled, setScrolled] = useState(false);
@@ -111,11 +113,16 @@ export const Navigation: React.FC<NavigationProps> = ({ navRef }) => {
 
   const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  /* Smooth-scroll anchors through Lenis, then close the menu */
+  /* Smooth-scroll anchors through Lenis, then close the menu.
+     When on a project page, App's onNavigate routes home first. */
   const goSection = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     event.preventDefault();
     closeMenu();
-    scrollToTarget(href);
+    if (onNavigate) {
+      onNavigate(event, href);
+    } else {
+      scrollToTarget(href);
+    }
   };
 
   return (

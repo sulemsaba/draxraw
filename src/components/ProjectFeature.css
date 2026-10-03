@@ -11,18 +11,7 @@
   overflow: clip;
 }
 
-/* Outlined numeral: a graphic layer, not a label */
-.film-index {
-  position: absolute;
-  z-index: 0;
-  font-size: clamp(7rem, 15vw, 14rem);
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--theme-ink);
-  opacity: 0.4;
-  pointer-events: none;
-  line-height: 1;
-  user-select: none;
-}
+/* Outlined numeral removed per art direction: no decorative numbers. */
 
 .film-stage {
   position: relative;
@@ -81,27 +70,6 @@
   z-index: 2;
 }
 
-.film-row {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: var(--space-xs);
-}
-
-.film-no {
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--theme-muted);
-}
-
-.film-rule {
-  height: 1px;
-  width: 3.2rem;
-  background-color: var(--theme-ink);
-  opacity: 0.3;
-}
-
 .film-title {
   font-size: clamp(2.4rem, 5.4vw, 5.4rem);
   color: var(--theme-ink);
@@ -115,22 +83,12 @@
   color: var(--theme-muted);
 }
 
-/* ============================================================
-   01 SPOTLIGHT (dark): showreel opens the block, title overlaps
-   the frame's lower-left corner, numeral sits behind everything.
-   ============================================================ */
-
 .scene-spotlight {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
   align-items: end;
   padding-top: var(--space-2xl);
-}
-
-.scene-spotlight .film-index {
-  top: 5%;
-  left: var(--pad-page);
 }
 
 .scene-spotlight .film-stage {
@@ -153,20 +111,11 @@
   font-size: clamp(2.6rem, 5.8vw, 5.8rem);
 }
 
-/* ============================================================
-   02 POSTER (light): portrait frame right, type stacks left.
-   ============================================================ */
-
 .scene-poster {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
   align-items: center;
-}
-
-.scene-poster .film-index {
-  top: 4%;
-  left: var(--pad-page);
 }
 
 .scene-poster .film-stage {
@@ -190,21 +139,10 @@
   font-size: clamp(2.9rem, 6.2vw, 6.2rem);
 }
 
-/* ============================================================
-   03 CINEMA (dark): near full-bleed frame, the title sits ON
-   the footage like a title card. Meta drops below, right.
-   ============================================================ */
-
 .scene-cinema {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.scene-cinema .film-index {
-  top: 6%;
-  right: var(--pad-page);
-  left: auto;
 }
 
 .scene-cinema .film-stage {
@@ -243,22 +181,11 @@
   text-align: right;
 }
 
-/* ============================================================
-   04 SPREAD (light): frame left, title anchored to its right
-   edge near the bottom, numeral huge behind the type.
-   ============================================================ */
-
 .scene-spread {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   column-gap: clamp(0.75rem, 1.5vw, 1.5rem);
   align-items: end;
-}
-
-.scene-spread .film-index {
-  top: 2%;
-  right: var(--pad-page);
-  left: auto;
 }
 
 .scene-spread .film-stage {
@@ -282,20 +209,10 @@
   font-size: clamp(2.5rem, 5.2vw, 5.2rem);
 }
 
-/* ============================================================
-   05 FRAME (dark): portrait frame centered, giant title
-   straddles its lower edge. Numeral hangs top left.
-   ============================================================ */
-
 .scene-frame {
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.scene-frame .film-index {
-  top: 8%;
-  left: var(--pad-page);
 }
 
 .scene-frame .film-stage {
@@ -314,14 +231,6 @@
   z-index: 2;
 }
 
-.scene-frame .film-row {
-  justify-content: center;
-}
-
-.scene-frame .film-rule {
-  display: none;
-}
-
 .scene-frame .film-title {
   font-size: clamp(2.8rem, 6vw, 6rem);
 }
@@ -330,22 +239,10 @@
   margin-top: var(--space-xs);
 }
 
-/* ============================================================
-   06 VERTICAL (dark): the Shorts film. Type runs BEHIND the
-   9/16 frame and pokes out both sides. The page's last cut.
-   ============================================================ */
-
 .scene-vertical {
   display: grid;
   place-items: center;
   min-height: 92svh;
-}
-
-.scene-vertical .film-index {
-  top: 7%;
-  right: var(--pad-page);
-  left: auto;
-  z-index: 2;
 }
 
 .scene-vertical .film-stage {
@@ -362,15 +259,6 @@
   text-align: center;
   z-index: 0;
   pointer-events: none;
-}
-
-.scene-vertical .film-row {
-  justify-content: center;
-  opacity: 0.7;
-}
-
-.scene-vertical .film-rule {
-  display: none;
 }
 
 .scene-vertical .film-title {
@@ -392,20 +280,12 @@
    ============================================================ */
 
 @media (max-width: 768px) {
+  /* Numberless layout: each scene becomes one honest column. */
   .film {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
     padding: var(--space-lg) var(--pad-page);
-  }
-
-  .film-index {
-    position: absolute;
-    top: var(--space-sm);
-    right: var(--pad-page);
-    left: auto;
-    font-size: 3.4rem;
-    opacity: 0.32;
   }
 
   .scene-spotlight,

@@ -1,4 +1,4 @@
-import type { Project, ProjectLayoutVariant } from '../types/project';
+import type { Project, ProjectLayoutVariant, ProjectStill } from '../types/project';
 
 export interface DraxFilmEntry {
   id: string;
@@ -20,9 +20,13 @@ export const DRAX_YOUTUBE_CHANNEL = {
 };
 
 /**
- * Real, collected film data (source of truth for titles, types,
- * roles, years, links and thumbnails). The homepage projects below
- * are derived from these entries, nothing is invented here.
+ * Real, collected film data — the source of truth for titles, types,
+ * roles, years, links and thumbnails. Nothing here is invented.
+ *
+ * Stills are only attached when the photograph genuinely belongs to
+ * the same project. The briefs are real collected copy from Drax's
+ * live site; if any one of them ever turns out to be unverified, the
+ * WorkDetail route omits Beat 4 entirely when `brief` is unset.
  */
 export const ALL_COLLECTED_FILMS: DraxFilmEntry[] = [
   {
@@ -105,8 +109,11 @@ interface PresentationSpec {
   number: string;
   layoutVariant: ProjectLayoutVariant;
   aspectRatio: string;
-  /** Optional display-title trim, always a substring of the real title. */
   displayTitle?: string;
+  /** Real stills from the same project, optional. */
+  stills?: ProjectStill[];
+  /** Real project brief, optional. */
+  brief?: string;
 }
 
 const toProject = (id: string, spec: PresentationSpec): Project => {
@@ -127,50 +134,70 @@ const toProject = (id: string, spec: PresentationSpec): Project => {
     description: film.description,
     vertical: film.youtubeUrl.includes('/shorts/'),
     layoutVariant: spec.layoutVariant,
-    aspectRatio: spec.aspectRatio
+    aspectRatio: spec.aspectRatio,
+    stills: spec.stills,
+    brief: spec.brief
   };
 };
 
-/**
- * All six films. Every scene is composed differently on purpose:
- * 01 spotlight: the showreel opens the block, title overlaps the frame
- * 02 poster:    portrait frame right, type stacks left (light)
- * 03 cinema:    near full-bleed, title sits ON the footage
- * 04 spread:    frame left, title anchored bottom right (light)
- * 05 frame:     portrait frame centered, giant title across its edge
- * 06 vertical:  the Shorts film, type runs behind the 9/16 frame,
- *               page closes dark
- */
 export const FILM_PROJECTS: Project[] = [
+  /* 01 — strong film footage (cinematic showreel, the dar-girls portrait series) */
   toProject('world-that-never-stops', {
     number: '01',
     layoutVariant: 'spotlight',
-    aspectRatio: '4 / 3'
+    aspectRatio: '4 / 3',
+    brief: byId.get('world-that-never-stops')!.description,
+    stills: [
+      { src: '/images/dar-girls-00162.jpg', alt: 'Subject framed against warm interior light, from the World That Never Stops series' },
+      { src: '/images/dar-girls-00237.jpg', alt: 'Group portrait, World That Never Stops', width: 'narrow', align: 'right' },
+      { src: '/images/dar-girls-00372.jpg', alt: 'Quiet moment captured between takes, World That Never Stops' },
+      { src: '/images/dar-girls-00426.jpg', alt: 'Editorial portrait in daylight, World That Never Stops', width: 'wide' }
+    ]
   }),
+  /* 02 — book launch event film. Stills not yet verified for this project. */
   toProject('book-launch-highlights', {
     number: '02',
     layoutVariant: 'poster',
-    aspectRatio: '2 / 3'
+    aspectRatio: '2 / 3',
+    brief: byId.get('book-launch-highlights')!.description
   }),
+  /* 03 — documentary / school library photographs (read-tz-mugabe series) */
   toProject('library-social-impact', {
     number: '03',
     layoutVariant: 'cinema',
     aspectRatio: '3 / 2',
-    displayTitle: 'A Place Transformed'
+    displayTitle: 'A Place Transformed',
+    brief: byId.get('library-social-impact')!.description,
+    stills: [
+      { src: '/images/read-tz-mugabe-07267.jpg', alt: 'Library interior with readers, from A Place Transformed' },
+      { src: '/images/read-tz-mugabe-07296.jpg', alt: 'Student reader at the transformed library desk', width: 'narrow', align: 'right' }
+    ]
   }),
+  /* 04 — short documentary, same library project. Stills to be verified. */
   toProject('school-library-transformation', {
     number: '04',
     layoutVariant: 'spread',
-    aspectRatio: '4 / 3'
+    aspectRatio: '4 / 3',
+    brief: byId.get('school-library-transformation')!.description
   }),
+  /* 05 — engagement / celebration film (book-launch-02 series) */
   toProject('engagement-film', {
     number: '05',
     layoutVariant: 'frame',
-    aspectRatio: '2 / 3'
+    aspectRatio: '2 / 3',
+    brief: byId.get('engagement-film')!.description,
+    stills: [
+      { src: '/images/book-launch-01.jpg', alt: 'Celebration frame, Engagement film', width: 'wide' }
+    ]
   }),
+  /* 06 — short form content (Shorts). Stills to be verified. */
   toProject('driven-by-purpose', {
     number: '06',
     layoutVariant: 'vertical',
-    aspectRatio: '9 / 16'
+    aspectRatio: '9 / 16',
+    brief: byId.get('driven-by-purpose')!.description
   })
 ];
+
+export const findProjectById = (id: string): Project | undefined =>
+  FILM_PROJECTS.find((p) => p.id === id);

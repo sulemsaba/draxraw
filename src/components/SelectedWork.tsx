@@ -1,10 +1,8 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '../lib/gsap';
 import { FILM_PROJECTS } from '../data/projects';
-import type { Project } from '../types/project';
 import { ProjectFeature } from './ProjectFeature';
-import { WorkLightbox } from './WorkLightbox';
 import './SelectedWork.css';
 
 /** The page's light/dark cutting rhythm for the six films. */
@@ -12,15 +10,14 @@ const THEME_RHYTHM: Array<'light' | 'dark'> = ['dark', 'light', 'dark', 'light',
 
 /**
  * The cutting room. A poster-size header, then all six films as
- * six different scenes, each one playing its film in view. Press
- * any frame for the sound-on cinema overlay.
+ * six different scenes. Each frame carries its image into a
+ * dedicated project page on click — no lightbox, no modal.
  */
 export const SelectedWork: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const line1Ref = useRef<HTMLSpanElement>(null);
   const line2Ref = useRef<HTMLSpanElement>(null);
   const noteRef = useRef<HTMLParagraphElement>(null);
-  const [watching, setWatching] = useState<Project | null>(null);
 
   useGSAP(
     () => {
@@ -46,9 +43,6 @@ export const SelectedWork: React.FC = () => {
     { scope: sectionRef }
   );
 
-  const openWatch = useCallback((project: Project) => setWatching(project), []);
-  const closeWatch = useCallback(() => setWatching(null), []);
-
   return (
     <section ref={sectionRef} className="selected-work" id="film" aria-label="Film work">
       <div className="work-intro theme-dark" data-theme="dark">
@@ -66,8 +60,7 @@ export const SelectedWork: React.FC = () => {
           </span>
         </h2>
         <p ref={noteRef} className="work-note">
-          Six films, cut straight into the page. Every one plays right here: muted, looping,
-          honest. Press any frame for sound.
+          Six films, cut straight into the page. Each frame carries into its own project experience.
         </p>
       </div>
 
@@ -78,12 +71,9 @@ export const SelectedWork: React.FC = () => {
             project={project}
             index={index}
             theme={THEME_RHYTHM[index] ?? 'dark'}
-            onWatch={openWatch}
           />
         ))}
       </div>
-
-      {watching && <WorkLightbox project={watching} onClose={closeWatch} />}
     </section>
   );
 };
