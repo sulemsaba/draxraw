@@ -50,17 +50,20 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       const strip = q('.fs-strip');
       const pitch = frames[1] && frames[0] ? frames[1].offsetTop - frames[0].offsetTop : 0;
       const endY = land && strip ? -(land.offsetTop - (strip.clientHeight - land.offsetHeight) / 2) : 0;
-      const scale =
-        land ? Math.max(window.innerWidth / land.offsetWidth, window.innerHeight / land.offsetHeight) * 1.04 : 1;
+      // A gentle push-in (never more than double) instead of blowing the frame up
+      const scale = land ? Math.min(2, Math.max(1.25, (window.innerWidth / land.offsetWidth) * 1.12)) : 1;
       tl.set('.fs-strip', { scale: 1 })
+        .set('.fs-flare', { opacity: 0 })
         .set('.fs-sprockets', { opacity: 0.85 })
         .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.15 })
         .fromTo(track, { y: endY + pitch * 8 }, { y: endY, duration: 0.95, ease: 'power3.out' }, 0)
         .fromTo(track, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: 0.8, ease: 'power2.in' }, 0)
         // the gate flickers as it locks
         .to('.fs-gate', { opacity: 0.35, duration: 0.05, repeat: 3, yoyo: true }, 0.9)
-        .to('.fs-strip', { scale, duration: 0.4, ease: 'power3.inOut' }, 1.08)
-        .to('.fs-sprockets', { opacity: 0, duration: 0.2 }, 1.08);
+        .to('.fs-strip', { scale, duration: 0.5, ease: 'power2.inOut' }, 1.05)
+        .to('.fs-sprockets', { opacity: 0, duration: 0.25 }, 1.05)
+        // the projector lamp flares as the picture takes over
+        .fromTo('.fs-flare', { opacity: 0 }, { opacity: 0.85, duration: 0.3, ease: 'power2.in' }, 1.3);
     }
 
     if (kind === 'photos') {
@@ -135,7 +138,8 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     });
 
     if (kind === 'films') {
-      tl.to(layer, { opacity: 0, duration: 0.4, ease: 'power2.out' });
+      tl.to('.fs-strip', { scale: '+=0.15', duration: 0.6, ease: 'power1.out' }, 0)
+        .to(layer, { opacity: 0, duration: 0.55, ease: 'power2.out' }, 0);
     }
     if (kind === 'photos') {
       tl.to('.sh-top', { yPercent: -101, duration: 0.38, ease: 'power3.out' })
@@ -207,6 +211,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <span className="fs-sprockets fs-right" />
             <span className="fs-gate" />
           </div>
+          <span className="fs-flare" />
         </div>
 
         {/* Photos: viewfinder and focal-plane shutter */}

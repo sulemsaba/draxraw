@@ -78,3 +78,37 @@
   width: clamp(130px, 30vw, 190px);
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
 }
+
+/* Phones: logo, then the links as a tidy two-column grid, then the line */
+@media (max-width: 640px) {
+  .case-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 22px;
+    padding-top: 36px;
+  }
+
+  .foot-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--case-line);
+  }
+
+  .foot-links a {
+    min-height: 54px;
+    border-bottom: 1px solid var(--case-line);
+  }
+
+  .foot-links a:nth-child(odd) {
+    border-right: 1px solid var(--case-line);
+  }
+
+  .foot-links a:nth-child(even) {
+    padding-left: 16px;
+  }
+
+  .foot-meta {
+    line-height: 1.7;
+  }
+}
