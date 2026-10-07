@@ -9,13 +9,17 @@ type Kind = 'home' | 'films' | 'photos' | 'about' | 'book' | 'walls';
 const KINDS: Record<string, Kind> = { '/films': 'films', '/photos': 'photos', '/about': 'about', '/book': 'book', '/wallpapers': 'walls' };
 const kindOf = (to: string): Kind => KINDS[to] ?? 'home';
 
+// Frames on the Films projector strip (it lands on the first film's frame)
+const FS_FRAMES = ['HxAhX2KDeos', 'hyaAb77XwGI', 'tK7P7bwisdo', 'QoEMUUKstAI', '1LPbfrHc6-U'];
+const FS_LAND = 10;
+
 // Tiles for the wallpapers mosaic
 const TILES = ['starring', 'countdown', 'redroom', 'slate', 'mark', 'vinyl'];
 
 
 /**
  * Page changes, each in the language of where you are going:
- * Films: a film-leader countdown. Photos: a viewfinder locks focus and the
+ * Films: a projector film strip racing through the gate. Photos: a viewfinder locks focus and the
  * shutter curtains fire. About: a movie character intro freeze-frame.
  * Book: a full-screen clapperboard. Wallpapers: a mosaic of his photos.
  * Home: a cinema iris closing on the DX mark and opening again.
@@ -38,22 +42,25 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     tl.set(root.current, { autoAlpha: 1 }).set(layer, { autoAlpha: 1 });
 
     if (kind === 'films') {
-      // Leader: cut to the countdown, the hand sweeps once per number
-      const hand = { a: 0 };
-      const sweep = q('.ld-sweep');
-      const num = q('.ld-num');
-      const paint = () => {
-        if (sweep) sweep.style.background = `conic-gradient(rgba(241,234,214,0.22) ${hand.a}deg, transparent ${hand.a}deg)`;
-      };
-      const show = (n: string) => () => {
-        if (num) num.textContent = n;
-      };
-      tl.call(show('3'))
-        .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.08 })
-        .fromTo(hand, { a: 0 }, { a: 360, duration: 0.34, ease: 'none', onUpdate: paint })
-        .call(show('2'))
-        .fromTo(hand, { a: 0 }, { a: 360, duration: 0.34, ease: 'none', onUpdate: paint })
-        .call(show('1'));
+      // Projector: a strip of his frames races through the gate, slows, locks on
+      // one frame, and that frame grows to fill the screen
+      const track = q('.fs-track');
+      const frames = qa('.fs-frame');
+      const land = frames[FS_LAND];
+      const strip = q('.fs-strip');
+      const pitch = frames[1] && frames[0] ? frames[1].offsetTop - frames[0].offsetTop : 0;
+      const endY = land && strip ? -(land.offsetTop - (strip.clientHeight - land.offsetHeight) / 2) : 0;
+      const scale =
+        land ? Math.max(window.innerWidth / land.offsetWidth, window.innerHeight / land.offsetHeight) * 1.04 : 1;
+      tl.set('.fs-strip', { scale: 1 })
+        .set('.fs-sprockets', { opacity: 0.85 })
+        .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.15 })
+        .fromTo(track, { y: endY + pitch * 8 }, { y: endY, duration: 0.95, ease: 'power3.out' }, 0)
+        .fromTo(track, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: 0.8, ease: 'power2.in' }, 0)
+        // the gate flickers as it locks
+        .to('.fs-gate', { opacity: 0.35, duration: 0.05, repeat: 3, yoyo: true }, 0.9)
+        .to('.fs-strip', { scale, duration: 0.4, ease: 'power3.inOut' }, 1.08)
+        .to('.fs-sprockets', { opacity: 0, duration: 0.2 }, 1.08);
     }
 
     if (kind === 'photos') {
@@ -128,8 +135,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     });
 
     if (kind === 'films') {
-      // "1", a flicker, and the reel runs
-      tl.to(layer, { opacity: 0.3, duration: 0.05, repeat: 3, yoyo: true }).to(layer, { opacity: 0, duration: 0.12 });
+      tl.to(layer, { opacity: 0, duration: 0.4, ease: 'power2.out' });
     }
     if (kind === 'photos') {
       tl.to('.sh-top', { yPercent: -101, duration: 0.38, ease: 'power3.out' })
@@ -189,15 +195,18 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     <GoContext.Provider value={go}>
       {children}
       <div ref={root} className="tr" aria-hidden="true">
-        {/* Films: film leader */}
+        {/* Films: projector film strip */}
         <div className="tr-layer tr-films">
-          <span className="ld-sweep" />
-          <span className="ld-ring ld-ring-1" />
-          <span className="ld-ring ld-ring-2" />
-          <span className="ld-cross ld-cross-h" />
-          <span className="ld-cross ld-cross-v" />
-          <span className="ld-num display">3</span>
-          <span className="ld-scratch" />
+          <div className="fs-strip">
+            <div className="fs-track">
+              {Array.from({ length: 14 }, (_, k) => (
+                <img key={k} className="fs-frame" src={`img/films/${FS_FRAMES[k % FS_FRAMES.length]}.webp`} alt="" />
+              ))}
+            </div>
+            <span className="fs-sprockets fs-left" />
+            <span className="fs-sprockets fs-right" />
+            <span className="fs-gate" />
+          </div>
         </div>
 
         {/* Photos: viewfinder and focal-plane shutter */}
