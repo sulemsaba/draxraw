@@ -26,16 +26,6 @@ export const PhotoWall: React.FC = () => {
           .timeline({ scrollTrigger: { trigger: fig, start: 'top 88%', once: true } })
           .fromTo(fig, { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.1, ease: 'expo.out' })
           .fromTo(img, { scale: 1.35 }, { scale: 1, duration: 1.6, ease: 'expo.out' }, 0);
-        // Darkroom: each print starts as a negative and develops as it scrolls into place
-        gsap.fromTo(
-          img,
-          { filter: 'invert(1) sepia(0.55) saturate(1.6) hue-rotate(-12deg) contrast(1.1)' },
-          {
-            filter: 'invert(0) sepia(0) saturate(1) hue-rotate(0deg) contrast(1)',
-            ease: 'none',
-            scrollTrigger: { trigger: fig, start: 'top 92%', end: 'top 35%', scrub: 0.6 },
-          }
-        );
       });
     },
     { scope: rootRef }
