@@ -1,249 +1,134 @@
-/* ============================================================
-   PRELOADER - Old TV / CRT (full-viewport)
-   The whole viewport IS the CRT screen. Static noise, scan
-   lines, vignette, curvature all fill the entire page. The
-   Drax Raw logo blooms in through the snow with a richer GSAP
-   timeline. After the power-off collapse, the panel wipes UP
-   off the screen to welcome the content (the homepage blooms
-   up beneath via App.css).
-   ============================================================ */
-
+/* An old TV switching on, then off. The black .preloader is the room;
+   .crt-screen is the picture tube that collapses at the end. */
 .preloader {
   position: fixed;
   inset: 0;
-  z-index: 100;
-  background-color: #000;
-  /* The root is the screen itself - every CRT effect is a
-     direct child positioned to fill the viewport. The root
-     also takes the power-off collapse + wipe-up transforms. */
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
+  z-index: 2000;
+  background: #000;
+  overflow: hidden;
 }
 
-/* ---- Static noise canvas ----------------------------------
-   Fills the whole viewport. Small 200x150 canvas scaled up
-   with crisp-pixel rendering so the snow reads like a real
-   CRT raster, not blurry video. */
+.crt-screen {
+  position: absolute;
+  inset: 0;
+  background: #050505;
+  transform-origin: 50% 50%;
+  will-change: transform, filter;
+}
+
 .crt-static {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  mix-blend-mode: screen;
-  z-index: 2;
-  pointer-events: none;
+  opacity: 0.85;
 }
 
-/* ---- Phosphor glow behind the logo -----------------------
-   A wide soft bloom that fills much of the viewport behind
-   the logo so the brand mark reads as the source of light. */
+/* The dark band that rolls up an old screen */
+.crt-roll {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 22%;
+  top: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.35) 45%, rgba(0, 0, 0, 0.35) 55%, transparent);
+  animation: crt-roll 2.2s linear infinite;
+}
+
+@keyframes crt-roll {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(560%); }
+}
+
+/* Soft light behind the logo: neutral white with a hint of the site's red */
 .crt-glow {
   position: absolute;
-  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(60vw, 50rem);
+  top: 50%;
+  width: min(70vw, 640px);
   aspect-ratio: 1;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 250, 235, 0.5) 0%,
-    rgba(198, 161, 40, 0.32) 32%,
-    rgba(198, 161, 40, 0.12) 56%,
-    transparent 78%
-  );
-  filter: blur(28px);
-  z-index: 3;
+  margin: calc(min(70vw, 640px) / -2) 0 0 calc(min(70vw, 640px) / -2);
+  background: radial-gradient(circle, rgba(255, 250, 240, 0.14) 0%, rgba(255, 250, 240, 0.05) 40%, transparent 70%);
+  opacity: 0;
   pointer-events: none;
-  mix-blend-mode: screen;
-  will-change: transform, opacity;
 }
 
-/* ---- The Drax Raw logo ------------------------------------
-   Centered, larger. The GSAP timeline drives scale, rotate,
-   blur, y, and a subtle horizontal jitter during bloom. */
+/* Centered by layout, so GSAP is free to move and scale the logo */
+.crt-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 0 24px;
+}
+
 .crt-logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: min(42vw, 32rem);
-  max-height: 50vh;
-  object-fit: contain;
-  z-index: 4;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.18));
-  will-change: transform, opacity, filter;
+  width: min(64vw, 440px);
+  height: auto;
+  opacity: 0;
+  will-change: transform, filter, opacity;
 }
 
-/* ---- Scan lines ------------------------------------------
-   Horizontal darkening every 3px, classic CRT raster.
-   Fills the whole viewport. */
-.crt-scanlines {
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 0px,
-    rgba(0, 0, 0, 0) 2px,
-    rgba(0, 0, 0, 0.34) 2px,
-    rgba(0, 0, 0, 0.34) 3px
-  );
-  z-index: 5;
-  pointer-events: none;
-  mix-blend-mode: multiply;
-}
-
-/* ---- Vignette --------------------------------------------
-   Darkens the edges of the viewport to fake CRT curvature
-   shadow. Sits above scan lines so it deepens them too. */
-.crt-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    ellipse at center,
-    rgba(0, 0, 0, 0) 42%,
-    rgba(0, 0, 0, 0.42) 78%,
-    rgba(0, 0, 0, 0.85) 100%
-  );
-  z-index: 6;
-  pointer-events: none;
-}
-
-/* ---- Curvature illusion ----------------------------------
-   Subtle highlight at top-left + bottom-right, simulating
-   glass reflection on a tube. Fills the whole viewport. */
-.crt-curvature {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 28% 16%, rgba(255, 255, 255, 0.06) 0%, transparent 36%),
-    radial-gradient(ellipse at 72% 86%, rgba(255, 255, 255, 0.03) 0%, transparent 32%);
-  z-index: 7;
-  pointer-events: none;
-  mix-blend-mode: screen;
-}
-
-/* ---- Meta row (bottom of viewport) ----------------------- */
 .crt-meta {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: clamp(1.5rem, 5vh, 3.5rem);
+  bottom: max(48px, 9vh);
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: center;
-  gap: clamp(0.8rem, 2.4vmin, 1.6rem);
-  color: #f1efe8;
-  font-family: var(--font-sans, 'Instrument Sans', sans-serif);
-  font-size: clamp(0.7rem, 1.8vmin, 0.9rem);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  z-index: 8;
-  text-shadow: 0 0 4px rgba(0, 0, 0, 0.85);
-  pointer-events: none;
-  /* Respect safe area so iOS Safari chrome doesn't crowd it. */
-  bottom: max(clamp(1.5rem, 5vh, 3.5rem), env(safe-area-inset-bottom));
+  gap: 12px;
+  font-size: clamp(1rem, 3.6vw, 1.25rem);
+  letter-spacing: 0.22em;
+  color: var(--paper);
+  opacity: 0;
 }
 
-.crt-standby {
-  color: rgba(241, 239, 232, 0.55);
+.crt-rec {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+  animation: crt-blink 1s steps(2, start) infinite;
 }
 
 .crt-count {
+  min-width: 2.2ch;
   font-variant-numeric: tabular-nums;
-  color: var(--gold, #c6a128);
-  font-weight: 600;
+  color: var(--red);
 }
 
-/* ============================================================
-   RESPONSIVE - the screen IS the viewport, so we just need to
-   tune logo size and meta placement per device shape.
-   ============================================================ */
-
-/* ---- Portrait phones (tall narrow viewports) ------------- */
-@media (max-width: 768px) and (orientation: portrait) {
-  .crt-logo {
-    width: min(68vw, 22rem);
-    max-height: 30vh;
-  }
-
-  .crt-glow {
-    width: min(80vw, 26rem);
-    filter: blur(20px);
-  }
-
-  /* Scan lines slightly less aggressive on dense mobile PPI
-     to avoid moiré. */
-  .crt-scanlines {
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 0px,
-      rgba(0, 0, 0, 0) 2px,
-      rgba(0, 0, 0, 0.28) 2px,
-      rgba(0, 0, 0, 0.28) 4px
-    );
-  }
-
-  .crt-meta {
-    font-size: clamp(0.62rem, 2.6vw, 0.82rem);
-    letter-spacing: 0.18em;
-    bottom: max(2rem, env(safe-area-inset-bottom));
-  }
+@keyframes crt-blink {
+  to { visibility: hidden; }
 }
 
-/* ---- Landscape phones (short height) -------------------- */
-@media (max-width: 768px) and (orientation: landscape) {
-  .crt-logo {
-    width: min(44vw, 22rem);
-    max-height: 56vh;
-  }
-
-  .crt-glow {
-    width: min(56vw, 28rem);
-    filter: blur(22px);
-  }
-
-  .crt-meta {
-    font-size: clamp(0.62rem, 2vmin, 0.78rem);
-    bottom: max(1rem, env(safe-area-inset-bottom));
-  }
+/* Raster lines and the dark curved edges of the tube */
+.crt-lines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.32) 2px 3px);
+  pointer-events: none;
 }
 
-/* ---- Very short landscape heights ------------------------ */
-@media (max-height: 24rem) {
-  .crt-logo {
-    width: min(38vw, 18rem);
-    max-height: 60vh;
-  }
-
-  .crt-glow {
-    width: min(48vw, 22rem);
-  }
+.crt-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.55) 80%, rgba(0, 0, 0, 0.92) 100%);
+  pointer-events: none;
 }
 
-/* ---- Reduced motion: instant, no snow, no collapse ------ */
-@media (prefers-reduced-motion: reduce) {
-  .crt-static,
-  .crt-scanlines,
-  .crt-vignette,
-  .crt-curvature,
-  .crt-glow {
-    transition: none !important;
-    animation: none !important;
-  }
-
-  .crt-static {
-    opacity: 0 !important;
-  }
-
-  .preloader {
-    transform: none !important;
-  }
-
-  .crt-logo {
-    opacity: 1 !important;
-    filter: none !important;
-    transform: translate(-50%, -50%) !important;
-  }
+/* The last bright dot before the tube goes dark */
+.crt-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 24px 8px rgba(255, 255, 255, 0.8), 0 0 80px 20px rgba(255, 255, 255, 0.35);
+  opacity: 0;
+  pointer-events: none;
 }

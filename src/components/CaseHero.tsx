@@ -21,7 +21,7 @@ export const CaseHero: React.FC = () => {
       // Opening: the two name stickers slap on, then each letter drops into place
       const letters = new SplitText('.name-letters', { type: 'chars' }).chars;
       // Held until the loading screen hands over, then played
-      const tl = gsap.timeline({ paused: true, delay: 0.1 });
+      const tl = gsap.timeline({ paused: true });
       tl.fromTo('.name-drax', SLAP_FROM, SLAP_TO, 0)
         .fromTo('.name-raw', SLAP_FROM, SLAP_TO, 0.16)
         .from(letters, { yPercent: -60, rotation: () => gsap.utils.random(-25, 25), opacity: 0, duration: 0.5, ease: 'back.out(2.6)', stagger: 0.05 }, 0.05)

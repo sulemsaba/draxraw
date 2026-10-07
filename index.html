@@ -23,9 +23,21 @@
     <meta name="twitter:image" content="https://sulemsaba.github.io/draxraw/og.jpg" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link rel="apple-touch-icon" href="favicon.png" />
+    <link rel="preload" as="image" href="img/logo.webp" fetchpriority="high" />
     <link rel="preload" as="image" href="img/drax-cutout.webp" fetchpriority="high" />
+    <!-- Paint black at once (no white flash) and show TV snow before any JavaScript loads -->
+    <style>
+      html, body { background: #000; }
+      #boot { position: fixed; inset: 0; z-index: 3000; background: #050505; overflow: hidden; }
+      #boot::before { content: ''; position: absolute; inset: -50%; opacity: .55;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        animation: boot-snow .25s steps(4) infinite; }
+      @keyframes boot-snow { 0% { transform: translate(0, 0) } 25% { transform: translate(-7%, 4%) } 50% { transform: translate(5%, -6%) } 75% { transform: translate(-3%, -8%) } }
+      @media (prefers-reduced-motion: reduce) { #boot::before { animation: none } }
+    </style>
   </head>
   <body>
+    <div id="boot" aria-hidden="true"></div>
     <!--
       THESIS: Drax's camera road case, plastered with stickers from every job; the portfolio is the case. Refuses the dark-minimal cinematic portfolio of hairlines, mono labels and gold accents.
       OWN-WORLD: scuffed black laminate, riveted aluminum extrusions, worn die-cut vinyl in sticker red, tour yellow, blue, purple and faded cream; Anton lettering on torn stickers; gaffer-taped photo prints.

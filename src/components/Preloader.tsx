@@ -1,299 +1,153 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '../lib/motion';
 import './Preloader.css';
 
 interface PreloaderProps {
-  /** Fires at the START of the wipe-up phase - the homepage can begin welcoming. */
+  /** The screen has switched off: the page can start its entrance. */
   onRevealed: () => void;
-  /** Fires once the wipe-up is fully complete - the preloader can be unmounted. */
-  onExited?: () => void;
+  /** Fully gone: unmount. */
+  onExited: () => void;
 }
 
 /**
- * The old television - now fills the WHOLE viewport.
- *
- * Black fills the screen. Static noise hisses. The Drax Raw logo
- * blooms in through the snow - scale + slight rotate + blur
- * settle + a touch of channel-tuning jitter, ending with a soft
- * bounce. The phosphor glow pulses in sync. A counter ticks
- * 00 → 100. Then the whole viewport collapses vertically to a
- * horizontal line, the line to a dot, and finally the panel
- * wipes UP off the screen to welcome the content - with the
- * homepage blooming up beneath it (handled in App.css).
- *
- * Reduced motion: the static never animates, the logo just
- * appears, the counter jumps to 100, the panel fades out.
+ * An old TV switching on. Snow hisses, the DX Raw logo tunes in through it
+ * (colour fringes pulling into focus), the set counts up while you stand by,
+ * then the picture tube switches off: the screen squeezes into a bright line,
+ * the line into a dot, the dot fades, and the site is underneath.
  */
 export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) => {
   const rootRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const logoRef = useRef<HTMLImageElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const countRef = useRef<HTMLSpanElement>(null);
-  const standByRef = useRef<HTMLSpanElement>(null);
-  const rafRef = useRef<number>(0);
-  const [leaving, setLeaving] = useState(false);
 
-  /* ---- Static noise canvas --------------------------------- */
+  // The plain HTML stand-in (shown before any JavaScript loads) hands over to this
+  useEffect(() => {
+    document.getElementById('boot')?.remove();
+  }, []);
+
+  // Snow: random grey pixels, 30 frames a second, on a small canvas scaled up
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reducedMotion) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const W = canvas.width;
-    const H = canvas.height;
-    const img = ctx.createImageData(W, H);
-
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !ctx || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const img = ctx.createImageData(canvas.width, canvas.height);
+    let raf = 0;
     let last = 0;
-    const FRAME_MS = 1000 / 30;
-
     const tick = (now: number) => {
-      if (now - last >= FRAME_MS) {
+      if (now - last > 33) {
         last = now;
-        const data = img.data;
-        for (let i = 0; i < data.length; i += 4) {
+        const d = img.data;
+        for (let i = 0; i < d.length; i += 4) {
           const v = (Math.random() * 255) | 0;
-          data[i] = v;
-          data[i + 1] = v;
-          data[i + 2] = v;
-          data[i + 3] = 255;
+          d[i] = d[i + 1] = d[i + 2] = v;
+          d[i + 3] = 255;
         }
         ctx.putImageData(img, 0, 0);
       }
-      rafRef.current = window.requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick);
     };
-
-    rafRef.current = window.requestAnimationFrame(tick);
-    return () => {
-      if (rafRef.current) window.cancelAnimationFrame(rafRef.current);
-    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   useGSAP(
     () => {
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (reducedMotion) {
-        if (countRef.current) countRef.current.textContent = '100';
-        const tl = gsap.timeline({ onComplete: () => { onRevealed(); onExited?.(); } });
-        tl.to(rootRef.current, { autoAlpha: 0, duration: 0.4, ease: 'power1.inOut' });
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.to(rootRef.current, {
+          autoAlpha: 0,
+          duration: 0.4,
+          delay: 0.6,
+          onStart: onRevealed,
+          onComplete: onExited,
+        });
         return;
       }
 
-      /* ---- Phase 1: TV warm-up + logo bloom through the snow ----
-         Richer than a simple fade. The logo:
-           - starts at 65% scale, tilted -3deg, blurred 14px, invisible
-           - blooms to full size with a slight overshoot (1.04) then settles
-           - has 4 horizontal micro-jitters during the bloom (channel tuning)
-           - the phosphor glow pulses 0.85 -> 1.1 -> 1 in sync
-           - the static recedes as the logo sharpens
-         The counter ticks 00 -> 100 over the same window. */
+      const count = { v: 0 };
+      const countEl = rootRef.current?.querySelector('.crt-count');
 
-      const counter = { value: 0 };
-      const noiseIntensity = { value: 1 };
-
-      gsap.set(canvasRef.current, { opacity: noiseIntensity.value });
-      gsap.set(logoRef.current, {
-        autoAlpha: 0,
-        scale: 0.65,
-        rotation: -3,
-        filter: 'blur(14px)',
-        y: 24
-      });
-      gsap.set(glowRef.current, { autoAlpha: 0, scale: 0.85 });
-      gsap.set([countRef.current, standByRef.current], { autoAlpha: 0 });
-
-      const tl = gsap.timeline({
-        defaults: { ease: 'power2.out' },
-        onComplete: () => {
-          /* Self-unmount after the wipe-up completes. The App's
-             preloaderDone flag will also flip, but this defends
-             against any race. */
-          setLeaving(true);
-          onExited?.();
-        }
-      });
-
-      tl /* the screen flicks to life */
+      // Held until the logo has actually loaded, so the tuning-in is never missed
+      const tl = gsap.timeline({ paused: true, onComplete: onExited });
+      tl
+        // Tuning in: the logo arrives split into red and cyan, blurred, shaking
         .fromTo(
-          rootRef.current,
-          { autoAlpha: 0 },
-          { autoAlpha: 1, duration: 0.1 },
-          0
-        )
-        /* the standby caption cuts in early */
-        .to(standByRef.current, { autoAlpha: 1, duration: 0.01 }, 0.15)
-        /* the logo blooms: scale up with slight overshoot, rotate to 0,
-           blur settles to 0, slight upward motion, opacity to 1 */
-        .to(
-          logoRef.current,
+          '.crt-logo',
           {
-            autoAlpha: 1,
-            scale: 1.04,
-            rotation: 0,
-            filter: 'blur(0px)',
-            y: 0,
-            duration: 1.2,
-            ease: 'power3.out'
+            opacity: 0,
+            scale: 0.92,
+            filter: 'blur(10px) drop-shadow(10px 0 0 rgba(255,40,40,0.9)) drop-shadow(-10px 0 0 rgba(0,230,255,0.9))',
           },
-          0.4
-        )
-        /* subtle channel-tuning horizontal jitter during the bloom
-           (4 quick x oscillations) */
-        .to(
-          logoRef.current,
           {
-            x: -3,
-            duration: 0.045,
-            repeat: 5,
-            yoyo: true,
-            ease: 'none'
-          },
-          0.45
-        )
-        /* settle back to x:0 with a soft elastic bounce at the end */
-        .to(
-          logoRef.current,
-          {
-            x: 0,
+            opacity: 1,
             scale: 1,
-            duration: 0.55,
-            ease: 'elastic.out(1, 0.55)'
+            filter: 'blur(0px) drop-shadow(0px 0 0 rgba(255,40,40,0)) drop-shadow(0px 0 0 rgba(0,230,255,0))',
+            duration: 1.1,
+            ease: 'power3.out',
           },
-          1.05
+          0.2
         )
-        /* the phosphor glow blooms larger then settles in sync */
+        .fromTo('.crt-logo', { x: -6, skewX: 8 }, { x: 0, skewX: 0, duration: 0.07, repeat: 7, yoyo: true, ease: 'none' }, 0.25)
+        .set('.crt-logo', { x: 0, skewX: 0 }, 0.82)
+        // The snow settles as the signal locks
+        .to('.crt-static', { opacity: 0.1, duration: 1.2, ease: 'power2.inOut' }, 0.45)
+        .fromTo('.crt-glow', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 1.2, ease: 'power2.out' }, 0.5)
+        .fromTo('.crt-meta', { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 }, 0.35)
         .to(
-          glowRef.current,
+          count,
           {
-            autoAlpha: 0.7,
-            scale: 1.1,
-            duration: 1.0,
-            ease: 'power2.out'
-          },
-          0.45
-        )
-        .to(
-          glowRef.current,
-          {
-            scale: 1,
-            autoAlpha: 0.4,
-            duration: 0.6,
-            ease: 'power2.out'
-          },
-          1.45
-        )
-        /* the static recedes as the logo sharpens */
-        .to(
-          noiseIntensity,
-          {
-            value: 0.06,
+            v: 100,
             duration: 1.6,
-            ease: 'power2.inOut',
-            onUpdate: () => {
-              if (canvasRef.current) {
-                canvasRef.current.style.opacity = String(noiseIntensity.value);
-              }
-            }
-          },
-          0.55
-        )
-        /* the counter ticks 00 -> 100 */
-        .fromTo(
-          counter,
-          { value: 0 },
-          {
-            value: 100,
-            duration: 1.7,
             ease: 'power1.inOut',
-            snap: { value: 1 },
             onUpdate: () => {
-              if (countRef.current) {
-                countRef.current.textContent = String(Math.round(counter.value)).padStart(2, '0');
-              }
-            }
+              if (countEl) countEl.textContent = String(Math.round(count.v)).padStart(2, '0');
+            },
           },
-          0.45
+          0.35
         )
-        /* the count + standby fade out before power-off */
-        .to([countRef.current, standByRef.current], { autoAlpha: 0, duration: 0.25 }, 2.15)
-        /* the static stops entirely */
-        .to(canvasRef.current, { autoAlpha: 0, duration: 0.25 }, 2.15)
+        // Switching off: the picture squeezes into a bright line ...
+        .to('.crt-meta', { opacity: 0, duration: 0.2 }, 2.05)
+        .fromTo('.crt-screen', { scaleY: 1, filter: 'brightness(1)' }, { scaleY: 0.005, filter: 'brightness(4)', duration: 0.24, ease: 'power4.in', immediateRender: false }, 2.2)
+        // ... the line into a dot ...
+        .to('.crt-screen', { scaleX: 0.002, duration: 0.18, ease: 'power4.in' }, 2.44)
+        .set('.crt-screen', { opacity: 0 }, 2.62)
+        .fromTo('.crt-dot', { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.2, duration: 0.28, ease: 'power2.in', immediateRender: false }, 2.62)
+        // ... and the room lights up: the site starts arriving as the dot fades
+        .call(onRevealed, [], 2.5)
+        .to(rootRef.current, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.35, ease: 'power2.out' }, 2.62);
 
-        /* ---- Phase 2: power-off collapse ----
-           Vertical to a horizontal line, then the line to a dot. */
-        .to(
-          rootRef.current,
-          { scaleY: 0.004, duration: 0.18, ease: 'power3.in', transformOrigin: '50% 50%' },
-          2.4
-        )
-        .to(
-          rootRef.current,
-          { scaleX: 0.001, duration: 0.12, ease: 'power3.in', transformOrigin: '50% 50%' },
-          2.58
-        )
-
-        /* ---- Phase 3: welcome the content ----
-           The collapsed dot expands back to full size briefly,
-           then the whole panel wipes UP off the screen. The
-           homepage blooms up beneath (handled in App.css). The
-           onRevealed callback fires HERE so the homepage can
-           start its welcome animation in parallel with the wipe. */
-        .set(rootRef.current, { transformOrigin: '50% 50%', scaleY: 1, scaleX: 1, yPercent: 0, autoAlpha: 1 }, 2.78)
-        .call(() => onRevealed(), [], 2.78)
-        .to(
-          rootRef.current,
-          {
-            yPercent: -100,
-            autoAlpha: 1,
-            duration: 0.55,
-            ease: 'power3.inOut'
-          },
-          2.78
-        );
+      const logo = rootRef.current?.querySelector<HTMLImageElement>('.crt-logo');
+      let started = false;
+      const start = () => {
+        if (started) return;
+        started = true;
+        tl.play();
+      };
+      logo?.decode().then(start, start);
+      // never keep anyone waiting on a slow connection
+      const fallback = window.setTimeout(start, 2500);
+      return () => window.clearTimeout(fallback);
     },
     { scope: rootRef }
   );
 
-  if (leaving) return null;
-
   return (
-    <div ref={rootRef} className="preloader" role="status" aria-label="Drax Raw, loading">
-      {/* Static noise canvas - fills the whole viewport */}
-      <canvas ref={canvasRef} className="crt-static" width={200} height={150} aria-hidden="true" />
-
-      {/* Phosphor glow behind the logo */}
-      <div ref={glowRef} className="crt-glow" aria-hidden="true" />
-
-      {/* The Drax Raw logo - blooms in through the snow with GSAP */}
-      <img
-        ref={logoRef}
-        src="img/logo.webp"
-        alt="Drax Raw"
-        className="crt-logo"
-        loading="eager"
-        fetchPriority="high"
-      />
-
-      {/* Scan lines + vignette + curvature - pure CSS overlays, full viewport */}
-      <div className="crt-scanlines" aria-hidden="true" />
-      <div className="crt-vignette" aria-hidden="true" />
-      <div className="crt-curvature" aria-hidden="true" />
-
-      {/* Meta at the bottom of the viewport */}
-      <div className="crt-meta">
-        <span ref={standByRef} className="crt-standby" aria-hidden="true">
+    <div ref={rootRef} className="preloader" role="status" aria-label="Drax Raw is loading">
+      <div className="crt-screen">
+        <canvas ref={canvasRef} className="crt-static" width={240} height={150} aria-hidden="true" />
+        <div className="crt-roll" aria-hidden="true" />
+        <div className="crt-glow" aria-hidden="true" />
+        <div className="crt-center">
+          <img className="crt-logo" src="img/logo.webp" alt="Drax Raw" width={700} height={436} />
+        </div>
+        <p className="crt-meta label" aria-hidden="true">
+          <span className="crt-rec" />
           Please stand by
-        </span>
-        <span ref={countRef} className="crt-count" aria-hidden="true">
-          00
-        </span>
+          <span className="crt-count">00</span>
+        </p>
+        <div className="crt-lines" aria-hidden="true" />
+        <div className="crt-vignette" aria-hidden="true" />
       </div>
+      <span className="crt-dot" aria-hidden="true" />
     </div>
   );
 };
-
