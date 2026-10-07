@@ -18,7 +18,7 @@
   gap: 8px;
   min-height: 44px;
   font-size: 1.1rem;
-  color: var(--paper);
+  color: var(--fg);
 }
 
 .foot-links a:hover {

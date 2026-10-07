@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { CameraIcon, FilmIcon, HomeIcon, PersonIcon, PhoneIcon, WhatsAppIcon } from './Icons';
 import { GoLink } from './PageWipe';
+import { ThemeToggle } from './ThemeToggle';
 import './CaseNav.css';
 
 const LINKS = [
@@ -23,12 +24,15 @@ export const CaseNav: React.FC = () => {
         <img src="img/logo.webp" alt="Drax Raw" width={700} height={436} />
       </GoLink>
 
-      {/* Phones: Book lives in the top bar */}
-      <GoLink to="/book" className="top-book stuck" aria-current={current('/book')}>
-        <span className="vinyl is-red top-book-inner label">
-          <WhatsAppIcon size={18} /> Book
-        </span>
-      </GoLink>
+      {/* Phones: theme switch and Book live in the top bar */}
+      <div className="top-bar-right">
+        <ThemeToggle className="on-page" />
+        <GoLink to="/book" className="top-book stuck" aria-current={current('/book')}>
+          <span className="vinyl is-red top-book-inner label">
+            <WhatsAppIcon size={18} /> Book
+          </span>
+        </GoLink>
+      </div>
 
       <nav className="case-rail" aria-label="Main">
         <GoLink to="/" className="rail-mark" aria-label="Home">
@@ -47,6 +51,7 @@ export const CaseNav: React.FC = () => {
             </GoLink>
           ))}
         </div>
+        <ThemeToggle className="in-rail" />
         <GoLink to="/book" className={`rail-book stuck ${pathname === '/book' ? 'is-active' : ''}`} aria-current={current('/book')}>
           <span className="vinyl is-red rail-book-inner label">
             <WhatsAppIcon />

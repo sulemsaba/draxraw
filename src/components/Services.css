@@ -11,7 +11,7 @@
   padding: 16px 0 12px;
   border-bottom: 1px solid var(--case-line);
   font-size: clamp(2rem, 9vw, 3.6rem);
-  color: var(--paper);
+  color: var(--fg);
 }
 
 @media (min-width: 900px) {

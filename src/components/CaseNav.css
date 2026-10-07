@@ -135,13 +135,43 @@
   color: var(--red);
 }
 
-/* Book button in the phone top bar */
-.top-book {
+/* Phone top bar, right side: theme switch + Book */
+.top-bar-right {
   position: absolute;
   top: 18px;
   right: var(--gutter);
   z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-book {
   rotate: 2deg;
+}
+
+/* Theme switch */
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.theme-toggle.on-page {
+  color: var(--fg);
+  border: 1px solid var(--case-line);
+}
+
+.theme-toggle.in-rail {
+  display: none;
+  color: var(--text-dim);
+}
+
+.theme-toggle:hover {
+  color: var(--yellow);
 }
 
 .top-book-inner {
@@ -171,8 +201,14 @@
 }
 
 @media (min-width: 900px) {
-  .top-book,
+  .top-bar-right,
   .phone-only {
     display: none;
+  }
+
+  .case-rail .theme-toggle.in-rail {
+    display: grid;
+    margin-top: auto;
+    margin-bottom: 14px;
   }
 }

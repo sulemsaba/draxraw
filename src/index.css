@@ -23,6 +23,8 @@
 
   --text: #ede4d0;
   --text-dim: #b9b0a0;
+  /* text on the page background (flips in the light theme) */
+  --fg: #ede4d0;
 
   --font-display: 'Anton', 'Arial Narrow', sans-serif;
   --font-label: 'Barlow Condensed', 'Arial Narrow', sans-serif;
@@ -249,4 +251,42 @@ button {
 .page-note {
   font-size: 1.1rem;
   color: var(--text-dim);
+}
+
+/* ---------- Light theme: warm kraft paper, not white ----------
+   The page becomes light; the nav, the red booking slab, players and
+   transitions stay dark, so the site keeps its weight (a hybrid). */
+:root[data-theme='light'] {
+  --case: #ddd5c5;
+  --case-2: #cfc6b4;
+  --case-line: rgba(23, 21, 15, 0.16);
+  --text: #17150f;
+  --text-dim: #4d483e;
+  --fg: #17150f;
+}
+
+:root[data-theme='light'] body {
+  background:
+    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.18) 45%, transparent 60%),
+    radial-gradient(ellipse 80% 40% at 20% 10%, rgba(255, 255, 255, 0.25), transparent 70%),
+    var(--case);
+}
+
+/* The dark nav keeps its own dark tokens */
+:root[data-theme='light'] .case-rail {
+  --text-dim: #b9b0a0;
+  --case-line: rgba(237, 228, 208, 0.12);
+}
+
+/* Drax's white logo prints in ink on the light page */
+:root[data-theme='light'] .case-logo img,
+:root[data-theme='light'] .foot-logo {
+  filter: invert(1) brightness(0.12);
+}
+
+/* Cross-fade only while switching themes */
+:root.theme-fade,
+:root.theme-fade body,
+:root.theme-fade * {
+  transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease !important;
 }

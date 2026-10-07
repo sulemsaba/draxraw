@@ -15,7 +15,7 @@
   display: inline-flex;
   align-items: center;
   font-size: clamp(2.6rem, 8vw, 6rem);
-  color: var(--paper);
+  color: var(--fg);
   white-space: nowrap;
 }
 

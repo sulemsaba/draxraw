@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap, reducedMotion } from '../lib/motion';
 import { FILMS, YOUTUBE_URL, type Film } from '../data/site';
 import { GoLink } from './PageWipe';
@@ -22,6 +22,42 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
   const peeledRef = useRef<HTMLElement | null>(null);
   const rootRef = useRef<HTMLElement>(null);
   const films = limit ? FILMS.slice(0, limit) : FILMS;
+
+  // With a mouse: sweeping across a film flips through real moments from it
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const cleanups = Array.from(root.querySelectorAll<HTMLElement>('.film-photo')).map((photo) => {
+      const frames = Array.from(photo.querySelectorAll<HTMLImageElement>('.film-scrub-frame'));
+      const bar = photo.querySelector<HTMLElement>('.film-scrub-bar i');
+      const enter = () => {
+        frames.forEach((f) => {
+          if (!f.src && f.dataset.src) f.src = f.dataset.src;
+        });
+      };
+      const move = (e: PointerEvent) => {
+        const r = photo.getBoundingClientRect();
+        const x = Math.min(0.999, Math.max(0, (e.clientX - r.left) / r.width));
+        const idx = Math.floor(x * (frames.length + 1)) - 1; // first band shows the poster
+        frames.forEach((f, i) => f.classList.toggle('is-on', i === idx));
+        if (bar) bar.style.transform = `scaleX(${x})`;
+        photo.classList.add('is-scrubbing');
+      };
+      const leave = () => {
+        frames.forEach((f) => f.classList.remove('is-on'));
+        photo.classList.remove('is-scrubbing');
+      };
+      photo.addEventListener('pointerenter', enter);
+      photo.addEventListener('pointermove', move);
+      photo.addEventListener('pointerleave', leave);
+      return () => {
+        photo.removeEventListener('pointerenter', enter);
+        photo.removeEventListener('pointermove', move);
+        photo.removeEventListener('pointerleave', leave);
+      };
+    });
+    return () => cleanups.forEach((c) => c());
+  }, [films.length]);
 
 
   const play = (film: Film) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -92,6 +128,12 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
                 <span className="film-print stuck">
                   <span className="film-photo">
                     <img src={`img/films/${film.id}.webp`} alt="" loading="lazy" width={1280} height={720} />
+                    {[1, 2, 3].map((n) => (
+                      <img key={n} className="film-scrub-frame" data-src={`img/scrub/${film.id}-${n}.webp`} alt="" />
+                    ))}
+                    <span className="film-scrub-bar">
+                      <i />
+                    </span>
                     <span className="film-curl" />
                   </span>
                 </span>
