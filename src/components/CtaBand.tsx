@@ -16,7 +16,7 @@ export const CtaBand: React.FC = () => (
         <span className="label cta-sub">Let's talk about your shoot</span>
       </h2>
       <div className="cta-actions">
-        <a className="stuck cta-btn" data-slap="" data-magnetic="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+        <a className="stuck cta-btn" data-slap="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
           <span className="vinyl is-yellow wear-2 cta-btn-inner label">
             <WhatsAppIcon size={26} /> Message on WhatsApp
           </span>

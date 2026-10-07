@@ -38,6 +38,9 @@
   </head>
   <body>
     <div id="boot" aria-hidden="true"></div>
+    <script>
+      try { if (sessionStorage.getItem('drax-seen')) document.getElementById('boot').remove(); } catch (e) {}
+    </script>
     <!--
       THESIS: Drax's camera road case, plastered with stickers from every job; the portfolio is the case. Refuses the dark-minimal cinematic portfolio of hairlines, mono labels and gold accents.
       OWN-WORLD: scuffed black laminate, riveted aluminum extrusions, worn die-cut vinyl in sticker red, tour yellow, blue, purple and faded cream; Anton lettering on torn stickers; gaffer-taped photo prints.

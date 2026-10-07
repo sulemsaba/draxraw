@@ -19,7 +19,7 @@ export const Book: React.FC = () => (
         Tell me about your shoot.
       </p>
 
-      <a className="book-cta stuck" data-slap="" data-magnetic="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+      <a className="book-cta stuck" data-slap="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
         <span className="vinyl is-yellow wear-2 book-cta-inner label">
           <WhatsAppIcon size={30} />
           Message Drax on WhatsApp

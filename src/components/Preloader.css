@@ -41,19 +41,6 @@
   to { transform: translateY(560%); }
 }
 
-/* Soft light behind the logo: neutral white with a hint of the site's red */
-.crt-glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: min(70vw, 640px);
-  aspect-ratio: 1;
-  margin: calc(min(70vw, 640px) / -2) 0 0 calc(min(70vw, 640px) / -2);
-  background: radial-gradient(circle, rgba(255, 250, 240, 0.14) 0%, rgba(255, 250, 240, 0.05) 40%, transparent 70%);
-  opacity: 0;
-  pointer-events: none;
-}
-
 /* Centered by layout, so GSAP is free to move and scale the logo */
 .crt-center {
   position: absolute;
@@ -68,39 +55,6 @@
   height: auto;
   opacity: 0;
   will-change: transform, filter, opacity;
-}
-
-.crt-meta {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: max(48px, 9vh);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  font-size: clamp(1rem, 3.6vw, 1.25rem);
-  letter-spacing: 0.22em;
-  color: var(--paper);
-  opacity: 0;
-}
-
-.crt-rec {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--red);
-  animation: crt-blink 1s steps(2, start) infinite;
-}
-
-.crt-count {
-  min-width: 2.2ch;
-  font-variant-numeric: tabular-nums;
-  color: var(--red);
-}
-
-@keyframes crt-blink {
-  to { visibility: hidden; }
 }
 
 /* Raster lines and the dark curved edges of the tube */

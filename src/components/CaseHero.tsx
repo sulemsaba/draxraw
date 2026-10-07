@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
-import { finePointer, gsap, onBoot, reducedMotion, SplitText } from '../lib/motion';
+import { gsap, onBoot, reducedMotion, SplitText } from '../lib/motion';
 import { Sticker } from './Sticker';
 import { PlayIcon, WhatsAppIcon } from './Icons';
 import { GoLink } from './PageWipe';
@@ -39,22 +39,6 @@ export const CaseHero: React.FC = () => {
         .to('.hero-drax', { y: 110, ease: 'none' }, 0)
         .to('.hero-roles, .hero-actions', { y: -50, opacity: 0, ease: 'none' }, 0);
 
-      // On a mouse: the name and the photo shift against each other
-      if (!finePointer()) return;
-      const nx = gsap.quickTo('.hero-name', 'x', { duration: 0.9, ease: 'power3' });
-      const ny = gsap.quickTo('.hero-name', 'y', { duration: 0.9, ease: 'power3' });
-      const px = gsap.quickTo('.hero-drax img', 'x', { duration: 0.9, ease: 'power3' });
-      const py = gsap.quickTo('.hero-drax img', 'y', { duration: 0.9, ease: 'power3' });
-      const move = (e: PointerEvent) => {
-        const dx = e.clientX / window.innerWidth - 0.5;
-        const dy = e.clientY / window.innerHeight - 0.5;
-        nx(dx * -18);
-        ny(dy * -12);
-        px(dx * 26);
-        py(dy * 16);
-      };
-      window.addEventListener('pointermove', move);
-      return () => window.removeEventListener('pointermove', move);
     },
     { scope: rootRef }
   );
@@ -87,7 +71,7 @@ export const CaseHero: React.FC = () => {
         </p>
 
         <div className="hero-actions">
-          <a className="stuck btn-sticker" data-magnetic="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
+          <a className="stuck btn-sticker" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
             <span className="vinyl is-red btn-inner label">
               <WhatsAppIcon /> Book on WhatsApp
             </span>

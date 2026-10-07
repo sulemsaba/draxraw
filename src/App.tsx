@@ -12,17 +12,31 @@ import { AboutPage } from './pages/AboutPage';
 import { BookPage } from './pages/BookPage';
 
 export const App: React.FC = () => {
-  // The old-TV loading screen plays once per visit
-  const [loading, setLoading] = useState(true);
+  // The old-TV loading screen plays on the first visit of a session only
+  const [loading, setLoading] = useState(() => {
+    try {
+      return !sessionStorage.getItem('drax-seen');
+    } catch {
+      return true;
+    }
+  });
 
   useEffect(() => {
     startSmoothScroll();
-    setScrollLocked(true);
+    if (loading) setScrollLocked(true);
+    else markBooted();
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handOver = () => {
     setScrollLocked(false);
     markBooted();
+    try {
+      sessionStorage.setItem('drax-seen', '1');
+    } catch {
+      // private mode: it just plays again next time
+    }
   };
 
   return (

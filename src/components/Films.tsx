@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useGSAP } from '@gsap/react';
-import { gsap, ScrollTrigger, finePointer, reducedMotion } from '../lib/motion';
+import { gsap, reducedMotion } from '../lib/motion';
 import { FILMS, YOUTUBE_URL, type Film } from '../data/site';
 import { GoLink } from './PageWipe';
 import { ArrowIcon } from './Icons';
@@ -24,49 +23,6 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
   const rootRef = useRef<HTMLElement>(null);
   const films = limit ? FILMS.slice(0, limit) : FILMS;
 
-  useGSAP(
-    () => {
-      if (reducedMotion()) return;
-
-      // The stickers lean with the speed of the scroll, like they were not stuck down flat
-      const lean = gsap.quickTo('.film-print', 'skewY', { duration: 0.5, ease: 'power3' });
-      ScrollTrigger.create({
-        trigger: rootRef.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        onUpdate: (self) => lean(gsap.utils.clamp(-5, 5, self.getVelocity() / -400)),
-        onLeave: () => lean(0),
-        onLeaveBack: () => lean(0),
-      });
-
-      // On a mouse: each print tilts toward the pointer in 3D
-      if (!finePointer()) return;
-      const cleanups = gsap.utils.toArray<HTMLElement>('.film-hit').map((hit) => {
-        const print = hit.querySelector<HTMLElement>('.film-print');
-        if (!print) return () => {};
-        gsap.set(print, { transformPerspective: 900 });
-        const rx = gsap.quickTo(print, 'rotationX', { duration: 0.6, ease: 'power3' });
-        const ry = gsap.quickTo(print, 'rotationY', { duration: 0.6, ease: 'power3' });
-        const move = (e: PointerEvent) => {
-          const r = hit.getBoundingClientRect();
-          ry(((e.clientX - r.left) / r.width - 0.5) * 12);
-          rx(((e.clientY - r.top) / r.height - 0.5) * -10);
-        };
-        const leave = () => {
-          rx(0);
-          ry(0);
-        };
-        hit.addEventListener('pointermove', move);
-        hit.addEventListener('pointerleave', leave);
-        return () => {
-          hit.removeEventListener('pointermove', move);
-          hit.removeEventListener('pointerleave', leave);
-        };
-      });
-      return () => cleanups.forEach((c) => c());
-    },
-    { scope: rootRef }
-  );
 
   const play = (film: Film) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;

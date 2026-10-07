@@ -1,10 +1,10 @@
 import { useGSAP } from '@gsap/react';
 import type { RefObject } from 'react';
-import { gsap, magnetize, reducedMotion, ScrollTrigger } from './motion';
+import { gsap, reducedMotion, ScrollTrigger } from './motion';
 
 /**
  * The shared motion on every page: each material arrives its own way as it
- * scrolls in, and call-to-action buttons lean toward the pointer.
+ * scrolls in.
  */
 export const usePageMotion = (scope: RefObject<HTMLElement | null>) => {
   useGSAP(
@@ -37,8 +37,6 @@ export const usePageMotion = (scope: RefObject<HTMLElement | null>) => {
       // Plain text blocks: rise
       arrive('[data-rise]', { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, 0.08);
 
-      const cleanups = gsap.utils.toArray<HTMLElement>('[data-magnetic]').map((el) => magnetize(el, 0.25));
-      return () => cleanups.forEach((c) => c());
     },
     { scope }
   );
