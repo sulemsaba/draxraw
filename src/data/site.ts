@@ -55,4 +55,6 @@ export const PRINTS: Print[] = [
   { src: 'img/stills/dar-girls-00584.webp', alt: 'Two students reading side by side on a low wall' },
   { src: 'img/stills/dar-girls-00372.webp', alt: 'Two students reading at their classroom desks' },
   { src: 'img/stills/read-tz-mugabe-07267.webp', alt: 'Students reading together in a school library' },
+  { src: 'img/stills/dar-girls-00173.webp', alt: 'A student in a white hijab reading at her classroom desk' },
+  { src: 'img/stills/dar-girls-00237.webp', alt: 'A hand resting on an open textbook and notes' },
 ];

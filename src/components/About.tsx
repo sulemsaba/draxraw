@@ -12,7 +12,7 @@ export const About: React.FC = () => (
       </figure>
 
       <div className="about-copy">
-        <Sticker as="h2" color="red" torn={83} rotate={-1} innerClassName="display section-title-inner">
+        <Sticker as="h1" color="red" torn={83} rotate={-1} innerClassName="display section-title-inner">
           <span id="about-title">Who's Drax?</span>
         </Sticker>
 

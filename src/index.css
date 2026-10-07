@@ -232,13 +232,21 @@ button {
   }
 }
 
-/* Riveted aluminum extrusion between case panels */
-.extrusion {
-  position: relative;
-  height: 16px;
-  background:
-    radial-gradient(circle, #e2e3e6 0 1.5px, #6c6e72 2.4px, #3b3c3f 3.6px, transparent 4.2px) center / 64px 16px repeat-x,
-    linear-gradient(180deg, #4b4d51 0%, #c4c6ca 22%, #8d8f93 50%, #b5b7bb 74%, #3d3e41 100%);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), 0 -2px 6px rgba(0, 0, 0, 0.4);
-  z-index: 2;
+
+/* Pages other than Home start below the logo */
+.page {
+  padding-top: 72px;
+}
+
+.page-head {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: clamp(32px, 5vw, 56px);
+}
+
+.page-note {
+  font-size: 1.1rem;
+  color: var(--text-dim);
 }

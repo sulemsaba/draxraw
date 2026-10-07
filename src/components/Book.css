@@ -84,82 +84,6 @@
   border-radius: 8px;
 }
 
-.case-foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px 32px;
-  padding: 32px var(--gutter) 40px;
-}
-
-.foot-links {
-  display: flex;
-  gap: 24px;
-}
-
-.foot-links a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  font-size: 1.1rem;
-  color: var(--paper);
-}
-
-.foot-links a:hover {
-  color: var(--yellow);
-}
-
-.foot-meta {
-  font-size: 0.95rem;
-  color: var(--text-dim);
-}
-
-.foot-meta span {
-  color: var(--red);
-  padding: 0 0.3em;
-}
-
-/* Drax's print taped onto the red slab (wide screens only) */
-.book-drax {
-  display: none;
-}
-
-@media (min-width: 1000px) {
-  .book-inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  .book-drax {
-    display: block;
-    position: absolute;
-    right: clamp(40px, 8vw, 160px);
-    top: 50%;
-    width: clamp(260px, 26vw, 380px);
-    padding: 10px 10px 38px;
-    background: #f3ecdc;
-    translate: 0 -50%;
-    rotate: 5deg;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.35), 0 26px 40px rgba(0, 0, 0, 0.45);
-  }
-
-  .book-drax img {
-    aspect-ratio: 4 / 5;
-    object-fit: cover;
-    object-position: center 22%;
-  }
-
-  .book-drax .tape {
-    top: -12px;
-    left: 50%;
-    width: 120px;
-    margin-left: -60px;
-    rotate: -4deg;
-  }
-}
-
 /* Every way to reach Drax, one clean row each */
 .book-lines {
   list-style: none;
@@ -210,7 +134,3 @@
   }
 }
 
-.foot-logo {
-  width: clamp(130px, 30vw, 190px);
-  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
-}

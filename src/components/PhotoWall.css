@@ -1,0 +1,101 @@
+/* Big photos, two columns on wide screens, edge to edge on phones */
+.wall {
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(14px, 2.4vw, 32px);
+}
+
+.wall-photo {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: var(--case-2);
+}
+
+.wall-photo img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  transition: filter 0.4s ease;
+}
+
+.wall-photo:hover img {
+  filter: brightness(1.08);
+}
+
+@media (min-width: 900px) {
+  .wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* every third photo runs the full width */
+  .wall li:nth-child(3n + 1) {
+    grid-column: 1 / -1;
+  }
+
+  .wall li:nth-child(3n + 1) img {
+    aspect-ratio: 21 / 9;
+  }
+}
+
+@media (max-width: 899px) {
+  .wall {
+    margin: 0 calc(var(--gutter) * -1);
+  }
+}
+
+/* Full-screen viewer */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 800;
+  display: grid;
+  place-items: center;
+  padding: 16px 16px 92px;
+  background: rgba(8, 8, 9, 0.96);
+}
+
+.viewer-img {
+  max-width: 100%;
+  max-height: calc(100dvh - 120px);
+  object-fit: contain;
+  cursor: zoom-out;
+}
+
+.viewer-bar {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--paper);
+}
+
+.viewer-bar button {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--case-line);
+  background: var(--case-2);
+  color: var(--paper);
+}
+
+.viewer-bar button:hover {
+  color: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.viewer-bar .label {
+  min-width: 64px;
+  text-align: center;
+  font-size: 1.05rem;
+}
+
+.flip-x {
+  transform: scaleX(-1);
+}

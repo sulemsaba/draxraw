@@ -1,17 +1,72 @@
 import React, { useRef, useState } from 'react';
-import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+import { gsap, ScrollTrigger, finePointer, reducedMotion } from '../lib/motion';
 import { FILMS, YOUTUBE_URL, type Film } from '../data/site';
+import { GoLink } from './PageWipe';
+import { ArrowIcon } from './Icons';
 import { Sticker } from './Sticker';
 import { PlayIcon, YouTubeIcon } from './Icons';
 import { Player } from './Player';
 import { tilt, tornClip } from '../lib/torn';
 import './Films.css';
 
-const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+interface FilmsProps {
+  /** Show only the first N films (home page teaser). */
+  limit?: number;
+  title?: string;
+  /** h1 on the Films page, h2 when it is a section of Home. */
+  as?: 'h1' | 'h2';
+}
 
-export const Films: React.FC = () => {
+export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h2' }) => {
   const [playing, setPlaying] = useState<Film | null>(null);
   const peeledRef = useRef<HTMLElement | null>(null);
+  const rootRef = useRef<HTMLElement>(null);
+  const films = limit ? FILMS.slice(0, limit) : FILMS;
+
+  useGSAP(
+    () => {
+      if (reducedMotion()) return;
+
+      // The stickers lean with the speed of the scroll, like they were not stuck down flat
+      const lean = gsap.quickTo('.film-print', 'skewY', { duration: 0.5, ease: 'power3' });
+      ScrollTrigger.create({
+        trigger: rootRef.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: (self) => lean(gsap.utils.clamp(-5, 5, self.getVelocity() / -400)),
+        onLeave: () => lean(0),
+        onLeaveBack: () => lean(0),
+      });
+
+      // On a mouse: each print tilts toward the pointer in 3D
+      if (!finePointer()) return;
+      const cleanups = gsap.utils.toArray<HTMLElement>('.film-hit').map((hit) => {
+        const print = hit.querySelector<HTMLElement>('.film-print');
+        if (!print) return () => {};
+        gsap.set(print, { transformPerspective: 900 });
+        const rx = gsap.quickTo(print, 'rotationX', { duration: 0.6, ease: 'power3' });
+        const ry = gsap.quickTo(print, 'rotationY', { duration: 0.6, ease: 'power3' });
+        const move = (e: PointerEvent) => {
+          const r = hit.getBoundingClientRect();
+          ry(((e.clientX - r.left) / r.width - 0.5) * 12);
+          rx(((e.clientY - r.top) / r.height - 0.5) * -10);
+        };
+        const leave = () => {
+          rx(0);
+          ry(0);
+        };
+        hit.addEventListener('pointermove', move);
+        hit.addEventListener('pointerleave', leave);
+        return () => {
+          hit.removeEventListener('pointermove', move);
+          hit.removeEventListener('pointerleave', leave);
+        };
+      });
+      return () => cleanups.forEach((c) => c());
+    },
+    { scope: rootRef }
+  );
 
   const play = (film: Film) => (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -20,7 +75,7 @@ export const Films: React.FC = () => {
     const open = () => {
       setPlaying(film);
     };
-    if (!card || reduceMotion()) return open();
+    if (!card || reducedMotion()) return open();
 
     // Peel the sticker off the case from its top-left corner, then roll the film
     peeledRef.current = card;
@@ -51,11 +106,11 @@ export const Films: React.FC = () => {
   };
 
   return (
-    <section className="section films" id="work" aria-labelledby="work-title">
+    <section ref={rootRef} className="section films" id="work" aria-labelledby="work-title">
       <div className="section-inner">
         <header className="films-head">
-          <Sticker as="h2" color="red" torn={31} rotate={-1} innerClassName="display section-title-inner">
-            <span id="work-title">The work</span>
+          <Sticker as={as} color="red" torn={31} rotate={-1} innerClassName="display section-title-inner">
+            <span id="work-title">{title}</span>
           </Sticker>
           <p className="films-note">
             Tap a film to play it.
@@ -63,7 +118,7 @@ export const Films: React.FC = () => {
         </header>
 
         <div className="films-grid">
-          {FILMS.map((film, i) => (
+          {films.map((film, i) => (
             <article
               key={film.id}
               className={`film film-${i + 1}`}
@@ -110,9 +165,15 @@ export const Films: React.FC = () => {
           ))}
         </div>
 
-        <a className="films-more label" href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">
-          <YouTubeIcon /> More on YouTube: @DraxRaw
-        </a>
+        {limit ? (
+          <GoLink to="/films" className="films-more label">
+            All {FILMS.length} films <ArrowIcon size={18} />
+          </GoLink>
+        ) : (
+          <a className="films-more label" href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">
+            <YouTubeIcon /> More on YouTube: @DraxRaw
+          </a>
+        )}
       </div>
 
       <Player film={playing} onClose={close} />

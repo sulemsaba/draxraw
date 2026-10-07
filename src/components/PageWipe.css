@@ -1,0 +1,38 @@
+.page-wipe {
+  position: fixed;
+  inset: -4vh -4vw;
+  z-index: 900;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background: var(--red);
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.page-wipe::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.12), transparent 40%, rgba(0, 0, 0, 0.16)),
+    var(--grime);
+  background-size: auto, 1200px;
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+.wipe-mark {
+  position: relative;
+  z-index: 1;
+  width: clamp(88px, 14vw, 140px);
+}
+
+.wipe-label {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(2.6rem, 9vw, 6rem);
+  color: var(--paper);
+}
