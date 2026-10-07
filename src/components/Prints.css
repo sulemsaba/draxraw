@@ -1,0 +1,145 @@
+.prints-note {
+  margin-top: 14px;
+  max-width: 40ch;
+  font-size: 1.1rem;
+  color: var(--text-dim);
+}
+
+/* Phone: a swipeable row of prints. Desktop: a taped-up wall. */
+.prints-wall {
+  list-style: none;
+  display: flex;
+  gap: 22px;
+  margin: clamp(36px, 6vw, 64px) calc(var(--gutter) * -1) 0;
+  padding: 26px var(--gutter) 30px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 var(--gutter);
+  scrollbar-width: none;
+}
+
+.prints-wall::-webkit-scrollbar {
+  display: none;
+}
+
+.print {
+  flex: none;
+  width: 84vw;
+  max-width: 400px;
+  scroll-snap-align: start;
+}
+
+.print-hit {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 10px 10px 34px;
+  background: #f3ecdc;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.35), 0 16px 26px rgba(0, 0, 0, 0.45);
+  cursor: zoom-in;
+  transition: transform 0.35s var(--ease-out);
+}
+
+.print-hit img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.print-hit .tape {
+  top: -13px;
+  left: 50%;
+  width: 110px;
+  margin-left: -55px;
+}
+
+.print-hit:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+@media (min-width: 900px) {
+  .prints-wall {
+    max-width: 1320px;
+    margin: clamp(48px, 6vw, 72px) auto 0;
+    padding: 20px 0 0;
+    overflow: visible;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 56px 36px;
+  }
+
+  .print {
+    width: auto;
+    max-width: none;
+  }
+
+  /* one gentle offset on the middle column keeps it from feeling like a grid of cards */
+  .print:nth-child(3n + 2) {
+    margin-top: 36px;
+  }
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: none;
+  padding: 16px;
+  background: transparent;
+  color: var(--paper);
+}
+
+.lightbox[open] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.lightbox::backdrop {
+  background: rgba(8, 8, 9, 0.95);
+}
+
+.lightbox-img {
+  max-width: 100%;
+  max-height: calc(100dvh - 110px);
+  object-fit: contain;
+  border: 8px solid #f3ecdc;
+}
+
+.lightbox-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lb-btn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 2px solid var(--case-line);
+  color: var(--paper);
+  background: var(--case-2);
+}
+
+.lb-btn:hover {
+  color: var(--yellow);
+  border-color: var(--yellow);
+}
+
+.lb-count {
+  min-width: 70px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.flip {
+  transform: scaleX(-1);
+}

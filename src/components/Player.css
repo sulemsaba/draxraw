@@ -1,0 +1,106 @@
+.player {
+  position: fixed;
+  inset: 0;
+  width: auto;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 12px;
+}
+
+.player[open] {
+  display: grid;
+  place-items: center;
+}
+
+.player::backdrop {
+  background: rgba(8, 8, 9, 0.92);
+}
+
+/* Lid: laminate panel inside a steel frame */
+.lid {
+  width: min(100%, 1200px, calc((100dvh - 150px) * 16 / 9));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border: 6px solid;
+  border-image: linear-gradient(135deg, #5d5f63, #c9cbcf 25%, #7b7d81 50%, #b9bbbf 75%, #4d4f53) 1;
+  background: var(--case-2);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.lid-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lid-title {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  color: var(--paper);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lid-close {
+  flex: none;
+  rotate: 2deg;
+}
+
+.lid-close .vinyl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 1.05rem;
+  border-radius: 6px;
+}
+
+.lid-screen {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.lid-screen.is-vertical {
+  aspect-ratio: 9 / 16;
+  width: auto;
+  height: min(calc(100dvh - 170px), 760px);
+  margin: 0 auto;
+}
+
+.lid-screen iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.lid-yt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-end;
+  min-height: 40px;
+  font-size: 1rem;
+  color: var(--text-dim);
+}
+
+.lid-yt:hover {
+  color: var(--yellow);
+}
+
+.player:has(.is-vertical) .lid {
+  width: auto;
+}

@@ -1,0 +1,49 @@
+{
+  "title": "Choose the look for DRAX RAW",
+  "question": "My pick: make the site a Bongo movie poster with Drax as the star. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Starring: DRAX",
+      "kicker": "MY PICK",
+      "lineage": "Bongo movie DVD sleeves and Dar cinema posters",
+      "thesis": "The whole site is a movie release where Drax is the star and every credit in the billing block is his.",
+      "palette": ["#E3261B", "#FFC20E", "#0B0B0D", "#F4EEE2"],
+      "materials": ["printed poster stock", "DVD sleeve gloss", "billing-block credits"],
+      "viewport": "Drax's cutout huge as the poster star, 'DRAX RAW' in tall condensed letters, a billing block at the bottom: SHOT BY DRAX, EDITED BY DRAX, COLORED BY DRAX, and a WhatsApp 'BOOK NOW' ticket.",
+      "risk": "Can feel cheesy if the type and photos are not handled with real poster craft."
+    },
+    {
+      "id": "challenger-tanaka",
+      "label": "Plane Portrait",
+      "lineage": "Ikko Tanaka geometric posters",
+      "thesis": "Drax's portrait rebuilt from a few bold flat color shapes on a calm grid.",
+      "case": "Striking and artsy, but less instantly 'filmmaker' to a client scrolling on a phone.",
+      "hero": "https://impeccable.style/worlds/cards/tanaka-plane-portrait-hero.webp"
+    },
+    {
+      "id": "challenger-stickers",
+      "label": "Road Case",
+      "lineage": "gear cases covered in tour stickers",
+      "thesis": "His camera case covered in stickers, each film and client a sticker you peel back.",
+      "case": "Great for musicians and street energy; harder to read for NGOs and brands.",
+      "hero": "https://impeccable.style/worlds/cards/vernacular-ephemera-layered-sticker-accretion-hero.webp"
+    },
+    {
+      "id": "challenger-neon",
+      "label": "Neon Sign",
+      "lineage": "hand-bent neon shop signs",
+      "thesis": "DRAX RAW as a hand-bent neon sign that lights up in a dark room, each section a sign switching on.",
+      "case": "Beautiful first screen, but fuses poorly with the photos and films, which are the real proof.",
+      "hero": "https://impeccable.style/worlds/cards/magnetism-electricity-plasma-hand-bent-neon-circuit-hero.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "canonCard": {
+    "label": "Classic filmmaker portfolio",
+    "thesis": "Clean dark portfolio: showreel, film grid, about, contact, done very well.",
+    "viewport": "Full-screen showreel video with name and a contact button."
+  },
+  "steer": true
+}

@@ -1,0 +1,132 @@
+.case-logo {
+  position: absolute;
+  top: 18px;
+  left: var(--gutter);
+  z-index: 20;
+  rotate: -2deg;
+}
+
+.logo-inner {
+  display: block;
+  font-size: 1.35rem;
+  padding: 0.3em 0.5em 0.2em;
+  border-radius: 4px;
+}
+
+.logo-inner b {
+  font-weight: 400;
+  color: var(--red);
+}
+
+/* Steel-edged rail. Phone: a dock under the thumb. Desktop: a strip down the left. */
+.case-rail {
+  position: fixed;
+  z-index: 50;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--dock-h) + env(safe-area-inset-bottom));
+  padding: 0 10px env(safe-area-inset-bottom) 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background:
+    radial-gradient(circle at 8px 8px, #6e7075 2px, transparent 2.6px) 0 0 / 50% 100% no-repeat,
+    linear-gradient(180deg, #1d1d20, #0d0d0f);
+  border-top: 3px solid;
+  border-image: linear-gradient(90deg, #5d5f63, #b9bbbf 30%, #7b7d81 60%, #c9cbcf 85%, #5d5f63) 1;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.rail-links {
+  display: flex;
+  flex: 1;
+  justify-content: space-around;
+}
+
+.rail-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 64px;
+  min-height: 56px;
+  color: var(--text-dim);
+  transition: color 0.2s ease;
+}
+
+.rail-link .label {
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+}
+
+.rail-link:hover,
+.rail-link:focus-visible {
+  color: var(--yellow);
+}
+
+.rail-book {
+  rotate: -3deg;
+  flex: none;
+}
+
+.rail-book-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  padding: 0 18px;
+  font-size: 1.15rem;
+  border-radius: 6px;
+}
+
+@media (min-width: 900px) {
+  .case-logo {
+    left: calc(84px + 24px);
+    top: 20px;
+  }
+
+  .case-rail {
+    top: 0;
+    right: auto;
+    width: 84px;
+    height: 100vh;
+    flex-direction: column;
+    padding: 28px 0;
+    border-top: none;
+    border-right: 3px solid;
+    border-image: linear-gradient(180deg, #5d5f63, #b9bbbf 30%, #7b7d81 60%, #c9cbcf 85%, #5d5f63) 1;
+    background:
+      radial-gradient(circle at 50% 14px, #6e7075 2.4px, transparent 3px) 0 0 / 100% 100% no-repeat,
+      radial-gradient(circle at 50% calc(100% - 14px), #6e7075 2.4px, transparent 3px) 0 0 / 100% 100% no-repeat,
+      radial-gradient(circle at calc(100% - 9px) 50%, #c4c6ca 0 1.4px, #55575b 2.2px, transparent 3px) 0 0 / 100% 72px repeat-y,
+      linear-gradient(90deg, #1d1d20, #0d0d0f 80%, #2a2b2e);
+  }
+
+  .rail-links {
+    flex: none;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 40px;
+  }
+
+  .rail-book-inner {
+    flex-direction: column;
+    height: auto;
+    padding: 12px 10px 8px;
+    gap: 4px;
+    font-size: 1rem;
+  }
+
+  #main {
+    padding-left: 84px;
+  }
+}
+
+@media (max-width: 899px) {
+  #main {
+    padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom));
+  }
+}

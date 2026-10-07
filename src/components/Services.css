@@ -1,0 +1,29 @@
+.services-pile {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 12px;
+  margin-top: clamp(36px, 6vw, 56px);
+}
+
+.service {
+  display: block;
+  font-size: clamp(2rem, 9vw, 4.4rem);
+  line-height: 0.92;
+  padding: 0.16em 0.32em 0.08em;
+}
+
+.service.is-diecut {
+  border-radius: 0.18em;
+}
+
+
+
+.services-note {
+  max-width: 46ch;
+  margin-top: clamp(40px, 6vw, 64px);
+  font-size: clamp(1.1rem, 2.4vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--text-dim);
+}

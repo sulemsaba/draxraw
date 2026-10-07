@@ -2,30 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DRAX.RAW · Filmmaker &amp; Visual Storyteller</title>
-    <meta name="description" content="DRAX.RAW. Filmmaker, video editor, photographer and visual storyteller based in Dar es Salaam, Tanzania." />
-    <meta name="theme-color" content="#ece9e2" />
-
-    <!-- Set the colour mode before first paint — light / dark / hybrid -->
-    <script>
-      (function () {
-        try {
-          var m = localStorage.getItem('drax-theme');
-          document.documentElement.dataset.mode =
-            m === 'light' || m === 'dark' || m === 'hybrid' ? m : 'hybrid';
-        } catch (e) {
-          document.documentElement.dataset.mode = 'hybrid';
-        }
-      })();
-    </script>
-
-    <!-- Contemporary grotesk for the editorial system -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#121214" />
+    <title>DRAX RAW - Filmmaker, Editor &amp; Photographer in Dar es Salaam</title>
+    <meta
+      name="description"
+      content="Drax Raw shoots, edits and colors films and photos in Dar es Salaam, Tanzania: weddings and events, NGO and impact films, brand films, music videos and reels. Book on WhatsApp."
+    />
+    <meta property="og:title" content="DRAX RAW - Filmmaker in Dar es Salaam" />
+    <meta property="og:description" content="Films and photos, shot, edited and colored by Drax. Book on WhatsApp." />
+    <meta property="og:image" content="img/drax-shades.webp" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preload" as="image" href="img/drax-cutout.webp" fetchpriority="high" />
   </head>
   <body>
+    <!--
+      THESIS: Drax's camera road case, plastered with stickers from every job; the portfolio is the case. Refuses the dark-minimal cinematic portfolio of hairlines, mono labels and gold accents.
+      OWN-WORLD: scuffed black laminate, riveted aluminum extrusions, worn die-cut vinyl in sticker red, tour yellow, blue, purple and faded cream; Anton lettering on torn stickers; gaffer-taped photo prints.
+      STORY: meet Drax, watch his real films, see what he shoots and his stills, believe one person does it all, message him on WhatsApp.
+      FIRST VIEWPORT: DRAX and RAW stickers with Drax's die-cut photo slapped over them, a yellow role strip, a red Book on WhatsApp sticker; phone dock keeps Book under the thumb.
+      FORM: road case sticker accretion (user-chosen challenger), seed cf299543.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+    -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

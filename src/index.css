@@ -1,45 +1,47 @@
-/* ============================================================
-   DRAX.RAW — Editorial design system
-   Warm light / deep dark surfaces, photography first.
-   ============================================================ */
+@import '@fontsource/anton/400.css';
+@import '@fontsource/barlow-condensed/600.css';
+@import '@fontsource/barlow-condensed/700.css';
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
 
 :root {
-  /* Surfaces */
-  --bg-light: #ece9e2;
-  --bg-dark: #0b0b0a;
+  /* Case */
+  --case: #121214;
+  --case-2: #1b1b1e;
+  --case-line: rgba(237, 228, 208, 0.12);
+  --steel: #9a9ca0;
 
-  /* Ink */
-  --ink-on-light: #11110f;
-  --ink-on-dark: #f1efe8;
+  /* Vinyl */
+  --red: #d42a24;
+  --red-deep: #a81d18;
+  --yellow: #f1b51c;
+  --blue: #2a4bb8;
+  --purple: #5a36a6;
+  --paper: #ede4d0;
+  --residue: #c8b38c;
+  --ink: #141210;
 
-  /* Muted */
-  --muted-on-light: #8d8a83;
-  --muted-on-dark: #8d8a83;
+  --text: #ede4d0;
+  --text-dim: #b9b0a0;
 
-  /* Accent — the existing muted gold, used very sparingly */
-  --gold: #c6a128;
+  --font-display: 'Anton', 'Arial Narrow', sans-serif;
+  --font-label: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-body: 'Barlow', system-ui, sans-serif;
 
-  /* Typography */
-  --font-sans: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
-  --font-display: 'Archivo', 'Instrument Sans', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+  --gutter: clamp(16px, 4vw, 56px);
+  --dock-h: 72px;
 
-  /* Spacing scale */
-  --space-xs: clamp(0.5rem, 1vw, 0.75rem);
-  --space-sm: clamp(1rem, 1.6vw, 1.5rem);
-  --space-md: clamp(1.75rem, 3.2vw, 3rem);
-  --space-lg: clamp(3rem, 5.5vw, 4.5rem);
-  --space-xl: clamp(4.5rem, 8.5vw, 7rem);
-  --space-2xl: clamp(7rem, 13vw, 11rem);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Page gutter */
-  --pad-page: clamp(1.25rem, 4vw, 4rem);
-
-  /* Motion */
-  --ease-editorial: cubic-bezier(0.22, 1, 0.36, 1);
-  --theme-shift: color 0.4s ease, background-color 0.4s ease;
+  /* Wear: opaque only where the vinyl rubbed off; painted in case color under the type */
+  --wear-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.5' numOctaves='3' seed='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 16 -12.4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+  --wear-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.32' numOctaves='4' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 14 -11.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+  --wear-3: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='turbulence' baseFrequency='.08 .7' numOctaves='2' seed='31' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 12 -9.8'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23w)'/%3E%3C/svg%3E");
+  /* Grime: soft mottling multiplied over vinyl and laminate */
+  --grime: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .03' numOctaves='4' seed='9' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .3 0 0 0 0 .22 0 0 0 -1.6 1.05'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Modern reset */
 *,
 *::before,
 *::after {
@@ -49,129 +51,41 @@
 }
 
 html {
+  background: var(--case);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
   scroll-behavior: smooth;
   overflow-x: clip;
-  background-color: var(--bg-light);
 }
 
-/* Page opens on light (hero) and closes on dark (last project) */
 body {
   min-height: 100vh;
-  background-color: var(--bg-dark);
-  font-family: var(--font-sans);
-  color: var(--ink-on-light);
-  line-height: 1.55;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
   overflow-x: clip;
+  line-height: 1.5;
+  /* Scuffed black laminate: pebble grain plus long rub marks */
+  background:
+    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.025) 45%, transparent 60%),
+    radial-gradient(ellipse 80% 40% at 20% 10%, rgba(255, 255, 255, 0.03), transparent 70%),
+    var(--case);
 }
 
-/* Theme contexts — sections declare light or dark.
-   Forced modes (below) can override either context site-wide. */
-.theme-light {
-  background-color: var(--bg-light);
-  color: var(--ink-on-light);
-  --theme-ink: var(--ink-on-light);
-  --theme-muted: var(--muted-on-light);
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1000;
+  background-image: var(--grain);
+  opacity: 0.05;
+  mix-blend-mode: overlay;
 }
 
-.theme-dark {
-  background-color: var(--bg-dark);
-  color: var(--ink-on-dark);
-  --theme-ink: var(--ink-on-dark);
-  --theme-muted: var(--muted-on-dark);
-}
-
-/* Surfaces cross-fade gently when the mode changes
-   (the hard cuts BETWEEN sections are untouched — this
-   only animates when html[data-mode] actually flips) */
-.theme-light,
-.theme-dark {
-  transition: background-color 0.45s ease, color 0.45s ease;
-}
-
-/* ============================================================
-   Colour modes
-   hybrid (default) — the designed rhythm: light hero, dark film
-   block, light counterpoint, dark close. Nothing to override.
-   light / dark — every themed section reads on one surface.
-   ============================================================ */
-
-html[data-mode='light'] .theme-light,
-html[data-mode='light'] .theme-dark {
-  background-color: var(--bg-light);
-  color: var(--ink-on-light);
-  --theme-ink: var(--ink-on-light);
-  --theme-muted: var(--muted-on-light);
-}
-
-html[data-mode='dark'] .theme-light,
-html[data-mode='dark'] .theme-dark {
-  background-color: var(--bg-dark);
-  color: var(--ink-on-dark);
-  --theme-ink: var(--ink-on-dark);
-  --theme-muted: var(--muted-on-dark);
-}
-
-/* Page-level surfaces follow the mode (overscroll + base ink) */
-html[data-mode='light'],
-html[data-mode='light'] body {
-  background-color: var(--bg-light);
-}
-
-html[data-mode='dark'],
-html[data-mode='dark'] body {
-  background-color: var(--bg-dark);
-}
-
-html[data-mode='light'] body {
-  color: var(--ink-on-light);
-}
-
-html[data-mode='dark'] body {
-  color: var(--ink-on-dark);
-}
-
-/* Typography base */
-h1,
-h2,
-h3,
-h4 {
-  font-weight: 500;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
-  color: inherit;
-}
-
-/* Display voice: poster-weight grotesque for the big moments.
-   Slightly expanded, uppercase, tight leading. Body stays
-   Instrument Sans so the contrast reads as art direction. */
-.display {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-stretch: 112%;
-  text-transform: uppercase;
-  line-height: 0.92;
-  letter-spacing: -0.015em;
-}
-
-/* Outlined numerals and words: pure graphic layer */
-.stroke-ink {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--theme-ink, var(--ink-on-light));
-}
-
-/* When the custom cursor is active (fine pointers only), the
-   native one steps aside. Keyboard and touch keep theirs. */
-html.has-cursor,
-html.has-cursor a,
-html.has-cursor button {
-  cursor: none;
-}
-
-p {
-  color: var(--theme-muted, var(--muted-on-light));
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 a {
@@ -180,63 +94,151 @@ a {
 }
 
 button {
-  background: none;
-  border: none;
   font: inherit;
   color: inherit;
+  background: none;
+  border: none;
   cursor: pointer;
 }
 
-img {
-  display: block;
-  max-width: 100%;
-}
-
-::selection {
-  background-color: var(--gold);
-  color: var(--bg-dark);
-}
-
-/* Gold scroll-progress hairline — the one fixed brand moment */
-.scroll-progress {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: var(--gold);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  z-index: 60;
-  pointer-events: none;
-}
-
-/* Focus visibility — quiet but present */
 :focus-visible {
-  outline: 1.5px solid currentColor;
+  outline: 3px solid var(--yellow);
   outline-offset: 3px;
 }
 
-/* Line-mask containers for the big reveals (Preloader, section
-   headers). Overflow hidden + translateY = the classic curtain
-   line lift used across award-level sites. */
-.line-mask {
-  display: block;
-  overflow: hidden;
+::selection {
+  background: var(--yellow);
+  color: var(--ink);
 }
 
-.line-mask > .line-inner {
-  display: block;
-  will-change: transform;
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- Vinyl stickers ---------- */
+
+.vinyl {
+  --vinyl: var(--paper);
+  --vinyl-ink: var(--ink);
+  --wear: var(--wear-1);
+  position: relative;
+  z-index: 0;
+  display: inline-block;
+  background: var(--vinyl);
+  color: var(--vinyl-ink);
+}
+
+/* Rubbed-off spots show the case through; they sit under the lettering */
+.vinyl::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--case);
+  -webkit-mask: var(--wear) var(--wear-x, 0) var(--wear-y, 0) / auto;
+  mask: var(--wear) var(--wear-x, 0) var(--wear-y, 0) / auto;
+}
+
+.vinyl.wear-2 { --wear: var(--wear-2); }
+.vinyl.wear-3 { --wear: var(--wear-3); }
+.vinyl.no-wear::before { display: none; }
+
+/* Grime and sheen printed over the vinyl */
+.vinyl::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.14), transparent 35%, transparent 70%, rgba(0, 0, 0, 0.12)),
+    var(--grime);
+  background-size: auto, 400px;
+  mix-blend-mode: multiply;
+  opacity: 0.18;
+  z-index: 1;
+}
+
+.vinyl.is-red { --vinyl: var(--red); --vinyl-ink: var(--paper); }
+.vinyl.is-yellow { --vinyl: var(--yellow); --vinyl-ink: var(--ink); }
+.vinyl.is-blue { --vinyl: var(--blue); --vinyl-ink: var(--paper); }
+.vinyl.is-purple { --vinyl: var(--purple); --vinyl-ink: var(--paper); }
+.vinyl.is-paper { --vinyl: var(--paper); --vinyl-ink: var(--ink); }
+.vinyl.is-ink { --vinyl: var(--ink); --vinyl-ink: var(--paper); }
+
+/* Stickers sit on the case with a soft, slightly lifted shadow */
+.stuck {
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.45)) drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
+}
+
+/* Gaffer / masking tape */
+.tape {
+  position: absolute;
+  height: 26px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 2px, transparent 2px 5px),
+    rgba(214, 200, 168, 0.82);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  z-index: 3;
+}
+
+.label {
+  font-family: var(--font-label);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: 0;
+}
+
+/* Section scaffolding */
+.section {
+  position: relative;
+  padding: clamp(72px, 12vw, 160px) var(--gutter);
+}
+
+.section-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.section-title {
+  font-size: clamp(3rem, 11vw, 6rem);
+  padding: 0.12em 0.22em 0.06em;
+  margin-bottom: clamp(32px, 6vw, 64px);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
   }
+}
+
+/* Riveted aluminum extrusion between case panels */
+.extrusion {
+  position: relative;
+  height: 16px;
+  background:
+    radial-gradient(circle, #e2e3e6 0 1.5px, #6c6e72 2.4px, #3b3c3f 3.6px, transparent 4.2px) center / 64px 16px repeat-x,
+    linear-gradient(180deg, #4b4d51 0%, #c4c6ca 22%, #8d8f93 50%, #b5b7bb 74%, #3d3e41 100%);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.55), 0 -2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 2;
 }
