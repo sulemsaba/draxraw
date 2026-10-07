@@ -4,22 +4,21 @@ import { gsap, reducedMotion, ScrollTrigger, scrollTop } from '../lib/motion';
 import { GoContext, useGo } from '../lib/go';
 import './PageWipe.css';
 
-type Kind = 'home' | 'films' | 'photos' | 'about' | 'book';
+type Kind = 'home' | 'films' | 'photos' | 'about' | 'book' | 'walls';
 
-const kindOf = (to: string): Kind =>
-  to === '/films' ? 'films' : to === '/photos' ? 'photos' : to === '/about' ? 'about' : to === '/book' ? 'book' : 'home';
+const KINDS: Record<string, Kind> = { '/films': 'films', '/photos': 'photos', '/about': 'about', '/book': 'book', '/wallpapers': 'walls' };
+const kindOf = (to: string): Kind => KINDS[to] ?? 'home';
 
-// Hexagon aperture, centred on 0,0 (scaled by GSAP)
-const HEX = Array.from({ length: 6 }, (_, i) => {
-  const a = (Math.PI / 3) * i + Math.PI / 6;
-  return `${(Math.cos(a) * 10).toFixed(2)},${(Math.sin(a) * 10).toFixed(2)}`;
-}).join(' ');
+// Tiles for the wallpapers mosaic
+const TILES = ['the-walk', 'corridor', 'library', 'on-the-wall', 'red-ink', 'on-the-grass'];
+
 
 /**
  * Page changes, each in the language of where you are going:
- * Films: a film-leader countdown. Photos: a camera shutter.
- * About: a Polaroid of Drax developing. Book: a clapperboard.
- * Home: a TV changing channel.
+ * Films: a film-leader countdown. Photos: a viewfinder locks focus and the
+ * shutter curtains fire. About: a movie character intro freeze-frame.
+ * Book: a full-screen clapperboard. Wallpapers: a mosaic of his photos.
+ * Home: a cinema iris closing on the DX mark and opening again.
  * Each one covers the page, the route changes underneath, then it clears.
  */
 export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -58,33 +57,60 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     }
 
     if (kind === 'photos') {
-      // Shutter: the aperture closes, rotating, and fires a flash
-      tl.fromTo('.ap-hole', { scale: 9, rotation: 0 }, { scale: 0, rotation: 120, duration: 0.42, ease: 'power3.in', svgOrigin: '0 0' })
-        .fromTo('.sh-flash', { opacity: 0 }, { opacity: 0.85, duration: 0.05 })
-        .to('.sh-flash', { opacity: 0, duration: 0.25 });
+      // Viewfinder over the page: focus hunts and locks, then the curtains fire
+      tl.set('.vf', { opacity: 1 })
+        .set('.vf-focus', { borderColor: '#ede4d0' })
+        .fromTo(layer, { backgroundColor: 'rgba(0,0,0,0)' }, { backgroundColor: 'rgba(0,0,0,0.35)', duration: 0.2 })
+        .fromTo('.vf-corner', { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: 'power3.out', stagger: 0.03 }, 0)
+        .fromTo('.vf-focus', { scale: 1.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.22, ease: 'power3.out' }, 0.08)
+        .to('.vf-focus', { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 })
+        .set('.vf-focus', { borderColor: '#f1b51c' })
+        .fromTo('.vf-read', { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.15)
+        .fromTo('.sh-top', { yPercent: -101 }, { yPercent: 0, duration: 0.17, ease: 'power4.in' }, '+=0.06')
+        .fromTo('.sh-bottom', { yPercent: 101 }, { yPercent: 0, duration: 0.17, ease: 'power4.in' }, '<')
+        .fromTo('.sh-flash', { opacity: 0 }, { opacity: 0.9, duration: 0.04 })
+        .to('.sh-flash', { opacity: 0, duration: 0.22 })
+        .set('.vf', { opacity: 0 });
     }
 
     if (kind === 'about') {
-      // Polaroid: drops onto the dark, then develops from black to full colour
-      tl.fromTo(layer, { backgroundColor: 'rgba(14,14,16,0)' }, { backgroundColor: 'rgba(14,14,16,1)', duration: 0.25 })
-        .fromTo('.pol', { y: -80, rotation: -14, scale: 1.25, opacity: 0 }, { y: 0, rotation: -4, scale: 1, opacity: 1, duration: 0.38, ease: 'back.out(1.6)' }, 0.08)
-        .fromTo('.pol img', { filter: 'brightness(0.05) saturate(0) sepia(0.6)' }, { filter: 'brightness(1) saturate(1) sepia(0)', duration: 0.6, ease: 'power1.inOut' }, 0.15)
-        // a beat to see him before the print is flicked away
-        .to({}, { duration: 0.18 });
+      // Character intro: the screen cuts to him, his name slaps on, freeze-frame
+      tl.set('.ci-stage', { filter: 'none' })
+        .fromTo(layer, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.32, ease: 'power3.inOut' })
+        .fromTo('.ci-drax', { xPercent: 25, opacity: 0, filter: 'blur(10px)' }, { xPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 0.42, ease: 'power3.out' }, 0.12)
+        .fromTo('.ci-name', { scale: 1.6, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: -3, duration: 0.3, ease: 'back.out(2)' }, 0.32)
+        .fromTo('.ci-role', { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.25, ease: 'power2.out' }, 0.5)
+        // freeze frame
+        .fromTo('.ci-flash', { opacity: 0 }, { opacity: 0.7, duration: 0.04 }, 0.78)
+        .to('.ci-flash', { opacity: 0, duration: 0.2 })
+        .set('.ci-stage', { filter: 'grayscale(1) contrast(1.15)' }, 0.8)
+        .to({}, { duration: 0.12 });
     }
 
     if (kind === 'book') {
-      // Clapperboard: comes up open, snaps shut, the board jolts
-      tl.fromTo(layer, { backgroundColor: 'rgba(14,14,16,0)' }, { backgroundColor: 'rgba(14,14,16,1)', duration: 0.22 })
-        .fromTo('.slate', { y: 60, scale: 0.85, opacity: 0, rotation: -3 }, { y: 0, scale: 1, opacity: 1, rotation: -3, duration: 0.32, ease: 'back.out(1.5)' }, 0.05)
-        .fromTo('.slate-clap', { rotation: -28 }, { rotation: -28, duration: 0.12 })
-        .to('.slate-clap', { rotation: 0, duration: 0.14, ease: 'power4.in' })
-        .to('.slate', { y: 6, duration: 0.05, yoyo: true, repeat: 1 });
+      // Full-screen clapperboard: the striped bars slam together, the slate pops
+      tl.fromTo('.cb-top', { yPercent: -100, rotation: -10 }, { yPercent: 0, rotation: -10, duration: 0.3, ease: 'power3.out' })
+        .fromTo('.cb-bottom', { yPercent: 100 }, { yPercent: 0, duration: 0.3, ease: 'power3.out' }, '<')
+        .fromTo('.cb-card', { scale: 0.6, opacity: 0, rotation: 6 }, { scale: 1, opacity: 1, rotation: -2, duration: 0.3, ease: 'back.out(1.8)' }, 0.12)
+        .to('.cb-top', { rotation: 0, duration: 0.13, ease: 'power4.in' }, 0.5)
+        .to('.tr-book', { y: 8, duration: 0.05, yoyo: true, repeat: 1 }, 0.63)
+        .to({}, { duration: 0.1 });
+    }
+
+    if (kind === 'walls') {
+      // Mosaic: his photos flip in tile by tile from the centre
+      tl.fromTo(
+        '.mz-tile',
+        { rotationY: -90, opacity: 0 },
+        { rotationY: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: { each: 0.035, from: 'center', grid: 'auto' } }
+      ).to({}, { duration: 0.08 });
     }
 
     if (kind === 'home') {
-      // Channel change: a burst of snow
-      tl.fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.12 }).to({}, { duration: 0.3 });
+      // Cinema iris closing to black around the DX mark
+      tl.fromTo(layer, { '--r': '150vmax' }, { '--r': '0vmax', duration: 0.55, ease: 'power3.in' })
+        .fromTo('.iris-mark', { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(2)' }, 0.42)
+        .to({}, { duration: 0.12 });
     }
 
     return tl;
@@ -106,27 +132,24 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       tl.to(layer, { opacity: 0.3, duration: 0.05, repeat: 3, yoyo: true }).to(layer, { opacity: 0, duration: 0.12 });
     }
     if (kind === 'photos') {
-      tl.fromTo('.ap-hole', { scale: 0 }, { scale: 9, rotation: 240, duration: 0.5, ease: 'power3.out', svgOrigin: '0 0' });
+      tl.to('.sh-top', { yPercent: -101, duration: 0.38, ease: 'power3.out' })
+        .to('.sh-bottom', { yPercent: 101, duration: 0.38, ease: 'power3.out' }, '<')
+        .to(layer, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.2 }, '<');
     }
     if (kind === 'about') {
-      tl.to('.pol', { x: '60vw', y: -40, rotation: 18, duration: 0.45, ease: 'power3.in' }).to(
-        layer,
-        { backgroundColor: 'rgba(14,14,16,0)', duration: 0.3 },
-        '-=0.15'
-      );
+      tl.to(layer, { xPercent: -100, skewX: -6, duration: 0.5, ease: 'power3.in' });
     }
     if (kind === 'book') {
-      tl.to('.slate', { y: '70vh', rotation: 6, duration: 0.45, ease: 'power3.in' }, 0.12).to(
-        layer,
-        { backgroundColor: 'rgba(14,14,16,0)', duration: 0.3 },
-        '-=0.2'
-      );
+      tl.to('.cb-card', { scale: 0.8, opacity: 0, duration: 0.2 })
+        .to('.cb-top', { yPercent: -100, duration: 0.4, ease: 'power3.in' }, 0.08)
+        .to('.cb-bottom', { yPercent: 100, duration: 0.4, ease: 'power3.in' }, 0.08);
+    }
+    if (kind === 'walls') {
+      tl.to('.mz-tile', { rotationY: 90, opacity: 0, duration: 0.35, ease: 'power3.in', stagger: { each: 0.03, from: 'edges', grid: 'auto' } });
     }
     if (kind === 'home') {
-      // The picture squeezes back on from a bright line
-      tl.set('.tv-noise', { opacity: 0 })
-        .fromTo('.tv-line', { scaleX: 1, scaleY: 1, opacity: 1 }, { scaleY: 120, opacity: 0, duration: 0.4, ease: 'power3.out' })
-        .to(layer, { opacity: 0, duration: 0.25 }, 0.12);
+      tl.to('.iris-mark', { scale: 0.6, opacity: 0, duration: 0.18 })
+        .to(layer, { '--r': '150vmax', duration: 0.6, ease: 'power3.out' }, 0.1);
     }
   };
 
@@ -177,53 +200,59 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
           <span className="ld-scratch" />
         </div>
 
-        {/* Photos: shutter */}
+        {/* Photos: viewfinder and focal-plane shutter */}
         <div className="tr-layer tr-photos">
-          <svg className="ap" viewBox="-50 -50 100 100" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <mask id="ap-mask">
-                <rect x="-200" y="-200" width="400" height="400" fill="white" />
-                <g className="ap-hole">
-                  <polygon points={HEX} fill="black" />
-                </g>
-              </mask>
-            </defs>
-            <rect x="-200" y="-200" width="400" height="400" fill="#0b0b0c" mask="url(#ap-mask)" />
-          </svg>
+          <div className="vf">
+            <span className="vf-corner vf-tl" />
+            <span className="vf-corner vf-tr" />
+            <span className="vf-corner vf-bl" />
+            <span className="vf-corner vf-br" />
+            <span className="vf-focus" />
+            <span className="vf-read label">
+              <b>1/250</b> f/2.8 <b>ISO</b> 400
+            </span>
+          </div>
+          <span className="sh-top" />
+          <span className="sh-bottom" />
           <span className="sh-flash" />
         </div>
 
-        {/* About: Polaroid */}
+        {/* About: character intro freeze-frame */}
         <div className="tr-layer tr-about">
-          <figure className="pol">
-            <img src="img/drax-shades.webp" alt="" width={1100} height={1650} />
-            <figcaption className="label">Who's Drax?</figcaption>
-          </figure>
+          <div className="ci-stage">
+            <img className="ci-drax" src="img/drax-cutout.webp" alt="" width={1100} height={1680} />
+            <div className="ci-card">
+              <span className="ci-name display">Drax</span>
+              <span className="ci-role label">Filmmaker / Editor / Photographer</span>
+            </div>
+          </div>
+          <span className="ci-flash" />
         </div>
 
-        {/* Book: clapperboard */}
+        {/* Book: full-screen clapperboard */}
         <div className="tr-layer tr-book">
-          <div className="slate">
-            <div className="slate-clap" />
-            <div className="slate-bar" />
-            <div className="slate-body">
-              <span className="slate-row label">
-                <b>Prod.</b> Drax Raw
-              </span>
-              <span className="slate-row label">
-                <b>Scene</b> Book <b>Take</b> 01
-              </span>
-              <span className="slate-row label">
-                <b>Dir.</b> You + Drax
-              </span>
-            </div>
+          <span className="cb-top" />
+          <span className="cb-bottom" />
+          <div className="cb-card">
+            <span className="label">
+              <b>Prod.</b> Drax Raw
+            </span>
+            <span className="label">
+              <b>Scene</b> Book <b>Take</b> 01
+            </span>
           </div>
         </div>
 
-        {/* Home: channel change */}
+        {/* Wallpapers: photo mosaic */}
+        <div className="tr-layer tr-walls">
+          {Array.from({ length: 12 }, (_, i) => (
+            <span key={i} className="mz-tile" style={{ backgroundImage: `url(img/walls/${TILES[i % TILES.length]}-phone.webp)` }} />
+          ))}
+        </div>
+
+        {/* Home: cinema iris */}
         <div className="tr-layer tr-home">
-          <span className="tv-noise" />
-          <span className="tv-line" />
+          <img className="iris-mark" src="img/logo-mark.webp" alt="" width={240} height={234} />
         </div>
       </div>
     </GoContext.Provider>

@@ -33,7 +33,7 @@ jobs:
       # Give every page a real file so direct links answer 200, not 404
       # (in-app browsers like WhatsApp and Instagram, and link previews, need this)
       - run: |
-          for page in films photos about book; do
+          for page in films photos about book wallpapers; do
             mkdir -p dist/$page
             cp dist/index.html dist/$page/index.html
           done

@@ -1,0 +1,108 @@
+.walls {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 48px);
+}
+
+.wall-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* A phone, showing the wallpaper on its screen */
+.wall-phone {
+  position: relative;
+  width: min(100%, 300px);
+  margin: 0 auto;
+  padding: 8px;
+  border-radius: 34px;
+  background: #0a0a0b;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.12),
+    0 24px 50px rgba(0, 0, 0, 0.5);
+}
+
+.wall-phone::before {
+  content: '';
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  width: 26%;
+  height: 18px;
+  margin-left: -13%;
+  border-radius: 999px;
+  background: #0a0a0b;
+  z-index: 1;
+}
+
+.wall-phone img {
+  width: 100%;
+  aspect-ratio: 1080 / 2340;
+  object-fit: cover;
+  border-radius: 27px;
+}
+
+.wall-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.wall-title {
+  font-size: 1.8rem;
+  color: var(--paper);
+}
+
+.wall-dl {
+  display: flex;
+  gap: 10px;
+}
+
+.wall-dl a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--paper);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.wall-dl a:first-child {
+  background: var(--yellow);
+}
+
+.wall-dl a:hover {
+  transform: translateY(-2px);
+}
+
+/* Phones: swipe through, the next phone peeks in from the edge */
+@media (max-width: 899px) {
+  .walls {
+    display: flex;
+    gap: 18px;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 0 var(--gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 var(--gutter);
+    scrollbar-width: none;
+  }
+
+  .walls::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wall-card {
+    flex: none;
+    width: 72vw;
+    max-width: 300px;
+    scroll-snap-align: start;
+  }
+}

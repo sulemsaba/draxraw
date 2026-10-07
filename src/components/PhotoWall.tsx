@@ -15,6 +15,7 @@ export const PhotoWall: React.FC = () => {
   const [open, setOpen] = useState<number | null>(null);
   const flipState = useRef<Flip.FlipState | null>(null);
   const closing = useRef(false);
+  const touch = useRef<{ x: number; y: number } | null>(null);
 
   useGSAP(
     () => {
@@ -63,10 +64,18 @@ export const PhotoWall: React.FC = () => {
     });
   }, [open]);
 
-  const step = useCallback(
-    (dir: number) => setOpen((i) => (i === null ? i : (i + dir + PRINTS.length) % PRINTS.length)),
-    []
-  );
+  const lastDir = useRef(0);
+  const step = useCallback((dir: number) => {
+    lastDir.current = dir;
+    setOpen((i) => (i === null ? i : (i + dir + PRINTS.length) % PRINTS.length));
+  }, []);
+
+  // Each new photo slides in from the side you swiped toward
+  useEffect(() => {
+    if (open === null || !lastDir.current || reducedMotion()) return;
+    gsap.fromTo('.viewer-img', { x: lastDir.current * 80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.35, ease: 'power3.out' });
+    lastDir.current = 0;
+  }, [open]);
 
   // Grow the clicked photo into the viewer
   useLayoutEffect(() => {
@@ -104,7 +113,26 @@ export const PhotoWall: React.FC = () => {
       </ul>
 
       {open !== null && (
-        <div className="viewer" role="dialog" aria-modal="true" aria-label="Photo viewer" onClick={(e) => e.target === e.currentTarget && hide()}>
+        <div
+          className="viewer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Photo viewer"
+          onClick={(e) => e.target === e.currentTarget && hide()}
+          // Swipe left / right for the next / previous photo, swipe down to close
+          onTouchStart={(e) => {
+            touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          }}
+          onTouchEnd={(e) => {
+            const start = touch.current;
+            touch.current = null;
+            if (!start) return;
+            const dx = e.changedTouches[0].clientX - start.x;
+            const dy = e.changedTouches[0].clientY - start.y;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+            else if (dy > 90) hide();
+          }}
+        >
           <img
             key={PRINTS[open].src}
             className="viewer-img"

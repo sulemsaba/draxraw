@@ -134,3 +134,45 @@
 .rail-link.is-active svg {
   color: var(--red);
 }
+
+/* Book button in the phone top bar */
+.top-book {
+  position: absolute;
+  top: 18px;
+  right: var(--gutter);
+  z-index: 20;
+  rotate: 2deg;
+}
+
+.top-book-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 1.05rem;
+  border-radius: 6px;
+}
+
+@media (max-width: 899px) {
+  /* five items share the dock evenly; Book moved to the top bar */
+  .rail-book {
+    display: none;
+  }
+
+  .rail-links {
+    justify-content: space-between;
+  }
+
+  .rail-link {
+    min-width: 0;
+    flex: 1;
+  }
+}
+
+@media (min-width: 900px) {
+  .top-book,
+  .phone-only {
+    display: none;
+  }
+}

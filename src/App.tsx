@@ -10,6 +10,7 @@ import { FilmsPage } from './pages/FilmsPage';
 import { PhotosPage } from './pages/PhotosPage';
 import { AboutPage } from './pages/AboutPage';
 import { BookPage } from './pages/BookPage';
+import { WallpapersPage } from './pages/WallpapersPage';
 
 export const App: React.FC = () => {
   // The old-TV loading screen plays on the first visit of a session only
@@ -50,6 +51,7 @@ export const App: React.FC = () => {
             <Route path="/photos" element={<PhotosPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/book" element={<BookPage />} />
+            <Route path="/wallpapers" element={<WallpapersPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

@@ -15,6 +15,9 @@ export const Footer: React.FC = () => (
       <GoLink to="/book" className="label">
         Book
       </GoLink>
+      <GoLink to="/wallpapers" className="label">
+        Wallpapers
+      </GoLink>
       <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="label">
         <YouTubeIcon /> YouTube
       </a>

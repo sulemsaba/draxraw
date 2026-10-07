@@ -5,12 +5,15 @@ import { PRINTS } from '../data/site';
 import { Sticker } from './Sticker';
 import { GoLink } from './PageWipe';
 import { ArrowIcon } from './Icons';
+import { SwipeDots } from './SwipeDots';
+import { useSwipeDots } from '../lib/useSwipeDots';
 import './PhotoStrip.css';
 
 /** Home: the page holds still while a strip of photos slides past sideways. */
 export const PhotoStrip: React.FC = () => {
   const rootRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const { active, goTo } = useSwipeDots(trackRef);
 
   useGSAP(
     () => {
@@ -65,6 +68,7 @@ export const PhotoStrip: React.FC = () => {
           </GoLink>
         ))}
       </div>
+      <SwipeDots count={Math.min(PRINTS.length, 7)} active={active} onPick={goTo} label="Photos" />
     </section>
   );
 };

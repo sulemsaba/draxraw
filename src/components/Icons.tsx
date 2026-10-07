@@ -113,3 +113,19 @@ export const ExpandIcon: React.FC<IconProps> = ({ size = 22, className }) =>
 
 export const ReplayIcon: React.FC<IconProps> = ({ size = 22, className }) =>
   svg(size, className, <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4.2h4.2" />);
+
+export const DownloadIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(size, className, <path d="M12 3.5v12M6.5 10l5.5 5.5 5.5-5.5M4.5 20h15" />);
+
+export const HomeIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(size, className, <path d="M3.5 11 12 4l8.5 7M6 9.5V20h12V9.5" />);
+
+export const PhoneIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(
+    size,
+    className,
+    <>
+      <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" />
+      <path d="M10.5 18.5h3" />
+    </>
+  );

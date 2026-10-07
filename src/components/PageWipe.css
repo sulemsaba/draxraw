@@ -108,12 +108,75 @@
   50% { left: 68%; opacity: 0.3; }
 }
 
-/* ---------- Photos: shutter ---------- */
-.ap {
+/* ---------- Photos: viewfinder + focal-plane shutter ---------- */
+.tr-photos {
+  overflow: hidden;
+}
+
+.vf {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: clamp(18px, 4vmin, 40px);
+}
+
+.vf-corner {
+  position: absolute;
+  width: clamp(36px, 7vmin, 64px);
+  height: clamp(36px, 7vmin, 64px);
+  border: 0 solid var(--paper);
+}
+
+.vf-tl { top: 0; left: 0; border-top-width: 3px; border-left-width: 3px; }
+.vf-tr { top: 0; right: 0; border-top-width: 3px; border-right-width: 3px; }
+.vf-bl { bottom: 0; left: 0; border-bottom-width: 3px; border-left-width: 3px; }
+.vf-br { bottom: 0; right: 0; border-bottom-width: 3px; border-right-width: 3px; }
+
+.vf-focus {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(90px, 18vmin, 150px);
+  height: clamp(70px, 13vmin, 110px);
+  margin: calc(clamp(70px, 13vmin, 110px) / -2) 0 0 calc(clamp(90px, 18vmin, 150px) / -2);
+  border: 2px solid var(--paper);
+}
+
+.vf-read {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  translate: -50% 0;
+  white-space: nowrap;
+  font-size: clamp(1rem, 3.4vw, 1.3rem);
+  letter-spacing: 0.12em;
+  color: var(--paper);
+}
+
+.vf-read b {
+  color: var(--yellow);
+  margin-left: 0.6em;
+}
+
+/* The two shutter curtains: dark metal blades */
+.sh-top,
+.sh-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.5%;
+  background:
+    repeating-linear-gradient(to bottom, #151517 0 calc(25% - 2px), #2a2a2e calc(25% - 2px) 25%),
+    #151517;
+  transform: translateY(-101%);
+}
+
+.sh-top {
+  top: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.sh-bottom {
+  bottom: 0;
+  transform: translateY(101%);
 }
 
 .sh-flash {
@@ -123,119 +186,172 @@
   opacity: 0;
 }
 
-/* ---------- About: Polaroid ---------- */
+/* ---------- About: character intro ---------- */
 .tr-about {
-  display: grid;
-  place-items: center;
-}
-
-.pol {
-  width: min(64vw, 320px);
-  padding: 12px 12px 0;
-  background: #f3ecdc;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
-}
-
-.pol img {
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-  object-position: center 18%;
-}
-
-.pol figcaption {
-  padding: 14px 4px 18px;
-  font-size: 1.35rem;
-  color: var(--ink);
-  text-align: center;
-}
-
-/* ---------- Book: clapperboard ---------- */
-.tr-book {
-  display: grid;
-  place-items: center;
-}
-
-.slate {
-  position: relative;
-  width: min(80vw, 420px);
-  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.55));
-}
-
-.slate-clap,
-.slate-bar {
-  height: 44px;
-  background: repeating-linear-gradient(-55deg, #111 0 26px, #f1ead6 26px 52px);
-  border-radius: 4px 4px 0 0;
-}
-
-.slate-clap {
-  position: relative;
-  z-index: 1;
-  transform-origin: 6px 100%;
-}
-
-.slate-bar {
-  border-radius: 0;
-  margin-top: 4px;
-  background: repeating-linear-gradient(55deg, #111 0 26px, #f1ead6 26px 52px);
-}
-
-.slate-body {
-  display: grid;
-  gap: 10px;
-  padding: 18px 20px 22px;
-  background: #151515;
-  border-radius: 0 0 6px 6px;
-}
-
-.slate-row {
-  font-size: clamp(1.1rem, 4.6vw, 1.5rem);
-  letter-spacing: 0.08em;
-  color: #f1ead6;
-  border-bottom: 1px solid rgba(241, 234, 214, 0.25);
-  padding-bottom: 6px;
-}
-
-.slate-row b {
-  color: var(--red);
-  font-weight: 700;
-  margin-right: 0.4em;
-}
-
-.slate-row b + b,
-.slate-row b:not(:first-child) {
-  margin-left: 0.8em;
-}
-
-/* ---------- Home: TV channel change ---------- */
-.tr-home {
-  background: #050505;
+  background: var(--red);
   overflow: hidden;
 }
 
-.tv-noise {
+.tr-about::before {
+  content: '';
   position: absolute;
-  inset: -50%;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.7;
-  animation: tv-snow 0.2s steps(4) infinite;
+  inset: 0;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0.1), transparent 45%, rgba(0, 0, 0, 0.25)), var(--grime);
+  background-size: auto, 1200px;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
 }
 
-@keyframes tv-snow {
-  25% { transform: translate(-7%, 4%); }
-  50% { transform: translate(5%, -6%); }
-  75% { transform: translate(-3%, -8%); }
+.ci-stage {
+  position: absolute;
+  inset: 0;
 }
 
-.tv-line {
+.ci-drax {
   position: absolute;
-  left: 0;
-  right: 0;
+  right: -4%;
+  bottom: 0;
+  height: 96%;
+  width: auto;
+  max-width: none;
+  filter: drop-shadow(-20px 10px 40px rgba(0, 0, 0, 0.45));
+}
+
+.ci-card {
+  position: absolute;
+  left: clamp(20px, 7vw, 120px);
   top: 50%;
-  height: 4px;
-  margin-top: -2px;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ci-name {
+  display: block;
+  font-size: clamp(5.5rem, 22vw, 15rem);
+  line-height: 0.85;
+  padding: 0.06em 0.14em 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.ci-role {
+  display: block;
+  font-size: clamp(1rem, 3.6vw, 1.5rem);
+  letter-spacing: 0.1em;
+  padding: 0.4em 0.8em;
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+.ci-flash {
+  position: absolute;
+  inset: 0;
   background: #fff;
-  box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.6);
+  opacity: 0;
+}
+
+@media (max-width: 899px) {
+  .ci-drax {
+    right: -22%;
+    height: 72%;
+  }
+
+  .ci-card {
+    top: 20%;
+    translate: 0 0;
+  }
+}
+
+/* ---------- Book: full-screen clapperboard ---------- */
+.tr-book {
+  overflow: hidden;
+}
+
+.cb-top,
+.cb-bottom {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  height: 52%;
+  background: repeating-linear-gradient(-55deg, #111 0 clamp(50px, 9vw, 110px), #ede4d0 clamp(50px, 9vw, 110px) clamp(100px, 18vw, 220px));
+}
+
+.cb-top {
+  top: 0;
+  transform-origin: 8% 100%;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+.cb-bottom {
+  bottom: 0;
+  background: repeating-linear-gradient(55deg, #111 0 clamp(50px, 9vw, 110px), #ede4d0 clamp(50px, 9vw, 110px) clamp(100px, 18vw, 220px));
+}
+
+.cb-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: grid;
+  gap: 10px;
+  padding: clamp(18px, 4vw, 30px) clamp(22px, 5vw, 40px);
+  background: #141414;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.cb-card .label {
+  font-size: clamp(1.3rem, 5vw, 2.2rem);
+  letter-spacing: 0.08em;
+  color: #ede4d0;
+}
+
+.cb-card b {
+  color: var(--red);
+  margin-right: 0.35em;
+}
+
+.cb-card b:not(:first-child) {
+  margin-left: 0.8em;
+}
+
+/* ---------- Wallpapers: photo mosaic ---------- */
+.tr-walls {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 4px;
+  background: transparent;
+  perspective: 1200px;
+}
+
+.mz-tile {
+  background-size: cover;
+  background-position: center;
+  backface-visibility: hidden;
+}
+
+@media (max-width: 899px) {
+  .tr-walls {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+  }
+}
+
+/* ---------- Home: cinema iris ---------- */
+.tr-home {
+  --r: 150vmax;
+  display: grid;
+  place-items: center;
+  background: #000;
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px));
+  mask: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px));
+}
+
+.iris-mark {
+  width: clamp(80px, 14vmin, 130px);
   opacity: 0;
 }

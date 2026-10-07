@@ -58,3 +58,19 @@ export const PRINTS: Print[] = [
   { src: 'img/stills/dar-girls-00173.webp', alt: 'A student in a white hijab reading at her classroom desk' },
   { src: 'img/stills/dar-girls-00237.webp', alt: 'A hand resting on an open textbook and notes' },
 ];
+
+export interface Wallpaper {
+  slug: string;
+  title: string;
+}
+
+// Generated from Drax's original photos: public/wallpapers/<slug>-phone.jpg (1080x2340)
+// and <slug>-desktop.jpg (2560x1440), previews in public/img/walls/.
+export const WALLPAPERS: Wallpaper[] = [
+  { slug: 'the-walk', title: 'The walk' },
+  { slug: 'corridor', title: 'Corridor' },
+  { slug: 'library', title: 'Library' },
+  { slug: 'on-the-wall', title: 'On the wall' },
+  { slug: 'red-ink', title: 'Red ink' },
+  { slug: 'on-the-grass', title: 'On the grass' },
+];

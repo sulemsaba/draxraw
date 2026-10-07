@@ -68,7 +68,9 @@
     display: none;
   }
 
+  /* the next photo always peeks in from the right edge */
   .strip-photo {
+    width: 78vw;
     scroll-snap-align: start;
   }
 }

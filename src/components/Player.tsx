@@ -109,7 +109,9 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
                   preroll = window.setTimeout(() => {
                     e.target.setPlaybackRate(1);
                     e.target.unMute();
-                    setMuted(e.target.isMuted());
+                    // isMuted() lags behind unMute(); read the real state a moment later
+                    setMuted(false);
+                    window.setTimeout(() => setMuted(e.target.isMuted()), 600);
                     setPhase('playing');
                     revealFilm();
                   }, 3800);
@@ -117,7 +119,6 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
                 }
                 gsap.to('.tv-cover', { autoAlpha: 0, duration: 0.6, delay: 0.4 });
                 setPhase('playing');
-                setMuted(e.target.isMuted());
               } else if (e.data === YT_STATE.PAUSED && phaseRef.current === 'playing') {
                 setPhase('paused');
                 gsap.to('.tv-cover', { autoAlpha: 1, duration: 0.35 });
@@ -158,12 +159,15 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
     }
   };
 
+  // Driven by our own state (YouTube's isMuted() lags), then checked against the player
   const toggleSound = () => {
     const p = playerRef.current;
     if (!p) return;
-    if (p.isMuted()) p.unMute();
-    else p.mute();
-    setMuted(!muted);
+    const next = !muted;
+    if (next) p.mute();
+    else p.unMute();
+    setMuted(next);
+    window.setTimeout(() => setMuted(p.isMuted()), 600);
   };
 
   const seek = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -268,7 +272,7 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
 
           {muted && phase === 'playing' && (
             <button type="button" className="tv-sound-chip label" onClick={toggleSound}>
-              <SoundIcon size={18} /> Tap for sound
+              <MutedIcon size={18} /> Sound is off: tap to turn it on
             </button>
           )}
 
