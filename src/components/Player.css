@@ -18,20 +18,15 @@
 }
 
 .player::backdrop {
-  background: rgba(8, 8, 9, 0.92);
+  background: rgba(6, 6, 7, 0.94);
 }
 
-/* Lid: laminate panel inside a steel frame */
-.lid {
-  width: min(100%, 1200px, calc((100dvh - 150px) * 16 / 9));
+/* The TV set: a dark cabinet around the glass */
+.tv-set {
+  width: min(100%, 1200px, calc((100dvh - 170px) * 16 / 9));
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 14px;
-  border: 6px solid;
-  border-image: linear-gradient(135deg, #5d5f63, #c9cbcf 25%, #7b7d81 50%, #b9bbbf 75%, #4d4f53) 1;
-  background: var(--case-2);
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
 }
 
 .lid-head {
@@ -65,26 +60,208 @@
   border-radius: 6px;
 }
 
-.lid-screen {
+.tv-screen {
   position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
   background: #000;
+  border-radius: 14px;
+  padding: 10px 10px 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 30px 80px rgba(0, 0, 0, 0.7);
 }
 
-.lid-screen.is-vertical {
-  aspect-ratio: 9 / 16;
-  width: auto;
-  height: min(calc(100dvh - 170px), 760px);
+/* The glass: 16:9, rounded like a tube, everything clipped to it */
+.tv-glass {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 10px / 14px;
+  background: #050505;
+}
+
+.tv-screen.is-vertical {
+  width: min(100%, calc((100dvh - 230px) * 9 / 16));
   margin: 0 auto;
 }
 
-.lid-screen iframe {
+.tv-screen.is-vertical .tv-glass {
+  aspect-ratio: 9 / 16;
+}
+
+.player:has(.is-vertical) .tv-set {
+  width: auto;
+}
+
+/* YouTube's frame is taller than the glass. The film keeps its size in the
+   middle, while YouTube's title bar (top) and logo (bottom) land outside. */
+.tv-yt,
+.tv-yt iframe {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  border: 0;
+}
+
+.tv-yt {
+  top: -16%;
+  height: 132%;
+  pointer-events: none;
+}
+
+.tv-yt iframe {
+  top: 0;
+  height: 100%;
+}
+
+/* Snow plus a ghost of the film, over YouTube until the film plays */
+.tv-cover {
+  position: absolute;
+  inset: 0;
+  background: #050505;
+}
+
+.tv-frame {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  border: 0;
+  object-fit: cover;
+  opacity: 0.35;
+  filter: grayscale(0.3) contrast(1.1);
+}
+
+.tv-snow {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  opacity: 0.75;
+}
+
+.tv-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0, 0, 0, 0.18) 2px 3px),
+    radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+}
+
+/* Click layer: play / pause, and it keeps the pointer away from YouTube */
+.tv-hit {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.tv-big {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: var(--yellow);
+  color: var(--ink);
+  padding-left: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  transition: transform 0.25s var(--ease-out);
+}
+
+.tv-hit:hover .tv-big {
+  transform: scale(1.06);
+}
+
+.tv-tuning {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  translate: -50% 0;
+  font-size: 0.95rem;
+  letter-spacing: 0.24em;
+  color: var(--paper);
+  opacity: 0.8;
+  animation: tv-blink 1.1s steps(2, start) infinite;
+}
+
+@keyframes tv-blink {
+  to { visibility: hidden; }
+}
+
+/* Our own controls under the glass */
+.tv-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 4px 10px;
+  color: var(--paper);
+}
+
+.tv-controls button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 8px;
+  color: var(--paper);
+}
+
+.tv-controls button:hover {
+  color: var(--yellow);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tv-progress {
+  position: relative;
+  flex: 1;
+  height: 24px;
+  cursor: pointer;
+}
+
+.tv-progress::before,
+.tv-progress span {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  border-radius: 2px;
+}
+
+.tv-progress::before {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.tv-progress span {
+  background: var(--red);
+  transform-origin: left;
+  transition: transform 0.25s linear;
+}
+
+.tv-time {
+  flex: none;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+.tv-sound-chip {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 1rem;
 }
 
 .lid-yt {
@@ -93,7 +270,7 @@
   gap: 8px;
   align-self: flex-end;
   min-height: 40px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text-dim);
 }
 
@@ -101,6 +278,28 @@
   color: var(--yellow);
 }
 
-.player:has(.is-vertical) .lid {
-  width: auto;
+/* Full screen: the set fills the display */
+.tv-screen:fullscreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 0;
+  padding: 0;
+}
+
+.tv-screen:fullscreen .tv-glass {
+  width: 100%;
+  max-height: calc(100vh - 64px);
+  margin: 0 auto;
+  border-radius: 0;
+}
+
+@media (max-width: 520px) {
+  .tv-time {
+    display: none;
+  }
+
+  .tv-screen {
+    padding: 6px 6px 0;
+  }
 }

@@ -84,3 +84,32 @@ export const InstagramIcon: React.FC<IconProps> = ({ size = 22, className }) =>
       <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" />
     </>
   );
+
+export const PauseIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(size, className, <path d="M6 4.5h4.2v15H6zM13.8 4.5H18v15h-4.2z" />, true);
+
+export const SoundIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(
+    size,
+    className,
+    <>
+      <path d="M4 9.5h4l5-4v13l-5-4H4v-5Z" fill="currentColor" stroke="none" />
+      <path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />
+    </>
+  );
+
+export const MutedIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(
+    size,
+    className,
+    <>
+      <path d="M4 9.5h4l5-4v13l-5-4H4v-5Z" fill="currentColor" stroke="none" />
+      <path d="M16.5 9.5l5 5M21.5 9.5l-5 5" />
+    </>
+  );
+
+export const ExpandIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(size, className, <path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" />);
+
+export const ReplayIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(size, className, <path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v4.2h4.2" />);
