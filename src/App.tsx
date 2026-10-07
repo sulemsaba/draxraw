@@ -33,7 +33,6 @@ export const App: React.FC = () => {
 
       // Opening: the case sits empty under its old bleached stickers, then Drax's go on one by one.
       const tl = gsap.timeline({ delay: 0.25 });
-      tl.from('.fragment', { opacity: 0, duration: 0.8, stagger: 0.04, ease: 'power1.out' }, 0);
       heroStickers.forEach((el, i) => {
         const at = 0.2 + i * 0.16;
         tl.fromTo(el, SLAP_FROM, SLAP_TO, at);

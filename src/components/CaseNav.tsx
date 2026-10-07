@@ -11,13 +11,15 @@ const LINKS = [
 
 export const CaseNav: React.FC = () => (
   <>
-    <a href="#top" className="case-logo stuck" aria-label="Drax Raw, back to top">
-      <span className="vinyl is-ink logo-inner display">
-        DRAX<b>.</b>RAW
-      </span>
+    {/* Drax's logo, applied to the case like white cut-vinyl lettering */}
+    <a href="#top" className="case-logo" aria-label="Drax Raw, back to top">
+      <img src="img/logo.webp" alt="Drax Raw" width={700} height={436} />
     </a>
 
     <nav className="case-rail" aria-label="Main">
+      <a href="#top" className="rail-mark" aria-label="Back to top">
+        <img src="img/logo-mark.webp" alt="" width={240} height={234} />
+      </a>
       <div className="rail-links">
         {LINKS.map(({ href, label, Icon }) => (
           <a key={href} href={href} className="rail-link">

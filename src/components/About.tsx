@@ -31,17 +31,6 @@ export const About: React.FC = () => (
           </span>
         </Sticker>
 
-        <ul className="about-facts">
-          <li>
-            <Sticker color="red" rotate={-1.5} innerClassName="fact label">Based in Dar es Salaam</Sticker>
-          </li>
-          <li>
-            <Sticker color="paper" rotate={1} innerClassName="fact label">Shoots on Sony A7C II</Sticker>
-          </li>
-          <li>
-            <Sticker color="yellow" rotate={-1} innerClassName="fact label">Edit / Color / Sound</Sticker>
-          </li>
-        </ul>
       </div>
     </div>
   </section>

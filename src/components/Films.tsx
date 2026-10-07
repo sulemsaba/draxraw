@@ -11,7 +11,6 @@ const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)')
 
 export const Films: React.FC = () => {
   const [playing, setPlaying] = useState<Film | null>(null);
-  const [seen, setSeen] = useState<Set<string>>(new Set());
   const peeledRef = useRef<HTMLElement | null>(null);
 
   const play = (film: Film) => (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -20,7 +19,6 @@ export const Films: React.FC = () => {
     const card = e.currentTarget.closest<HTMLElement>('.film');
     const open = () => {
       setPlaying(film);
-      setSeen((prev) => new Set(prev).add(film.id));
     };
     if (!card || reduceMotion()) return open();
 
@@ -60,7 +58,7 @@ export const Films: React.FC = () => {
             <span id="work-title">The work</span>
           </Sticker>
           <p className="films-note">
-            Real films for real clients. Tap one and it plays right here.
+            Tap a film to play it.
           </p>
         </header>
 
@@ -107,11 +105,6 @@ export const Films: React.FC = () => {
                   </span>
                 </span>
 
-                {seen.has(film.id) && (
-                  <span className="film-seen stuck" aria-label="Watched">
-                    <span className="vinyl is-paper label">Seen</span>
-                  </span>
-                )}
               </a>
             </article>
           ))}

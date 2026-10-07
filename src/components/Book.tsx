@@ -18,8 +18,7 @@ export const Book: React.FC = () => (
       </h2>
 
       <p className="book-copy">
-        Got something to shoot? A wedding, a launch, a campaign, a music video. Send me a message on WhatsApp and tell
-        me about it.
+        Tell me about your shoot.
       </p>
 
       <a className="book-cta stuck" data-slap="" href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer">
@@ -54,6 +53,7 @@ export const Book: React.FC = () => (
     </div>
 
     <footer className="case-foot">
+      <img className="foot-logo" src="img/logo.webp" alt="Drax Raw" width={700} height={436} loading="lazy" />
       <div className="foot-links">
         <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="label">
           <YouTubeIcon /> YouTube

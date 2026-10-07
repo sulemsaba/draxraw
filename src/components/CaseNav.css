@@ -1,21 +1,17 @@
 .case-logo {
   position: absolute;
-  top: 18px;
+  top: 14px;
   left: var(--gutter);
   z-index: 20;
-  rotate: -2deg;
-}
-
-.logo-inner {
   display: block;
-  font-size: 1.35rem;
-  padding: 0.3em 0.5em 0.2em;
-  border-radius: 4px;
+  width: clamp(104px, 28vw, 150px);
+  /* cut vinyl sits flat on the case: just a hint of edge */
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
 }
 
-.logo-inner b {
-  font-weight: 400;
-  color: var(--red);
+/* The DX mark lives on the desktop rail only */
+.rail-mark {
+  display: none;
 }
 
 /* Steel-edged rail. Phone: a dock under the thumb. Desktop: a strip down the left. */
@@ -105,11 +101,17 @@
       linear-gradient(90deg, #1d1d20, #0d0d0f 80%, #2a2b2e);
   }
 
+  .rail-mark {
+    display: block;
+    width: 52px;
+    margin-top: 6px;
+  }
+
   .rail-links {
     flex: none;
     flex-direction: column;
     gap: 18px;
-    margin-top: 40px;
+    margin-top: 28px;
   }
 
   .rail-book-inner {

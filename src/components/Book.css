@@ -209,3 +209,8 @@
     grid-column: 1 / -1;
   }
 }
+
+.foot-logo {
+  width: clamp(130px, 30vw, 190px);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6));
+}
