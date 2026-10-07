@@ -10,7 +10,7 @@ const KINDS: Record<string, Kind> = { '/films': 'films', '/photos': 'photos', '/
 const kindOf = (to: string): Kind => KINDS[to] ?? 'home';
 
 // Tiles for the wallpapers mosaic
-const TILES = ['the-walk', 'corridor', 'library', 'on-the-wall', 'red-ink', 'on-the-grass'];
+const TILES = ['starring', 'countdown', 'redroom', 'slate', 'mark', 'vinyl'];
 
 
 /**

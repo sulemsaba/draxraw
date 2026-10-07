@@ -23,7 +23,7 @@ export const WallpapersPage: React.FC = () => {
               <span id="walls-title">Wallpapers</span>
             </Sticker>
             <p className="page-note" data-rise="">
-              Shot by Drax in Dar es Salaam. Free for your phone and your computer.
+              Made by Drax Raw. Free for your phone and your computer.
             </p>
           </header>
 

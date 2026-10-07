@@ -8,7 +8,7 @@ web
 
 ## Users
 
-Anyone who might hire a filmmaker in or around Dar es Salaam: NGOs and organizations (schools, charities, social impact programs), people with events (weddings, engagements, book launches), brands and businesses (ads, company films, reels), and musicians and artists. Most visitors arrive on a phone, often from an Instagram or WhatsApp link.
+Anyone who might hire a filmmaker in or around Dar es Salaam: NGOs and organizations (schools, charities, social impact programs), people with events (launches, celebrations), brands and businesses (ads, company films, reels), and musicians and artists. Most visitors arrive on a phone, often from an Instagram or WhatsApp link.
 
 ## Product Purpose
 

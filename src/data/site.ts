@@ -32,7 +32,7 @@ export const FILMS: Film[] = [
 ];
 
 export const SERVICES: { label: string; color: StickerColor }[] = [
-  { label: 'Weddings & events', color: 'red' },
+  { label: 'Events & launches', color: 'red' },
   { label: 'NGO & impact films', color: 'blue' },
   { label: 'Brand films & ads', color: 'paper' },
   { label: 'Music videos', color: 'paper' },
@@ -64,13 +64,13 @@ export interface Wallpaper {
   title: string;
 }
 
-// Generated from Drax's original photos: public/wallpapers/<slug>-phone.jpg (1080x2340)
+// Designed wallpapers: public/wallpapers/<slug>-phone.jpg (1080x2340)
 // and <slug>-desktop.jpg (2560x1440), previews in public/img/walls/.
 export const WALLPAPERS: Wallpaper[] = [
-  { slug: 'the-walk', title: 'The walk' },
-  { slug: 'corridor', title: 'Corridor' },
-  { slug: 'library', title: 'Library' },
-  { slug: 'on-the-wall', title: 'On the wall' },
-  { slug: 'red-ink', title: 'Red ink' },
-  { slug: 'on-the-grass', title: 'On the grass' },
+  { slug: 'starring', title: 'Starring' },
+  { slug: 'countdown', title: 'Countdown' },
+  { slug: 'redroom', title: 'Red room' },
+  { slug: 'slate', title: 'Slate' },
+  { slug: 'mark', title: 'DX' },
+  { slug: 'vinyl', title: 'Vinyl' },
 ];
