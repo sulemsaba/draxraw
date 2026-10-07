@@ -19,17 +19,15 @@ const fmt = (s: number) => {
 };
 
 /**
- * The film plays on an old TV set. Opening switches the set on (dot, line,
- * snow), the film's frame tunes in through the snow, and the snow fades
- * slowly into the film once it is really playing. YouTube's own title, logo
- * and buttons are cropped out of view and covered by our own controls, so
- * nothing on screen says YouTube.
+ * The film player. While the film loads you see its own still frame, which
+ * fades smoothly into the film once it is really playing. YouTube's own
+ * title, logo and buttons are cropped out of view and covered by our own
+ * controls, so nothing on screen says YouTube.
  */
 export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const screenRef = useRef<HTMLDivElement>(null);
   const mountRef = useRef<HTMLDivElement>(null);
-  const snowRef = useRef<HTMLCanvasElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
   const phaseRef = useRef<Phase>('tuning');
   const [phase, setPhaseState] = useState<Phase>('tuning');
@@ -50,51 +48,13 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
     setScrollLocked(!!film);
   }, [film]);
 
-  // Snow on the cover while the set tunes in
-  useEffect(() => {
-    const canvas = snowRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!film || !canvas || !ctx || reducedMotion()) return;
-    const img = ctx.createImageData(canvas.width, canvas.height);
-    let raf = 0;
-    let last = 0;
-    const tick = (t: number) => {
-      if (t - last > 40) {
-        last = t;
-        const d = img.data;
-        for (let i = 0; i < d.length; i += 4) {
-          const v = (Math.random() * 255) | 0;
-          d[i] = d[i + 1] = d[i + 2] = v;
-          d[i + 3] = 255;
-        }
-        ctx.putImageData(img, 0, 0);
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [film]);
-
-  // The set switches on: a dot, a line, then the screen
-  useEffect(() => {
-    if (!film || reducedMotion()) return;
-    const tl = gsap.timeline();
-    tl.fromTo('.tv-set', { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.35, ease: 'power2.out' })
-      .fromTo('.tv-glass', { clipPath: 'inset(49.6% 49.6% 49.6% 49.6%)' }, { clipPath: 'inset(49.6% 0% 49.6% 0%)', duration: 0.22, ease: 'power3.out' }, 0.15)
-      .to('.tv-glass', { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.32, ease: 'power3.inOut' })
-      .fromTo('.tv-frame', { opacity: 0 }, { opacity: 0.35, duration: 1.2, ease: 'power1.inOut' }, 0.5);
-    return () => {
-      tl.kill();
-    };
-  }, [film]);
-
-  // Slow fade from snow into the film once it is really playing
+  // Smooth fade from the film's still frame into the film once it is really playing
   const revealFilm = useCallback(() => {
     if (reducedMotion()) {
       gsap.set('.tv-cover', { autoAlpha: 0 });
       return;
     }
-    // Fade slowly from the snow into the film
+    // Fade from the still into the film
     gsap.to('.tv-cover', { autoAlpha: 0, duration: 1.8, delay: 0.3, ease: 'power2.inOut' });
   }, []);
 
@@ -141,7 +101,7 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
             onStateChange: (e) => {
               if (e.data === YT_STATE.PLAYING) {
                 if (phaseRef.current === 'tuning' || phaseRef.current === 'blocked') {
-                  // Silent slow-motion pre-roll under the snow: YouTube shows and hides
+                  // Silent slow-motion pre-roll under the still: YouTube shows and hides
                   // its own start-up buttons while only about a second of film passes.
                   // No seeking afterwards, because any jump brings those buttons back.
                   if (preroll) return;
@@ -263,10 +223,10 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
               {/* YouTube lives here, oversized so its title bar and logo fall outside the glass */}
               <div ref={mountRef} className="tv-yt" />
 
-              {/* Snow and the film's frame, covering YouTube until the film is really playing */}
+              {/* The film's still frame, covering YouTube until the film is really playing */}
               <div className="tv-cover">
                 <img className="tv-frame" src={`img/films/${film.id}.webp`} alt="" />
-                <canvas ref={snowRef} className="tv-snow" width={200} height={120} />
+                {phase === 'tuning' && <span className="tv-loading" />}
               </div>
 
               {/* Takes every click, so YouTube never shows its own buttons */}
@@ -274,10 +234,8 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
                 {showCoverButton && (
                   <span className="tv-big">{phase === 'ended' ? <ReplayIcon size={34} /> : <PlayIcon size={34} />}</span>
                 )}
-                {phase === 'tuning' && <span className="tv-tuning label">Tuning in</span>}
               </button>
 
-              <div className="tv-lines" aria-hidden="true" />
             </div>
 
             <div className="tv-controls">
