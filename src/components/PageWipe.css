@@ -1,38 +1,241 @@
-.page-wipe {
+.tr {
   position: fixed;
-  inset: -4vh -4vw;
+  inset: 0;
   z-index: 900;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  gap: 18px;
-  background: var(--red);
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
 }
 
-.page-wipe::after {
+.tr-layer {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+/* ---------- Films: film leader countdown ---------- */
+.tr-films {
+  background:
+    radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%),
+    #2a2722;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.tr-films::after {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(115deg, rgba(255, 255, 255, 0.12), transparent 40%, rgba(0, 0, 0, 0.16)),
-    var(--grime);
-  background-size: auto, 1200px;
-  mix-blend-mode: multiply;
+  background-image: var(--grain);
   opacity: 0.35;
+  mix-blend-mode: overlay;
+  animation: ld-grain 0.2s steps(3) infinite;
 }
 
-.wipe-mark {
-  position: relative;
-  z-index: 1;
-  width: clamp(88px, 14vw, 140px);
+@keyframes ld-grain {
+  33% { background-position: 40px 20px; }
+  66% { background-position: -30px 50px; }
 }
 
-.wipe-label {
+.ld-sweep,
+.ld-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+}
+
+.ld-sweep {
+  width: 150vmax;
+  height: 150vmax;
+  margin: -75vmax 0 0 -75vmax;
+}
+
+.ld-ring-1 {
+  width: min(62vmin, 520px);
+  height: min(62vmin, 520px);
+  margin: calc(min(62vmin, 520px) / -2) 0 0 calc(min(62vmin, 520px) / -2);
+  border: 3px solid rgba(241, 234, 214, 0.85);
+}
+
+.ld-ring-2 {
+  width: min(52vmin, 436px);
+  height: min(52vmin, 436px);
+  margin: calc(min(52vmin, 436px) / -2) 0 0 calc(min(52vmin, 436px) / -2);
+  border: 2px solid rgba(241, 234, 214, 0.6);
+}
+
+.ld-cross {
+  position: absolute;
+  background: rgba(241, 234, 214, 0.55);
+}
+
+.ld-cross-h {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+}
+
+.ld-cross-v {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+}
+
+.ld-num {
+  position: relative;
+  font-size: min(40vmin, 340px);
+  line-height: 1;
+  color: #f1ead6;
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.ld-scratch {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 31%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  animation: ld-scratch 0.35s steps(2) infinite;
+}
+
+@keyframes ld-scratch {
+  50% { left: 68%; opacity: 0.3; }
+}
+
+/* ---------- Photos: shutter ---------- */
+.ap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sh-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+}
+
+/* ---------- About: Polaroid ---------- */
+.tr-about {
+  display: grid;
+  place-items: center;
+}
+
+.pol {
+  width: min(64vw, 320px);
+  padding: 12px 12px 0;
+  background: #f3ecdc;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.55);
+}
+
+.pol img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center 18%;
+}
+
+.pol figcaption {
+  padding: 14px 4px 18px;
+  font-size: 1.35rem;
+  color: var(--ink);
+  text-align: center;
+}
+
+/* ---------- Book: clapperboard ---------- */
+.tr-book {
+  display: grid;
+  place-items: center;
+}
+
+.slate {
+  position: relative;
+  width: min(80vw, 420px);
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.55));
+}
+
+.slate-clap,
+.slate-bar {
+  height: 44px;
+  background: repeating-linear-gradient(-55deg, #111 0 26px, #f1ead6 26px 52px);
+  border-radius: 4px 4px 0 0;
+}
+
+.slate-clap {
   position: relative;
   z-index: 1;
-  font-size: clamp(2.6rem, 9vw, 6rem);
-  color: var(--paper);
+  transform-origin: 6px 100%;
+}
+
+.slate-bar {
+  border-radius: 0;
+  margin-top: 4px;
+  background: repeating-linear-gradient(55deg, #111 0 26px, #f1ead6 26px 52px);
+}
+
+.slate-body {
+  display: grid;
+  gap: 10px;
+  padding: 18px 20px 22px;
+  background: #151515;
+  border-radius: 0 0 6px 6px;
+}
+
+.slate-row {
+  font-size: clamp(1.1rem, 4.6vw, 1.5rem);
+  letter-spacing: 0.08em;
+  color: #f1ead6;
+  border-bottom: 1px solid rgba(241, 234, 214, 0.25);
+  padding-bottom: 6px;
+}
+
+.slate-row b {
+  color: var(--red);
+  font-weight: 700;
+  margin-right: 0.4em;
+}
+
+.slate-row b + b,
+.slate-row b:not(:first-child) {
+  margin-left: 0.8em;
+}
+
+/* ---------- Home: TV channel change ---------- */
+.tr-home {
+  background: #050505;
+  overflow: hidden;
+}
+
+.tv-noise {
+  position: absolute;
+  inset: -50%;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.7;
+  animation: tv-snow 0.2s steps(4) infinite;
+}
+
+@keyframes tv-snow {
+  25% { transform: translate(-7%, 4%); }
+  50% { transform: translate(5%, -6%); }
+  75% { transform: translate(-3%, -8%); }
+}
+
+.tv-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 4px;
+  margin-top: -2px;
+  background: #fff;
+  box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.6);
+  opacity: 0;
 }
