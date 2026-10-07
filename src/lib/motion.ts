@@ -56,3 +56,18 @@ export const magnetize = (el: HTMLElement, strength = 0.3) => {
     el.removeEventListener('pointerleave', leave);
   };
 };
+
+let booted = false;
+const bootListeners: Array<() => void> = [];
+
+/** Run cb once the loading screen has handed over to the page (immediately if it already has). */
+export const onBoot = (cb: () => void) => {
+  if (booted) cb();
+  else bootListeners.push(cb);
+};
+
+export const markBooted = () => {
+  if (booted) return;
+  booted = true;
+  bootListeners.splice(0).forEach((cb) => cb());
+};

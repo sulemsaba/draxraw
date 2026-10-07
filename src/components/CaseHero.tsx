@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { useGSAP } from '@gsap/react';
-import { finePointer, gsap, reducedMotion, SplitText } from '../lib/motion';
+import { finePointer, gsap, onBoot, reducedMotion, SplitText } from '../lib/motion';
 import { Sticker } from './Sticker';
 import { PlayIcon, WhatsAppIcon } from './Icons';
 import { GoLink } from './PageWipe';
@@ -20,7 +20,8 @@ export const CaseHero: React.FC = () => {
 
       // Opening: the two name stickers slap on, then each letter drops into place
       const letters = new SplitText('.name-letters', { type: 'chars' }).chars;
-      const tl = gsap.timeline({ delay: 0.2 });
+      // Held until the loading screen hands over, then played
+      const tl = gsap.timeline({ paused: true, delay: 0.1 });
       tl.fromTo('.name-drax', SLAP_FROM, SLAP_TO, 0)
         .fromTo('.name-raw', SLAP_FROM, SLAP_TO, 0.16)
         .from(letters, { yPercent: -60, rotation: () => gsap.utils.random(-25, 25), opacity: 0, duration: 0.5, ease: 'back.out(2.6)', stagger: 0.05 }, 0.05)
@@ -28,6 +29,7 @@ export const CaseHero: React.FC = () => {
         .fromTo(hero, { y: 0 }, { y: 5, duration: 0.05, yoyo: true, repeat: 1 }, 0.58)
         .from('.hero-roles, .hero-actions > *', { y: 24, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08 }, 0.7)
         .from('.case-logo, .case-rail', { opacity: 0, duration: 0.5 }, 0.8);
+      onBoot(() => tl.play());
 
       // Scrolling away: the stickers pull apart and Drax sinks back into the case
       gsap

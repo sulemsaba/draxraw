@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { startSmoothScroll } from './lib/motion';
+import { markBooted, setScrollLocked, startSmoothScroll } from './lib/motion';
+import { Preloader } from './components/Preloader';
 import { PageWipe } from './components/PageWipe';
 import { CaseNav } from './components/CaseNav';
 import { Footer } from './components/Footer';
@@ -11,9 +12,18 @@ import { AboutPage } from './pages/AboutPage';
 import { BookPage } from './pages/BookPage';
 
 export const App: React.FC = () => {
+  // The old-TV loading screen plays once per visit
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     startSmoothScroll();
+    setScrollLocked(true);
   }, []);
+
+  const handOver = () => {
+    setScrollLocked(false);
+    markBooted();
+  };
 
   return (
     <PageWipe>
@@ -31,6 +41,7 @@ export const App: React.FC = () => {
         </main>
         <Footer />
       </div>
+      {loading && <Preloader onRevealed={handOver} onExited={() => setLoading(false)} />}
     </PageWipe>
   );
 };
