@@ -14,7 +14,7 @@ const LABELS: Record<string, string> = {
 
 export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const pathname = useLocation().pathname.replace(/(.)\/$/, '$1');
   const panel = useRef<HTMLDivElement>(null);
   const covering = useRef(false);
   const [label, setLabel] = useState('');

@@ -11,7 +11,8 @@ const LINKS = [
 ];
 
 export const CaseNav: React.FC = () => {
-  const { pathname } = useLocation();
+  // GitHub Pages serves /films as /films/; compare without the trailing slash
+  const pathname = useLocation().pathname.replace(/(.)\/$/, '$1');
 
   return (
     <>
