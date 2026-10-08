@@ -169,11 +169,26 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       if (land && target && fly) {
         fly.src = (land as HTMLImageElement).src;
         place(fly, land.getBoundingClientRect());
-        gsap.set(fly, { autoAlpha: 1 });
+        gsap.set(fly, { autoAlpha: 1, rotation: 0 });
         gsap.set(land, { opacity: 0 });
-        tl.add(flyTo(fly, target.getBoundingClientRect(), 0.7), 0)
-          .to(layer, { opacity: 0, duration: 0.45, ease: 'power2.out' }, 0.08)
-          .to(fly, { autoAlpha: 0, duration: 0.18 })
+        // The card sits at a slight angle: land on its true (unrotated) box and
+        // turn to its angle, so the frame settles onto the card with no snap
+        const card = target.closest<HTMLElement>('.film');
+        const angle = card ? parseFloat(getComputedStyle(card).rotate) || 0 : 0;
+        const box = target.getBoundingClientRect();
+        const w = target.offsetWidth;
+        const h = target.offsetHeight;
+        const left = box.left + box.width / 2 - w / 2;
+        const top = box.top + box.height / 2 - h / 2;
+        // the card's own picture waits until the flying frame lands on it
+        gsap.set(target, { opacity: 0 });
+        // the strip clears first, then the frame glides home
+        tl.to('.fs-strip .fs-frame:not(:nth-child(' + (FS_LAND + 1) + ')), .fs-sprockets, .fs-gate', { opacity: 0, duration: 0.22, ease: 'power1.out' }, 0)
+          .to(layer, { opacity: 0, duration: 0.38, ease: 'power1.out' }, 0.14)
+          .to(fly, { left, top, width: w, height: h, rotation: angle, duration: 0.7, ease: 'power3.inOut' }, 0.05)
+          .set(target, { opacity: 1 }, 0.75)
+          .to(fly, { autoAlpha: 0, duration: 0.2, ease: 'power1.inOut' }, 0.76)
+          .set('.fs-strip .fs-frame, .fs-sprockets, .fs-gate', { clearProps: 'opacity' })
           .set(land, { opacity: 1 });
       } else {
         tl.to(layer, { opacity: 0, duration: 0.4, ease: 'power2.out' });

@@ -349,4 +349,5 @@
 
 .tr-fly {
   z-index: 5;
+  transform-origin: 50% 50%;
 }
