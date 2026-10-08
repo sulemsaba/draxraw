@@ -147,6 +147,12 @@ button {
   mask: var(--wear) var(--wear-x, 0) var(--wear-y, 0) / auto;
 }
 
+/* The wear and grime layers follow the sticker's shape (round stickers stay round) */
+.vinyl::before,
+.vinyl::after {
+  border-radius: inherit;
+}
+
 .vinyl.wear-2 { --wear: var(--wear-2); }
 .vinyl.wear-3 { --wear: var(--wear-3); }
 .vinyl.no-wear::before { display: none; }

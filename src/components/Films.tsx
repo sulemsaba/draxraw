@@ -44,7 +44,8 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
       transformOrigin: '100% 0%',
       duration: 0.42,
       ease: 'power2.in',
-      onComplete: open,
+      // the film starts loading the moment you tap, while the sticker peels
+      onStart: open,
     });
   };
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { markBooted, setScrollLocked, startSmoothScroll } from './lib/motion';
+import { loadYouTube } from './lib/youtube';
 import { Preloader } from './components/Preloader';
 import { PageWipe } from './components/PageWipe';
 import { CaseNav } from './components/CaseNav';
@@ -23,9 +24,12 @@ export const App: React.FC = () => {
   });
 
   useEffect(() => {
+    // Fetch YouTube's player code in the background, so films start fast
+    const warm = window.setTimeout(() => loadYouTube().catch(() => {}), 2500);
     startSmoothScroll();
     if (loading) setScrollLocked(true);
     else markBooted();
+    return () => window.clearTimeout(warm);
     // run once on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

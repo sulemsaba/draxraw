@@ -12,6 +12,10 @@ interface PlayerProps {
 
 type Phase = 'tuning' | 'playing' | 'paused' | 'ended' | 'blocked';
 
+// Hidden warm-up while YouTube's own start-up buttons show and hide
+// (phones keep YouTube's title and buttons up longer than computers)
+const PREROLL_S = window.matchMedia('(hover: hover) and (pointer: fine)').matches ? 2 : 3;
+
 const fmt = (s: number) => {
   if (!Number.isFinite(s)) return '0:00';
   const m = Math.floor(s / 60);
@@ -55,7 +59,7 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
       return;
     }
     // Fade from the still into the film
-    gsap.to('.tv-cover', { autoAlpha: 0, duration: 1.8, delay: 0.3, ease: 'power2.inOut' });
+    gsap.to('.tv-cover', { autoAlpha: 0, duration: 1, delay: 0.3, ease: 'power2.inOut' });
   }, []);
 
   // Build the YouTube player for this film
@@ -101,20 +105,25 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
             onStateChange: (e) => {
               if (e.data === YT_STATE.PLAYING) {
                 if (phaseRef.current === 'tuning' || phaseRef.current === 'blocked') {
-                  // Silent slow-motion pre-roll under the still: YouTube shows and hides
-                  // its own start-up buttons while only about a second of film passes.
-                  // No seeking afterwards, because any jump brings those buttons back.
                   if (preroll) return;
-                  e.target.setPlaybackRate(0.25);
-                  preroll = window.setTimeout(() => {
-                    e.target.setPlaybackRate(1);
-                    e.target.unMute();
+                  // Any player call (seek, speed) makes YouTube flash its buttons,
+                  // so the film just plays under the still; reveal touches only our layer
+                  e.target.unMute();
+                  // Reveal once the film has really played past YouTube's start-up
+                  // buttons (measured on the film itself, not a guess at load time)
+                  const check = window.setInterval(() => {
+                    if ((e.target.getCurrentTime() || 0) < PREROLL_S) return;
+                    window.clearInterval(check);
+                    reveal();
+                  }, 100);
+                  preroll = check;
+                  const reveal = () => {
                     // isMuted() lags behind unMute(); read the real state a moment later
                     setMuted(false);
                     window.setTimeout(() => setMuted(e.target.isMuted()), 600);
                     setPhase('playing');
                     revealFilm();
-                  }, 3800);
+                  };
                   return;
                 }
                 gsap.to('.tv-cover', { autoAlpha: 0, duration: 0.6, delay: 0.4 });
@@ -142,6 +151,7 @@ export const Player: React.FC<PlayerProps> = ({ film, onClose }) => {
       cancelled = true;
       window.clearTimeout(blockTimer);
       window.clearTimeout(preroll);
+      window.clearInterval(preroll);
       window.clearInterval(ticker);
       playerRef.current?.destroy();
       playerRef.current = null;
