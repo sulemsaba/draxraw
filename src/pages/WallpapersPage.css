@@ -290,6 +290,7 @@
 }
 
 .wv-dl,
+.wv-share,
 .wv-close {
   display: inline-flex;
   align-items: center;
@@ -305,9 +306,24 @@
   color: var(--ink);
 }
 
-.wv-close {
+.wv-close,
+.wv-share {
   border: 1px solid rgba(237, 228, 208, 0.25);
   color: #ede4d0;
+}
+
+.wv-share:hover,
+.wv-close:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+@media (max-width: 420px) {
+  .wv-dl,
+  .wv-share,
+  .wv-close {
+    padding: 0 14px;
+  }
 }
 
 .flip-x {

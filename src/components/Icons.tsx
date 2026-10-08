@@ -142,3 +142,15 @@ export const SunIcon: React.FC<IconProps> = ({ size = 22, className }) =>
 
 export const MoonIcon: React.FC<IconProps> = ({ size = 22, className }) =>
   svg(size, className, <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />);
+
+export const ShareIcon: React.FC<IconProps> = ({ size = 22, className }) =>
+  svg(
+    size,
+    className,
+    <>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="M8.2 10.8l7.6-4.1M8.2 13.2l7.6 4.1" />
+    </>
+  );

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Sticker } from '../components/Sticker';
 import { CtaBand } from '../components/CtaBand';
-import { ArrowIcon, CloseIcon, DownloadIcon, PhoneIcon } from '../components/Icons';
+import { ArrowIcon, CloseIcon, DownloadIcon, PhoneIcon, ShareIcon } from '../components/Icons';
 import { WALLPAPERS } from '../data/site';
 import { gsap, reducedMotion, setScrollLocked } from '../lib/motion';
 import { usePageMotion } from '../lib/usePageMotion';
@@ -28,10 +28,18 @@ const clock = () => {
 
 export const WallpapersPage: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
-  const [device, setDevice] = useState<Device>(() =>
-    window.matchMedia('(max-width: 899px)').matches ? 'phone' : 'desktop'
-  );
-  const [open, setOpen] = useState<number | null>(null);
+  const [device, setDevice] = useState<Device>(() => {
+    const d = new URLSearchParams(window.location.search).get('d');
+    if (d === 'phone' || d === 'desktop') return d;
+    return window.matchMedia('(max-width: 899px)').matches ? 'phone' : 'desktop';
+  });
+  // A shared link (?w=<slug>&d=phone|desktop) opens straight onto that wallpaper
+  const params = new URLSearchParams(window.location.search);
+  const [open, setOpen] = useState<number | null>(() => {
+    const i = WALLPAPERS.findIndex((x) => x.slug === params.get('w'));
+    return i >= 0 ? i : null;
+  });
+  const [note, setNote] = useState('');
   const touch = useRef<{ x: number; y: number } | null>(null);
   usePageMotion(ref);
 
@@ -54,6 +62,40 @@ export const WallpapersPage: React.FC = () => {
   }, [open, step]);
 
   const w = open !== null ? WALLPAPERS[open] : null;
+
+  const flash = (msg: string) => {
+    setNote(msg);
+    window.setTimeout(() => setNote(''), 2200);
+  };
+
+  // Phone share sheet with the image itself; otherwise a link; otherwise copy the link
+  const share = async () => {
+    if (!w) return;
+    const url = `${window.location.origin}${import.meta.env.BASE_URL}wallpapers?w=${w.slug}&d=${device}`;
+    const text = `${w.title}: a free Drax Raw wallpaper`;
+    try {
+      const blob = await fetch(`${import.meta.env.BASE_URL}wallpapers/${w.slug}-${device}.jpg`).then((r) => r.blob());
+      const file = new File([blob], `drax-raw-${w.slug}-${device}.jpg`, { type: 'image/jpeg' });
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'Drax Raw wallpaper', text: `${text} ${url}` });
+        return;
+      }
+      if (navigator.share) {
+        await navigator.share({ title: 'Drax Raw wallpaper', text, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      flash('Link copied');
+    } catch (err) {
+      if ((err as Error)?.name === 'AbortError') return; // closed the share sheet
+      try {
+        await navigator.clipboard.writeText(url);
+        flash('Link copied');
+      } catch {
+        flash('Could not share');
+      }
+    }
+  };
   const now = clock();
 
   return (
@@ -160,6 +202,9 @@ export const WallpapersPage: React.FC = () => {
             <a className="wv-dl label" href={`wallpapers/${w.slug}-${device}.jpg`} download={`drax-raw-${w.slug}-${device}.jpg`}>
               <DownloadIcon size={20} /> Download
             </a>
+            <button type="button" className="wv-share label" onClick={share}>
+              <ShareIcon size={18} /> {note || 'Share'}
+            </button>
             <button type="button" className="wv-close label" onClick={() => setOpen(null)} autoFocus>
               <CloseIcon size={18} /> Close
             </button>
