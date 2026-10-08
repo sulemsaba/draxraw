@@ -113,7 +113,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       // Character intro: the red card slides in, he arrives, his name slaps on, freeze
       tl.set('.ci-stage', { filter: 'none' })
         .fromTo(layer, { xPercent: 100 }, { xPercent: 0, duration: 0.3, ease: 'power3.out' })
-        .fromTo('.ci-drax', { xPercent: 18, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.32, ease: 'power3.out' }, 0.1)
+        .fromTo('.ci-photo', { xPercent: 18, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.32, ease: 'power3.out' }, 0.1)
         .fromTo('.ci-name', { scale: 1.5, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: -3, duration: 0.24, ease: 'back.out(2)' }, 0.22)
         .fromTo('.ci-role', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.36)
         .fromTo('.ci-flash', { opacity: 0 }, { opacity: 0.6, duration: 0.03 }, 0.56)
@@ -158,6 +158,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         gsap.set(root.current, { autoAlpha: 0 });
         gsap.set(layer, { clearProps: 'all' });
         gsap.set(qa('.tr-fly, .ph-shot'), { autoAlpha: 0 });
+        gsap.set(qa('.tr-fly'), { clearProps: 'filter,objectPosition,rotation' });
       },
     });
 
@@ -211,7 +212,43 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       }
     }
     if (kind === 'about') {
-      tl.to(layer, { xPercent: -100, duration: 0.38, ease: 'power3.inOut' });
+      // Hand-over: the frozen black-and-white portrait flies into the Polaroid
+      // on the About page, turning to its angle and coming back into colour
+      const photo = q('.ci-photo');
+      const target = document.querySelector<HTMLElement>('main .about-print img');
+      const fly = q('.tr-fly') as HTMLImageElement | null;
+      if (photo && target && fly) {
+        fly.src = (photo as HTMLImageElement).src;
+        place(fly, photo.getBoundingClientRect());
+        gsap.set(fly, { autoAlpha: 1, rotation: 0, objectPosition: 'center 18%', filter: 'grayscale(1) contrast(1.15)' });
+        gsap.set(photo, { opacity: 0 });
+        gsap.set(target, { opacity: 0 });
+        const print = target.closest<HTMLElement>('.about-print');
+        const angle = print ? parseFloat(getComputedStyle(print).rotate) || 0 : 0;
+        const box = target.getBoundingClientRect();
+        const w = target.offsetWidth;
+        const h = target.offsetHeight;
+        tl.to(layer, { opacity: 0, duration: 0.38, ease: 'power1.out' }, 0.1)
+          .to(
+            fly,
+            {
+              left: box.left + box.width / 2 - w / 2,
+              top: box.top + box.height / 2 - h / 2,
+              width: w,
+              height: h,
+              rotation: angle,
+              filter: 'grayscale(0) contrast(1)',
+              duration: 0.7,
+              ease: 'power3.inOut',
+            },
+            0.05
+          )
+          .set(target, { opacity: 1 }, 0.75)
+          .to(fly, { autoAlpha: 0, duration: 0.2 }, 0.76)
+          .set(photo, { opacity: 1 });
+      } else {
+        tl.to(layer, { xPercent: -100, duration: 0.38, ease: 'power3.inOut' });
+      }
     }
     if (kind === 'book') {
       tl.to('.cb-card', { scale: 0.85, opacity: 0, duration: 0.14 })
@@ -315,7 +352,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         {/* About: character intro freeze-frame */}
         <div className="tr-layer tr-about">
           <div className="ci-stage">
-            <img className="ci-drax" src="img/drax-cutout.webp" alt="" width={1100} height={1680} />
+            <img className="ci-photo" src="img/drax-shades.webp" alt="" width={1100} height={1650} />
             <div className="ci-card">
               <span className="ci-name display">Drax</span>
               <span className="ci-role label">Filmmaker / Editor / Photographer</span>
