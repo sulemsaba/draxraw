@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { gsap, reducedMotion, ScrollTrigger, scrollTop } from '../lib/motion';
 import { GoContext, useGo } from '../lib/go';
@@ -22,7 +22,7 @@ const TILES = ['starring', 'countdown', 'redroom', 'slate', 'mark', 'vinyl'];
  * Films: a projector film strip racing through the gate. Photos: a viewfinder locks focus and the
  * shutter curtains fire. About: a movie character intro freeze-frame.
  * Book: a full-screen clapperboard. Wallpapers: a mosaic of his photos.
- * Home: a cinema iris closing on the DX mark and opening again.
+ * Home: an iris closing on the DX mark and opening again.
  * Each one covers the page, the route changes underneath, then it clears.
  */
 export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -30,6 +30,23 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const pathname = useLocation().pathname.replace(/(.)\/$/, '$1');
   const root = useRef<HTMLDivElement>(null);
   const pending = useRef<Kind | null>(null);
+
+  // Warm the transition images up in the background so they never pop in
+  useEffect(() => {
+    const warm = () =>
+      qa('.tr img, .mz-tile').forEach((el) => {
+        if (el instanceof HTMLImageElement) {
+          el.loading = 'eager';
+          el.decode?.().catch(() => {});
+        } else {
+          const url = el.style.backgroundImage.match(/url\("?([^")]+)"?\)/)?.[1];
+          if (url) new Image().src = url;
+        }
+      });
+    const t = window.setTimeout(warm, 3500);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const q = (sel: string) => root.current?.querySelector<HTMLElement>(sel) ?? null;
   const qa = (sel: string) => Array.from(root.current?.querySelectorAll<HTMLElement>(sel) ?? []);
@@ -42,124 +59,132 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     tl.set(root.current, { autoAlpha: 1 }).set(layer, { autoAlpha: 1 });
 
     if (kind === 'films') {
-      // Projector: a strip of his frames races through the gate, slows, locks on
-      // one frame, and that frame grows to fill the screen
+      // Projector: a strip of his frames races through the gate, locks on one
+      // frame, and that frame pushes in under the lamp
       const track = q('.fs-track');
       const frames = qa('.fs-frame');
       const land = frames[FS_LAND];
       const strip = q('.fs-strip');
       const pitch = frames[1] && frames[0] ? frames[1].offsetTop - frames[0].offsetTop : 0;
       const endY = land && strip ? -(land.offsetTop - (strip.clientHeight - land.offsetHeight) / 2) : 0;
-      // A gentle push-in (never more than double) instead of blowing the frame up
       const scale = land ? Math.min(2, Math.max(1.25, (window.innerWidth / land.offsetWidth) * 1.12)) : 1;
       tl.set('.fs-strip', { scale: 1 })
         .set('.fs-flare', { opacity: 0 })
         .set('.fs-sprockets', { opacity: 0.85 })
-        .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.15 })
-        .fromTo(track, { y: endY + pitch * 8 }, { y: endY, duration: 0.95, ease: 'power3.out' }, 0)
-        .fromTo(track, { filter: 'blur(6px)' }, { filter: 'blur(0px)', duration: 0.8, ease: 'power2.in' }, 0)
-        // the gate flickers as it locks
-        .to('.fs-gate', { opacity: 0.35, duration: 0.05, repeat: 3, yoyo: true }, 0.9)
-        .to('.fs-strip', { scale, duration: 0.5, ease: 'power2.inOut' }, 1.05)
-        .to('.fs-sprockets', { opacity: 0, duration: 0.25 }, 1.05)
-        // the projector lamp flares as the picture takes over
-        .fromTo('.fs-flare', { opacity: 0 }, { opacity: 0.85, duration: 0.3, ease: 'power2.in' }, 1.3);
+        .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.12 })
+        .fromTo(track, { y: endY + pitch * 7 }, { y: endY, duration: 0.75, ease: 'power3.out' }, 0)
+        .to('.fs-gate', { opacity: 0.35, duration: 0.04, repeat: 3, yoyo: true }, 0.68)
+        .to('.fs-strip', { scale, duration: 0.38, ease: 'power2.inOut' }, 0.8)
+        .to('.fs-sprockets', { opacity: 0, duration: 0.2 }, 0.8)
+        .fromTo('.fs-flare', { opacity: 0 }, { opacity: 0.85, duration: 0.22, ease: 'power2.in' }, 0.98);
     }
 
     if (kind === 'photos') {
-      // Viewfinder over the page: focus hunts and locks, then the curtains fire
+      // Viewfinder locks focus, then the shutter curtains fire
       tl.set('.vf', { opacity: 1 })
         .set('.vf-focus', { borderColor: '#ede4d0' })
-        .fromTo(layer, { backgroundColor: 'rgba(0,0,0,0)' }, { backgroundColor: 'rgba(0,0,0,0.35)', duration: 0.2 })
-        .fromTo('.vf-corner', { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.25, ease: 'power3.out', stagger: 0.03 }, 0)
-        .fromTo('.vf-focus', { scale: 1.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.22, ease: 'power3.out' }, 0.08)
-        .to('.vf-focus', { scale: 0.92, duration: 0.07, yoyo: true, repeat: 1 })
+        .fromTo('.vf-dim', { opacity: 0 }, { opacity: 1, duration: 0.15 })
+        .fromTo('.vf-corner', { scale: 1.25, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.2, ease: 'power3.out', stagger: 0.02 }, 0)
+        .fromTo('.vf-focus', { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.18, ease: 'power3.out' }, 0.05)
+        .to('.vf-focus', { scale: 0.93, duration: 0.06, yoyo: true, repeat: 1 })
         .set('.vf-focus', { borderColor: '#f1b51c' })
-        .fromTo('.vf-read', { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0.15)
-        .fromTo('.sh-top', { yPercent: -101 }, { yPercent: 0, duration: 0.17, ease: 'power4.in' }, '+=0.06')
-        .fromTo('.sh-bottom', { yPercent: 101 }, { yPercent: 0, duration: 0.17, ease: 'power4.in' }, '<')
-        .fromTo('.sh-flash', { opacity: 0 }, { opacity: 0.9, duration: 0.04 })
-        .to('.sh-flash', { opacity: 0, duration: 0.22 })
-        .set('.vf', { opacity: 0 });
+        .fromTo('.vf-read', { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.1)
+        .fromTo('.sh-top', { yPercent: -101 }, { yPercent: 0, duration: 0.15, ease: 'power4.in' }, '+=0.04')
+        .fromTo('.sh-bottom', { yPercent: 101 }, { yPercent: 0, duration: 0.15, ease: 'power4.in' }, '<')
+        .fromTo('.sh-flash', { opacity: 0 }, { opacity: 0.85, duration: 0.04 })
+        .to('.sh-flash', { opacity: 0, duration: 0.16 })
+        .set('.vf', { opacity: 0 })
+        .set('.vf-dim', { opacity: 0 });
     }
 
     if (kind === 'about') {
-      // Character intro: the screen cuts to him, his name slaps on, freeze-frame
+      // Character intro: the red card slides in, he arrives, his name slaps on, freeze
       tl.set('.ci-stage', { filter: 'none' })
-        .fromTo(layer, { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.32, ease: 'power3.inOut' })
-        .fromTo('.ci-drax', { xPercent: 25, opacity: 0, filter: 'blur(10px)' }, { xPercent: 0, opacity: 1, filter: 'blur(0px)', duration: 0.42, ease: 'power3.out' }, 0.12)
-        .fromTo('.ci-name', { scale: 1.6, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: -3, duration: 0.3, ease: 'back.out(2)' }, 0.32)
-        .fromTo('.ci-role', { clipPath: 'inset(0% 100% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.25, ease: 'power2.out' }, 0.5)
-        // freeze frame
-        .fromTo('.ci-flash', { opacity: 0 }, { opacity: 0.7, duration: 0.04 }, 0.78)
-        .to('.ci-flash', { opacity: 0, duration: 0.2 })
-        .set('.ci-stage', { filter: 'grayscale(1) contrast(1.15)' }, 0.8)
-        .to({}, { duration: 0.12 });
+        .fromTo(layer, { xPercent: 100 }, { xPercent: 0, duration: 0.3, ease: 'power3.out' })
+        .fromTo('.ci-drax', { xPercent: 18, opacity: 0 }, { xPercent: 0, opacity: 1, duration: 0.32, ease: 'power3.out' }, 0.1)
+        .fromTo('.ci-name', { scale: 1.5, opacity: 0, rotation: -8 }, { scale: 1, opacity: 1, rotation: -3, duration: 0.24, ease: 'back.out(2)' }, 0.22)
+        .fromTo('.ci-role', { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.2, ease: 'power2.out' }, 0.36)
+        .fromTo('.ci-flash', { opacity: 0 }, { opacity: 0.6, duration: 0.03 }, 0.56)
+        .to('.ci-flash', { opacity: 0, duration: 0.16 })
+        .set('.ci-stage', { filter: 'grayscale(1) contrast(1.15)' }, 0.58)
+        .to({}, { duration: 0.08 });
     }
 
     if (kind === 'book') {
       // Full-screen clapperboard: the striped bars slam together, the slate pops
-      tl.fromTo('.cb-top', { yPercent: -100, rotation: -10 }, { yPercent: 0, rotation: -10, duration: 0.3, ease: 'power3.out' })
-        .fromTo('.cb-bottom', { yPercent: 100 }, { yPercent: 0, duration: 0.3, ease: 'power3.out' }, '<')
-        .fromTo('.cb-card', { scale: 0.6, opacity: 0, rotation: 6 }, { scale: 1, opacity: 1, rotation: -2, duration: 0.3, ease: 'back.out(1.8)' }, 0.12)
-        .to('.cb-top', { rotation: 0, duration: 0.13, ease: 'power4.in' }, 0.5)
-        .to('.tr-book', { y: 8, duration: 0.05, yoyo: true, repeat: 1 }, 0.63)
-        .to({}, { duration: 0.1 });
+      tl.fromTo('.cb-top', { yPercent: -100, rotation: -10 }, { yPercent: 0, rotation: -10, duration: 0.24, ease: 'power3.out' })
+        .fromTo('.cb-bottom', { yPercent: 100 }, { yPercent: 0, duration: 0.24, ease: 'power3.out' }, '<')
+        .fromTo('.cb-card', { scale: 0.7, opacity: 0, rotation: 6 }, { scale: 1, opacity: 1, rotation: -2, duration: 0.24, ease: 'back.out(1.8)' }, 0.08)
+        .to('.cb-top', { rotation: 0, duration: 0.11, ease: 'power4.in' }, 0.36)
+        .to('.tr-book', { y: 6, duration: 0.04, yoyo: true, repeat: 1 }, 0.47);
     }
 
     if (kind === 'walls') {
-      // Mosaic: his photos flip in tile by tile from the centre
+      // Mosaic: the wallpapers flip in tile by tile from the centre
       tl.fromTo(
         '.mz-tile',
         { rotationY: -90, opacity: 0 },
-        { rotationY: 0, opacity: 1, duration: 0.4, ease: 'power3.out', stagger: { each: 0.035, from: 'center', grid: 'auto' } }
-      ).to({}, { duration: 0.08 });
+        { rotationY: 0, opacity: 1, duration: 0.32, ease: 'power3.out', stagger: { each: 0.025, from: 'center', grid: 'auto' } }
+      );
     }
 
     if (kind === 'home') {
-      // Cinema iris closing to black around the DX mark
-      tl.fromTo(layer, { '--r': '150vmax' }, { '--r': '0vmax', duration: 0.55, ease: 'power3.in' })
-        .fromTo('.iris-mark', { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(2)' }, 0.42)
-        .to({}, { duration: 0.12 });
+      // Iris: a black disc closes in on the DX mark
+      tl.fromTo(layer, { clipPath: 'circle(0% at 50% 50%)' }, { clipPath: 'circle(75% at 50% 50%)', duration: 0.42, ease: 'power3.in' })
+        .fromTo('.iris-mark', { scale: 0.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.24, ease: 'back.out(2)' }, 0.26);
     }
 
     return tl;
   };
 
-  /** Clear the cover over the new page. */
+  /** Clear the cover over the new page (already measured, so nothing jumps). */
   const reveal = (kind: Kind) => {
     const layer = q(`.tr-${kind}`);
     const tl = gsap.timeline({
+      defaults: { force3D: true },
       onComplete: () => {
         gsap.set(root.current, { autoAlpha: 0 });
         gsap.set(layer, { clearProps: 'all' });
-        ScrollTrigger.refresh();
       },
     });
 
     if (kind === 'films') {
-      tl.to('.fs-strip', { scale: '+=0.15', duration: 0.6, ease: 'power1.out' }, 0)
-        .to(layer, { opacity: 0, duration: 0.55, ease: 'power2.out' }, 0);
+      tl.to('.fs-strip', { scale: '+=0.12', duration: 0.45, ease: 'power1.out' }, 0).to(
+        layer,
+        { opacity: 0, duration: 0.4, ease: 'power2.out' },
+        0
+      );
     }
     if (kind === 'photos') {
-      tl.to('.sh-top', { yPercent: -101, duration: 0.38, ease: 'power3.out' })
-        .to('.sh-bottom', { yPercent: 101, duration: 0.38, ease: 'power3.out' }, '<')
-        .to(layer, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.2 }, '<');
+      tl.to('.sh-top', { yPercent: -101, duration: 0.32, ease: 'power3.out' }).to(
+        '.sh-bottom',
+        { yPercent: 101, duration: 0.32, ease: 'power3.out' },
+        '<'
+      );
     }
     if (kind === 'about') {
-      tl.to(layer, { xPercent: -100, skewX: -6, duration: 0.5, ease: 'power3.in' });
+      tl.to(layer, { xPercent: -100, duration: 0.38, ease: 'power3.inOut' });
     }
     if (kind === 'book') {
-      tl.to('.cb-card', { scale: 0.8, opacity: 0, duration: 0.2 })
-        .to('.cb-top', { yPercent: -100, duration: 0.4, ease: 'power3.in' }, 0.08)
-        .to('.cb-bottom', { yPercent: 100, duration: 0.4, ease: 'power3.in' }, 0.08);
+      tl.to('.cb-card', { scale: 0.85, opacity: 0, duration: 0.14 })
+        .to('.cb-top', { yPercent: -100, duration: 0.32, ease: 'power3.inOut' }, 0.04)
+        .to('.cb-bottom', { yPercent: 100, duration: 0.32, ease: 'power3.inOut' }, 0.04);
     }
     if (kind === 'walls') {
-      tl.to('.mz-tile', { rotationY: 90, opacity: 0, duration: 0.35, ease: 'power3.in', stagger: { each: 0.03, from: 'edges', grid: 'auto' } });
+      tl.to('.mz-tile', {
+        rotationY: 90,
+        opacity: 0,
+        duration: 0.26,
+        ease: 'power2.in',
+        stagger: { each: 0.02, from: 'edges', grid: 'auto' },
+      });
     }
     if (kind === 'home') {
-      tl.to('.iris-mark', { scale: 0.6, opacity: 0, duration: 0.18 })
-        .to(layer, { '--r': '150vmax', duration: 0.6, ease: 'power3.out' }, 0.1);
+      tl.to('.iris-mark', { scale: 0.6, opacity: 0, duration: 0.14 }).to(
+        layer,
+        { clipPath: 'circle(0% at 50% 50%)', duration: 0.42, ease: 'power3.out' },
+        0.06
+      );
     }
   };
 
@@ -191,7 +216,14 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     const kind = pending.current;
     if (!kind) return;
     pending.current = null;
-    gsap.delayedCall(0.08, () => reveal(kind));
+    // Let the new page paint and settle under the cover, measure it there,
+    // then lift the cover on a page that will not move
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+        reveal(kind);
+      })
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
@@ -216,6 +248,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
         {/* Photos: viewfinder and focal-plane shutter */}
         <div className="tr-layer tr-photos">
+          <span className="vf-dim" />
           <div className="vf">
             <span className="vf-corner vf-tl" />
             <span className="vf-corner vf-tr" />

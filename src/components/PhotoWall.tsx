@@ -21,6 +21,8 @@ export const PhotoWall: React.FC = () => {
     () => {
       if (reducedMotion()) return;
       gsap.utils.toArray<HTMLElement>('.wall-photo').forEach((fig) => {
+        // already on screen when the page opens: show it as is
+        if (fig.getBoundingClientRect().top < window.innerHeight) return;
         const img = fig.querySelector('img');
         gsap
           .timeline({ scrollTrigger: { trigger: fig, start: 'top 88%', once: true } })

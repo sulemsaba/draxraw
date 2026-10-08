@@ -123,7 +123,7 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
 
         {limit ? (
           <GoLink to="/films" className="films-more label">
-            All {FILMS.length} films <ArrowIcon size={18} />
+            View all <ArrowIcon size={18} />
           </GoLink>
         ) : (
           <a className="films-more label" href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer">

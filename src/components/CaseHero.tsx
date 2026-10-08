@@ -7,6 +7,8 @@ import { GoLink } from './PageWipe';
 import { WHATSAPP_URL } from '../data/site';
 import './CaseHero.css';
 
+let heroOpened = false;
+
 const SLAP_FROM = { scale: 1.45, opacity: 0, rotation: () => gsap.utils.random(-10, 10) };
 const SLAP_TO = { scale: 1, opacity: 1, rotation: 0, duration: 0.42, ease: 'back.out(2.2)' };
 
@@ -29,7 +31,13 @@ export const CaseHero: React.FC = () => {
         .fromTo(hero, { y: 0 }, { y: 5, duration: 0.05, yoyo: true, repeat: 1 }, 0.58)
         .from('.hero-roles, .hero-actions > *', { y: 24, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08 }, 0.7)
         .from('.case-logo, .case-rail', { opacity: 0, duration: 0.5 }, 0.8);
-      onBoot(() => tl.play());
+      // The opening plays once per visit; coming back to Home shows the hero settled
+      if (heroOpened) tl.progress(1);
+      else
+        onBoot(() => {
+          heroOpened = true;
+          tl.play();
+        });
 
       // Scrolling away: the stickers pull apart and Drax sinks back into the case
       gsap

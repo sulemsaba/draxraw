@@ -58,7 +58,7 @@ export const PhotoStrip: React.FC = () => {
           <span id="strip-title">Photos</span>
         </Sticker>
         <GoLink to="/photos" className="strip-all label">
-          All {PRINTS.length} photos <ArrowIcon size={18} />
+          View all <ArrowIcon size={18} />
         </GoLink>
       </div>
       <div ref={trackRef} className="strip-track">

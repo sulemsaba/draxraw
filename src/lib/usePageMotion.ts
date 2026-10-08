@@ -12,7 +12,9 @@ export const usePageMotion = (scope: RefObject<HTMLElement | null>) => {
       if (reducedMotion()) return;
 
       const arrive = (selector: string, from: gsap.TweenVars, to: gsap.TweenVars, stagger: number) => {
-        const els = gsap.utils.toArray<HTMLElement>(selector);
+        // Whatever is already on screen when the page opens is shown as is,
+        // so the page is still when a transition lifts; the rest arrives on scroll
+        const els = gsap.utils.toArray<HTMLElement>(selector).filter((el) => el.getBoundingClientRect().top > window.innerHeight);
         if (!els.length) return;
         gsap.set(els, { opacity: 0 });
         ScrollTrigger.batch(els, {

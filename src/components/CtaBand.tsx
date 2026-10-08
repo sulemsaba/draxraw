@@ -22,7 +22,7 @@ export const CtaBand: React.FC = () => (
           </span>
         </a>
         <GoLink to="/book" className="cta-more label">
-          All contacts <ArrowIcon size={18} />
+          View all <ArrowIcon size={18} />
         </GoLink>
       </div>
     </div>

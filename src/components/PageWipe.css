@@ -35,7 +35,7 @@
   display: flex;
   flex-direction: column;
   gap: clamp(10px, 1.6vw, 16px);
-  will-change: transform, filter;
+  will-change: transform;
 }
 
 .fs-frame {
@@ -93,6 +93,13 @@
 /* ---------- Photos: viewfinder + focal-plane shutter ---------- */
 .tr-photos {
   overflow: hidden;
+}
+
+.vf-dim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
 }
 
 .vf {
@@ -323,14 +330,13 @@
   }
 }
 
-/* ---------- Home: cinema iris ---------- */
+/* ---------- Home: iris on the DX mark ---------- */
 .tr-home {
-  --r: 150vmax;
   display: grid;
   place-items: center;
   background: #000;
-  -webkit-mask: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px));
-  mask: radial-gradient(circle at 50% 50%, transparent var(--r), #000 calc(var(--r) + 1px));
+  clip-path: circle(0% at 50% 50%);
+  will-change: clip-path;
 }
 
 .iris-mark {
