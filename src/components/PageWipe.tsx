@@ -158,7 +158,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         gsap.set(root.current, { autoAlpha: 0 });
         gsap.set(layer, { clearProps: 'all' });
         gsap.set(qa('.tr-fly, .ph-shot'), { autoAlpha: 0 });
-        gsap.set(qa('.tr-fly'), { clearProps: 'filter,objectPosition,rotation' });
+        gsap.set(qa('.tr-fly'), { clearProps: 'filter,objectPosition,rotation,borderRadius' });
       },
     });
 
@@ -172,6 +172,10 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         place(fly, land.getBoundingClientRect());
         gsap.set(fly, { autoAlpha: 1, rotation: 0 });
         gsap.set(land, { opacity: 0 });
+        // look exactly like the card's picture, so the swap at the end is invisible
+        const look = getComputedStyle(target);
+        gsap.set(fly, { borderRadius: look.borderRadius });
+        fly.style.filter = look.filter;
         // The card sits at a slight angle: land on its true (unrotated) box and
         // turn to its angle, so the frame settles onto the card with no snap
         const card = target.closest<HTMLElement>('.film');
@@ -187,8 +191,9 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         tl.to('.fs-strip .fs-frame:not(:nth-child(' + (FS_LAND + 1) + ')), .fs-sprockets, .fs-gate', { opacity: 0, duration: 0.22, ease: 'power1.out' }, 0)
           .to(layer, { opacity: 0, duration: 0.38, ease: 'power1.out' }, 0.14)
           .to(fly, { left, top, width: w, height: h, rotation: angle, duration: 0.7, ease: 'power3.inOut' }, 0.05)
-          .set(target, { opacity: 1 }, 0.75)
-          .to(fly, { autoAlpha: 0, duration: 0.2, ease: 'power1.inOut' }, 0.76)
+          // swap in one frame: same picture, same place, same look
+          .set(target, { opacity: 1 }, 0.76)
+          .set(fly, { autoAlpha: 0 }, 0.78)
           .set('.fs-strip .fs-frame, .fs-sprockets, .fs-gate', { clearProps: 'opacity' })
           .set(land, { opacity: 1 });
       } else {
