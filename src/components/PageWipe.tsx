@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { gsap, reducedMotion, ScrollTrigger, scrollTop } from '../lib/motion';
 import { GoContext, useGo } from '../lib/go';
+import { PRINTS } from '../data/site';
 import './PageWipe.css';
 
 type Kind = 'home' | 'films' | 'photos' | 'about' | 'book' | 'walls';
@@ -51,6 +52,14 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const q = (sel: string) => root.current?.querySelector<HTMLElement>(sel) ?? null;
   const qa = (sel: string) => Array.from(root.current?.querySelectorAll<HTMLElement>(sel) ?? []);
 
+  /** Pin an element to a screen rectangle. */
+  const place = (el: HTMLElement, r: DOMRect | { left: number; top: number; width: number; height: number }) =>
+    gsap.set(el, { left: r.left, top: r.top, width: r.width, height: r.height });
+
+  /** Fly an image from where it is to a target rectangle on the new page. */
+  const flyTo = (el: HTMLElement, r: DOMRect, duration: number) =>
+    gsap.to(el, { left: r.left, top: r.top, width: r.width, height: r.height, duration, ease: 'power3.inOut' });
+
   /** Cover the page; returns a timeline that ends covered. */
   const cover = (kind: Kind): gsap.core.Timeline => {
     const tl = gsap.timeline();
@@ -67,16 +76,12 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       const strip = q('.fs-strip');
       const pitch = frames[1] && frames[0] ? frames[1].offsetTop - frames[0].offsetTop : 0;
       const endY = land && strip ? -(land.offsetTop - (strip.clientHeight - land.offsetHeight) / 2) : 0;
-      const scale = land ? Math.min(2, Math.max(1.25, (window.innerWidth / land.offsetWidth) * 1.12)) : 1;
       tl.set('.fs-strip', { scale: 1 })
-        .set('.fs-flare', { opacity: 0 })
         .set('.fs-sprockets', { opacity: 0.85 })
         .fromTo(layer, { opacity: 0 }, { opacity: 1, duration: 0.12 })
         .fromTo(track, { y: endY + pitch * 7 }, { y: endY, duration: 0.75, ease: 'power3.out' }, 0)
         .to('.fs-gate', { opacity: 0.35, duration: 0.04, repeat: 3, yoyo: true }, 0.68)
-        .to('.fs-strip', { scale, duration: 0.38, ease: 'power2.inOut' }, 0.8)
-        .to('.fs-sprockets', { opacity: 0, duration: 0.2 }, 0.8)
-        .fromTo('.fs-flare', { opacity: 0 }, { opacity: 0.85, duration: 0.22, ease: 'power2.in' }, 0.98);
+        .to({}, { duration: 0.12 });
     }
 
     if (kind === 'photos') {
@@ -91,6 +96,13 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         .fromTo('.vf-read', { opacity: 0 }, { opacity: 1, duration: 0.12 }, 0.1)
         .fromTo('.sh-top', { yPercent: -101 }, { yPercent: 0, duration: 0.15, ease: 'power4.in' }, '+=0.04')
         .fromTo('.sh-bottom', { yPercent: 101 }, { yPercent: 0, duration: 0.15, ease: 'power4.in' }, '<')
+        .add(() => {
+          const shot = q('.ph-shot');
+          if (shot) {
+            place(shot, { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight });
+            gsap.set(shot, { autoAlpha: 1 });
+          }
+        })
         .fromTo('.sh-flash', { opacity: 0 }, { opacity: 0.85, duration: 0.04 })
         .to('.sh-flash', { opacity: 0, duration: 0.16 })
         .set('.vf', { opacity: 0 })
@@ -145,22 +157,43 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
       onComplete: () => {
         gsap.set(root.current, { autoAlpha: 0 });
         gsap.set(layer, { clearProps: 'all' });
+        gsap.set(qa('.tr-fly, .ph-shot'), { autoAlpha: 0 });
       },
     });
 
     if (kind === 'films') {
-      tl.to('.fs-strip', { scale: '+=0.12', duration: 0.45, ease: 'power1.out' }, 0).to(
-        layer,
-        { opacity: 0, duration: 0.4, ease: 'power2.out' },
-        0
-      );
+      // Hand-over: the locked frame flies into its place as the first film card
+      const land = qa('.fs-frame')[FS_LAND];
+      const target = document.querySelector<HTMLElement>('main .film-photo img');
+      const fly = q('.tr-fly') as HTMLImageElement | null;
+      if (land && target && fly) {
+        fly.src = (land as HTMLImageElement).src;
+        place(fly, land.getBoundingClientRect());
+        gsap.set(fly, { autoAlpha: 1 });
+        gsap.set(land, { opacity: 0 });
+        tl.add(flyTo(fly, target.getBoundingClientRect(), 0.7), 0)
+          .to(layer, { opacity: 0, duration: 0.45, ease: 'power2.out' }, 0.08)
+          .to(fly, { autoAlpha: 0, duration: 0.18 })
+          .set(land, { opacity: 1 });
+      } else {
+        tl.to(layer, { opacity: 0, duration: 0.4, ease: 'power2.out' });
+      }
     }
     if (kind === 'photos') {
-      tl.to('.sh-top', { yPercent: -101, duration: 0.32, ease: 'power3.out' }).to(
+      // Hand-over: the shot you just "took" fills the screen, then settles
+      // into its place as the first photo on the wall
+      const shot = q('.ph-shot');
+      const target = document.querySelector<HTMLElement>('main .wall-photo img');
+      tl.to('.sh-top', { yPercent: -101, duration: 0.3, ease: 'power3.out' }).to(
         '.sh-bottom',
-        { yPercent: 101, duration: 0.32, ease: 'power3.out' },
+        { yPercent: 101, duration: 0.3, ease: 'power3.out' },
         '<'
       );
+      if (shot && target) {
+        tl.add(flyTo(shot, target.getBoundingClientRect(), 0.65), '+=0.12').to(shot, { autoAlpha: 0, duration: 0.18 });
+      } else if (shot) {
+        tl.to(shot, { autoAlpha: 0, duration: 0.3 }, '<');
+      }
     }
     if (kind === 'about') {
       tl.to(layer, { xPercent: -100, duration: 0.38, ease: 'power3.inOut' });
@@ -243,7 +276,6 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <span className="fs-sprockets fs-right" />
             <span className="fs-gate" />
           </div>
-          <span className="fs-flare" />
         </div>
 
         {/* Photos: viewfinder and focal-plane shutter */}
@@ -259,6 +291,7 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
               <b>1/250</b> f/2.8 <b>ISO</b> 400
             </span>
           </div>
+          <img className="ph-shot" src={PRINTS[0].src} alt="" />
           <span className="sh-top" />
           <span className="sh-bottom" />
           <span className="sh-flash" />
@@ -301,6 +334,8 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
         <div className="tr-layer tr-home">
           <img className="iris-mark" src="img/logo-mark.webp" alt="" width={240} height={234} />
         </div>
+        {/* The image that carries over into the new page */}
+        <img className="tr-fly" alt="" />
       </div>
     </GoContext.Provider>
   );
