@@ -64,7 +64,7 @@ export const PhotoStrip: React.FC = () => {
       <div ref={trackRef} className="strip-track">
         {PRINTS.slice(0, 7).map((p) => (
           <GoLink key={p.src} to="/photos" className="strip-photo" aria-label={`${p.alt}. See all photos`}>
-            <img src={p.src} alt="" loading="lazy" width={1600} height={1067} />
+            <img src={p.src.replace('.webp', '-800.webp')} alt="" loading="lazy" width={800} height={533} />
           </GoLink>
         ))}
       </div>

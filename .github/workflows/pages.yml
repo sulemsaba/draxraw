@@ -30,14 +30,6 @@ jobs:
       - run: npm run build
         env:
           BASE_PATH: /draxraw/
-      # Give every page a real file so direct links answer 200, not 404
-      # (in-app browsers like WhatsApp and Instagram, and link previews, need this)
-      - run: |
-          for page in films photos about book wallpapers; do
-            mkdir -p dist/$page
-            cp dist/index.html dist/$page/index.html
-          done
-          cp dist/index.html dist/404.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

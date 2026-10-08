@@ -108,7 +108,17 @@ export const PhotoWall: React.FC = () => {
         {PRINTS.map((p, i) => (
           <li key={p.src}>
             <button type="button" className="wall-photo" onClick={() => show(i)} aria-label={`View photo: ${p.alt}`}>
-              <img src={p.src} alt={p.alt} loading="lazy" width={1600} height={1067} data-flip-id={`photo-${i}`} />
+              <img
+                src={p.src}
+                srcSet={`${p.src.replace('.webp', '-800.webp')} 800w, ${p.src} 1600w`}
+                sizes="(max-width: 899px) 100vw, 50vw"
+                alt={p.alt}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : 'auto'}
+                width={1600}
+                height={1067}
+                data-flip-id={`photo-${i}`}
+              />
             </button>
           </li>
         ))}

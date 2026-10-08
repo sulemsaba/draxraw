@@ -1,0 +1,47 @@
+{
+  "name": "Drax Raw",
+  "defaultUrl": "https://sulemsaba.github.io/draxraw/",
+  "pages": {
+    "/": {
+      "title": "Drax Raw - Filmmaker, Video Editor & Photographer in Dar es Salaam",
+      "description": "Drax Raw is a filmmaker, video editor and photographer in Dar es Salaam, Tanzania. Event films, NGO and impact films, brand films, music videos and reels. Book on WhatsApp."
+    },
+    "/films": {
+      "title": "Films - Drax Raw | Videographer & Video Editor in Dar es Salaam",
+      "description": "Watch films shot and edited by Drax Raw in Dar es Salaam, Tanzania: event highlights, social impact documentaries, cinematic reels and short-form content."
+    },
+    "/photos": {
+      "title": "Photos - Drax Raw | Photographer in Dar es Salaam, Tanzania",
+      "description": "Photography by Drax Raw: documentary and event photos from schools, communities and launches in Dar es Salaam, Tanzania."
+    },
+    "/about": {
+      "title": "About Drax - Filmmaker & Video Editor in Dar es Salaam | Drax Raw",
+      "description": "Meet Drax, a filmmaker and professional video editor in Dar es Salaam, Tanzania, turning raw footage into stories through editing, colour, sound and cinematic storytelling."
+    },
+    "/book": {
+      "title": "Book Drax Raw - Hire a Videographer in Dar es Salaam",
+      "description": "Book Drax Raw for your shoot in Dar es Salaam: WhatsApp +255 666 040 825, email draxraw0@gmail.com, Instagram @drax.raw."
+    },
+    "/wallpapers": {
+      "title": "Free Wallpapers - Drax Raw | Phone & Desktop",
+      "description": "Free phone (1080x2340) and desktop (2560x1440) wallpapers designed by Drax Raw. Preview, download and share."
+    }
+  },
+  "person": {
+    "jobTitle": "Filmmaker, Video Editor and Photographer",
+    "email": "draxraw0@gmail.com",
+    "telephone": "+255666040825",
+    "city": "Dar es Salaam",
+    "country": "TZ",
+    "sameAs": ["https://www.youtube.com/@DraxRaw", "https://www.instagram.com/drax.raw/"],
+    "services": ["Event films", "NGO and impact films", "Brand films and ads", "Music videos", "Reels and shorts", "Photography", "Video editing", "Colour grading"]
+  },
+  "films": [
+    { "id": "HxAhX2KDeos", "title": "A World That Never Stops", "seconds": 80, "date": "2026-09-02", "description": "Cinematic reel by Drax Raw." },
+    { "id": "hyaAb77XwGI", "title": "Book Launch Highlights", "seconds": 143, "date": "2026-09-07", "description": "Event highlight film of a book launch at the British Council, Dar es Salaam, by Drax Raw." },
+    { "id": "tK7P7bwisdo", "title": "Social Impact Video", "seconds": 249, "date": "2026-09-07", "description": "Social impact film about a school library in Tanzania, by Drax Raw." },
+    { "id": "QoEMUUKstAI", "title": "Social Impact: Short Documentary", "seconds": 157, "date": "2026-09-08", "description": "Short social impact documentary from Tanzania, by Drax Raw." },
+    { "id": "1LPbfrHc6-U", "title": "Engagement", "seconds": 126, "date": "2026-09-12", "description": "Film by Drax Raw." },
+    { "id": "iw1qnfriJIc", "title": "Social Media Reel", "seconds": 45, "date": "2026-09-11", "description": "Short-form social media reel by Drax Raw." }
+  ]
+}

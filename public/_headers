@@ -1,0 +1,10 @@
+# Cloudflare Pages / Netlify: cache files whose names never change for a year
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+/img/*
+  Cache-Control: public, max-age=2592000
+/wallpapers/*
+  Cache-Control: public, max-age=2592000
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

@@ -92,7 +92,17 @@ export const Films: React.FC<FilmsProps> = ({ limit, title = 'The work', as = 'h
               >
                 <span className="film-print stuck">
                   <span className="film-photo">
-                    <img src={`img/films/${film.id}.webp`} alt="" loading="lazy" width={1280} height={720} />
+                    <img
+                      src={`img/films/${film.id}.webp`}
+                      srcSet={`img/films/${film.id}-640.webp 640w, img/films/${film.id}.webp 1280w`}
+                      sizes="(max-width: 700px) 92vw, (max-width: 1100px) 46vw, 60vw"
+                      alt=""
+                      // the first film is the page's main picture: load it first
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={i === 0 ? 'high' : 'auto'}
+                      width={1280}
+                      height={720}
+                    />
                     <span className="film-curl" />
                   </span>
                 </span>

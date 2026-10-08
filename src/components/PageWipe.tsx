@@ -308,12 +308,19 @@ export const PageWipe: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pending.current = null;
     // Let the new page paint and settle under the cover, measure it there,
     // then lift the cover on a page that will not move
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        ScrollTrigger.refresh();
-        reveal(kind);
-      })
-    );
+    // (pages load on demand: wait, briefly, until the new one is really there)
+    const t0 = performance.now();
+    const ready = () => {
+      const page = document.querySelector('main > .page, main .case-hero');
+      if (!page && performance.now() - t0 < 2000) return requestAnimationFrame(ready);
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => {
+          ScrollTrigger.refresh();
+          reveal(kind);
+        })
+      );
+    };
+    ready();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
