@@ -30,7 +30,7 @@ export const CaseHero: React.FC = () => {
         .fromTo('.hero-drax', SLAP_FROM, SLAP_TO, 0.42)
         .fromTo(hero, { y: 0 }, { y: 5, duration: 0.05, yoyo: true, repeat: 1 }, 0.58)
         .from('.hero-roles, .hero-actions > *', { y: 24, opacity: 0, duration: 0.6, ease: 'power3.out', stagger: 0.08 }, 0.7)
-        .from('.case-logo, .case-rail', { opacity: 0, duration: 0.5 }, 0.8);
+        .from('.case-rail', { opacity: 0, duration: 0.5 }, 0.8);
       // The opening plays once per visit; coming back to Home shows the hero settled
       if (heroOpened) tl.progress(1);
       else

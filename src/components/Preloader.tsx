@@ -12,9 +12,8 @@ interface PreloaderProps {
 
 /**
  * An old TV switching on, about 1.5 seconds, first visit only. Snow hisses,
- * the DX Raw logo tunes in through it, then the picture tube switches off:
- * the screen squeezes into a bright line, the line into a dot, and the site
- * is underneath.
+ * the DX Raw logo tunes in through it, then the logo leaves the TV for its
+ * place as the site's logo while the picture tube switches off behind it.
  */
 export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) => {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -63,6 +62,9 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) =>
         return;
       }
 
+      // The site's logo waits for the TV logo to land on it
+      gsap.set('.case-logo', { opacity: 0 });
+
       // Held until the logo has actually loaded, so the tuning-in is never missed
       const tl = gsap.timeline({ paused: true, onComplete: onExited });
       tl
@@ -86,13 +88,30 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) =>
         .fromTo('.crt-logo', { x: -5, skewX: 6 }, { x: 0, skewX: 0, duration: 0.06, repeat: 4, yoyo: true, ease: 'none' }, 0.08)
         .set('.crt-logo', { x: 0, skewX: 0 }, 0.4)
         .to('.crt-static', { opacity: 0.1, duration: 0.6, ease: 'power2.inOut' }, 0.15)
-        // Switching off: picture to a bright line, line to a dot, then the site
-        .fromTo('.crt-screen', { scaleY: 1, filter: 'brightness(1)' }, { scaleY: 0.005, filter: 'brightness(4)', duration: 0.2, ease: 'power4.in', immediateRender: false }, 0.95)
-        .to('.crt-screen', { scaleX: 0.002, duration: 0.15, ease: 'power4.in' }, 1.15)
-        .set('.crt-screen', { opacity: 0 }, 1.3)
-        .fromTo('.crt-dot', { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.2, duration: 0.25, ease: 'power2.in', immediateRender: false }, 1.3)
-        .call(onRevealed, [], 1.2)
-        .to(rootRef.current, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.3, ease: 'power2.out' }, 1.3);
+        // Hand-over: the logo leaves the TV for its place as the site's logo,
+        // while the set switches off behind it (picture to a line, line to a dot)
+        .add(() => {
+          const from = rootRef.current?.querySelector<HTMLElement>('.crt-logo')?.getBoundingClientRect();
+          const target = document.querySelector<HTMLElement>('.case-logo img');
+          const to = target?.getBoundingClientRect();
+          if (!from || !to || !to.width) return;
+          gsap.to('.crt-logo', {
+            x: to.left + to.width / 2 - (from.left + from.width / 2),
+            y: to.top + to.height / 2 - (from.top + from.height / 2),
+            scale: to.width / from.width,
+            duration: 0.6,
+            ease: 'power3.inOut',
+          });
+        }, 0.85)
+        .fromTo('.crt-screen', { scaleY: 1, filter: 'brightness(1)' }, { scaleY: 0.005, filter: 'brightness(4)', duration: 0.2, ease: 'power4.in', immediateRender: false }, 0.88)
+        .to('.crt-screen', { scaleX: 0.002, duration: 0.15, ease: 'power4.in' }, 1.08)
+        .set('.crt-screen', { opacity: 0 }, 1.23)
+        .fromTo('.crt-dot', { opacity: 1, scale: 1 }, { opacity: 0, scale: 0.2, duration: 0.22, ease: 'power2.in', immediateRender: false }, 1.23)
+        .call(onRevealed, [], 1.12)
+        .to(rootRef.current, { backgroundColor: 'rgba(0,0,0,0)', duration: 0.3, ease: 'power2.out' }, 1.2)
+        // the logo has landed: the site's own logo takes over
+        .set('.case-logo', { opacity: 1 }, 1.45)
+        .to('.crt-logo', { opacity: 0, duration: 0.15 }, 1.45);
 
       const logo = rootRef.current?.querySelector<HTMLImageElement>('.crt-logo');
       let started = false;
@@ -114,11 +133,12 @@ export const Preloader: React.FC<PreloaderProps> = ({ onRevealed, onExited }) =>
       <div className="crt-screen">
         <canvas ref={canvasRef} className="crt-static" width={240} height={150} aria-hidden="true" />
         <div className="crt-roll" aria-hidden="true" />
-        <div className="crt-center">
-          <img className="crt-logo" src="img/logo.webp" alt="Drax Raw" width={700} height={436} />
-        </div>
         <div className="crt-lines" aria-hidden="true" />
         <div className="crt-vignette" aria-hidden="true" />
+      </div>
+      {/* Outside the screen, so it can leave the TV when the set switches off */}
+      <div className="crt-center">
+        <img className="crt-logo" src="img/logo.webp" alt="Drax Raw" width={700} height={436} />
       </div>
       <span className="crt-dot" aria-hidden="true" />
     </div>
